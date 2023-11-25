@@ -2,7 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -11,16 +11,16 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 public class OpmodeCV extends LinearOpMode {
 
     private ElapsedTime runtime = new ElapsedTime();
-    private DcMotorEx motorFrontLeft = null;
-    private DcMotorEx motorBackLeft = null;
-    private DcMotorEx motorFrontRight = null;
-    private DcMotorEx motorBackRight = null;
+    //private DcMotorEx motorFrontLeft = null;
+    //private DcMotorEx motorBackLeft = null;
+    //private DcMotorEx motorFrontRight = null;
+    //private DcMotorEx motorBackRight = null;
     private Servo garra = null;
     private Servo cotovelo = null;
     private Servo ombroR = null;
     private Servo ombroL = null;
-    private CRServo bracoR = null;
-    private CRServo bracoL = null;
+    //private CRServo bracoR = null;
+    //private CRServo bracoL = null;
     private DcMotorEx Intake = null;
 
     private int RB_presses = 0;
@@ -38,16 +38,19 @@ public class OpmodeCV extends LinearOpMode {
         motorBackLeft = hardwareMap.get(DcMotorEx.class,"motorBackLeft"); //
         motorFrontRight = hardwareMap.get(DcMotorEx.class,"motorFrontRight"); //
         motorBackRight = hardwareMap.get(DcMotorEx.class,"motorBackRight"); //
-        Intake = hardwareMap.get(DcMotorEx.class,"Intake");
         */
+        Intake = hardwareMap.get(DcMotorEx.class,"Intake"); //0
+
 
         //Servos
-        garra = hardwareMap.get(Servo.class, "garra"); //1
-        cotovelo = hardwareMap.get(Servo.class, "cotovelo"); //3
+        garra = hardwareMap.get(Servo.class, "garra"); //Ex0
+        cotovelo = hardwareMap.get(Servo.class, "cotovelo"); //4
         ombroR = hardwareMap.get(Servo.class, "ombroR"); //2
         ombroL = hardwareMap.get(Servo.class, "ombroL"); //0
+        /*
         bracoL = hardwareMap.get(CRServo.class, "bracoL");
         bracoR = hardwareMap.get(CRServo.class, "bracoR");
+        */
 
         //Configure Motors
         /*
@@ -57,16 +60,18 @@ public class OpmodeCV extends LinearOpMode {
         motorBackRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorBackRight.setDirection(DcMotorEx.Direction.REVERSE);
         motorFrontRight.setDirection(DcMotorEx.Direction.REVERSE);
+        */
         Intake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-         */
+
 
         garra.setPosition(0);
-        cotovelo.setPosition(0.5);
-        sleep(2000);
+        cotovelo.setPosition(0.6);
         ombroL.setPosition(0);
         ombroR.setPosition(1);
-        bracoR.setPower(0);
-        bracoL.setPower(0);
+        sleep(1000);
+        cotovelo.setPosition(0.45);
+        //bracoR.setPower(0);
+        //bracoL.setPower(0);
 
 
         waitForStart();
@@ -91,21 +96,22 @@ public class OpmodeCV extends LinearOpMode {
             motorFrontRight.setPower(frontRightPower);
             motorBackRight.setPower(backRightPower);
             */
-            if (gamepad1.a == true) {
+            if (gamepad2.a == true) {
                 cotovelo.setPosition(0.3);
-                sleep(2000);
-                ombroL.setPosition(1);
-                ombroR.setPosition(0);
+                sleep(1000);
+                ombroL.setPosition(0.8);
+                ombroR.setPosition(0.2);
                 cotovelo.setPosition(1);
             }
-            if (gamepad1.b == true) {
+            if (gamepad2.b == true) {
                 cotovelo.setPosition(0.3);
                 ombroL.setPosition(0);
                 ombroR.setPosition(1);
-                sleep(2000);
-                cotovelo.setPosition(0.5);
+                sleep(1000);
+                cotovelo.setPosition(0.45);
             }
-            if (gamepad1.right_bumper) {
+
+            if (gamepad2.right_bumper) {
                 RB_presses += 1;
                 if (RB_presses == 3) { //Se apertar 3 vezes, faz a mesma coisa que 1 vez
                     RB_presses = 1;
@@ -119,17 +125,18 @@ public class OpmodeCV extends LinearOpMode {
                 }
             }
 
-            if (gamepad1.left_bumper) {
+            if (gamepad2.left_bumper) {
                 garra.setPosition(1);
             }
 
-            if (gamepad1.dpad_up) {
+            /*
+            if (gamepad2.dpad_up) {
                 bracoL.setPower(1);
                 bracoR.setPower(1);
             }
-
+            */
             if (gamepad2.start) {
-                Intake.setPower(500);
+                Intake.setPower(-5);
             }
 
             if (gamepad2.back) {
@@ -146,8 +153,8 @@ public class OpmodeCV extends LinearOpMode {
             telemetry.addData("Garra: ", garra.getPosition());
             telemetry.addLine("============= Sistema MOTORES ============");
             telemetry.addData("Intake: ", Intake.getPower());
-            telemetry.addData("BraçoL: ", bracoL.getPower());
-            telemetry.addData("BraçoR: ", bracoR.getPower());
+            //telemetry.addData("BraçoL: ", bracoL.getPower());
+            //telemetry.addData("BraçoR: ", bracoR.getPower());
             telemetry.update();
 
 
