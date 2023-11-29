@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -15,17 +16,16 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 public class OpmodeCV extends LinearOpMode {
 
     private ElapsedTime runtime = new ElapsedTime();
-    //private DcMotorEx motorFrontLeft = null;
-    //private DcMotorEx motorBackLeft = null;
-    //private DcMotorEx motorFrontRight = null;
-    //private DcMotorEx motorBackRight = null;
+    private DcMotorEx motorFrontLeft = null;
+    private DcMotorEx motorBackLeft = null;
+    private DcMotorEx motorFrontRight = null;
+    private DcMotorEx motorBackRight = null;
+    private DcMotorEx Intake = null;
+    private DcMotorEx Lift = null;
     private Servo garra = null;
     private Servo cotovelo = null;
     private Servo ombroR = null;
     private Servo ombroL = null;
-    //private CRServo bracoR = null;
-    //private CRServo bracoL = null;
-    private DcMotorEx Intake = null;
     private DistanceSensor distanceSensor = null;
     private NormalizedColorSensor colorSensor = null;
 
@@ -44,13 +44,13 @@ public class OpmodeCV extends LinearOpMode {
 
         //HardwareMap Config
         //Motors
-        /*
-        motorFrontLeft = hardwareMap.get(DcMotorEx.class,"motorFrontLeft"); //
-        motorBackLeft = hardwareMap.get(DcMotorEx.class,"motorBackLeft"); //
-        motorFrontRight = hardwareMap.get(DcMotorEx.class,"motorFrontRight"); //
-        motorBackRight = hardwareMap.get(DcMotorEx.class,"motorBackRight"); //
-        */
+        motorFrontLeft = hardwareMap.get(DcMotorEx.class,"motorFrontLeft"); //2
+        motorBackLeft = hardwareMap.get(DcMotorEx.class,"motorBackLeft"); //3
+        motorFrontRight = hardwareMap.get(DcMotorEx.class,"motorFrontRight"); //0
+        motorBackRight = hardwareMap.get(DcMotorEx.class,"motorBackRight"); //1
         Intake = hardwareMap.get(DcMotorEx.class,"Intake"); //0
+        Lift = hardwareMap.get(DcMotorEx.class, "Lift");
+
         colorSensor = hardwareMap.get(NormalizedColorSensor.class, "DistanceSensor"); //2
         distanceSensor = ((DistanceSensor) colorSensor);
 
@@ -59,40 +59,34 @@ public class OpmodeCV extends LinearOpMode {
         cotovelo = hardwareMap.get(Servo.class, "cotovelo"); //4
         ombroR = hardwareMap.get(Servo.class, "ombroR"); //2
         ombroL = hardwareMap.get(Servo.class, "ombroL"); //0
-        /*
-        bracoL = hardwareMap.get(CRServo.class, "bracoL");
-        bracoR = hardwareMap.get(CRServo.class, "bracoR");
-        */
 
         //Configure Motors
-        /*
         motorFrontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorBackLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorFrontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorBackRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorBackRight.setDirection(DcMotorEx.Direction.REVERSE);
         motorFrontRight.setDirection(DcMotorEx.Direction.REVERSE);
-        */
         Intake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        distanciaAnterior = distanceSensor.getDistance(DistanceUnit.CM);
+        Lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        Lift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        Lift.setDirection(DcMotorSimple.Direction.REVERSE);
 
+        distanciaAnterior = distanceSensor.getDistance(DistanceUnit.CM);
 
         garra.setPosition(0);
         cotovelo.setPosition(0.6);
-        ombroL.setPosition(0);
-        ombroR.setPosition(1);
+        ombroL.setPosition(0.03);
+        ombroR.setPosition(0.97);
         sleep(1000);
-        cotovelo.setPosition(0.45);
-        //bracoR.setPower(0);
-        //bracoL.setPower(0);
-
+        cotovelo.setPosition(0.47);
 
         waitForStart();
         resetRuntime();
 
         while (opModeIsActive()) {
             telemetry.addData("Status", "Running");
-            /*
+
             double velocity = (gamepad1.right_trigger * 0.80) + 0.20;
             double y = gamepad1.left_stick_y * velocity;
             double x = gamepad1.left_stick_x * -1.1 * velocity;
@@ -108,7 +102,7 @@ public class OpmodeCV extends LinearOpMode {
             motorBackLeft.setPower(backLeftPower);
             motorFrontRight.setPower(frontRightPower);
             motorBackRight.setPower(backRightPower);
-            */
+
             if (gamepad2.a == true) {
                 cotovelo.setPosition(0.25);
                 sleep(1000);
@@ -124,6 +118,23 @@ public class OpmodeCV extends LinearOpMode {
                 ombroR.setPosition(0.97);
                 sleep(1000);
                 cotovelo.setPosition(0.47);
+            }
+
+            if (gamepad2.dpad_up){
+                Lift.setVelocity(700);
+                //Lift.setVelocityPIDFCoefficients(6.5,0.65,0,65);
+                Lift.setVelocityPIDFCoefficients(6,0,0,45);
+                Lift.setTargetPosition(2000);
+                Lift.setTargetPositionTolerance(10);
+                Lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            }
+            if (gamepad2.dpad_down){
+                Lift.setVelocity(700);
+                //Lift.setVelocityPIDFCoefficients(6.5,0.65,0,65);
+                Lift.setVelocityPIDFCoefficients(6,0,0,45);
+                Lift.setTargetPosition(0);
+                Lift.setTargetPositionTolerance(10);
+                Lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             }
 
             if (gamepad2.right_bumper) {
@@ -146,12 +157,6 @@ public class OpmodeCV extends LinearOpMode {
                 garra.setPosition(1);
             }
 
-            /*
-            if (gamepad2.dpad_up) {
-                bracoL.setPower(1);
-                bracoR.setPower(1);
-            }
-            */
             if (gamepad2.start) {
                 Intake.setPower(-10);
                 PixelsnaGarra = 0;
@@ -160,7 +165,6 @@ public class OpmodeCV extends LinearOpMode {
             if (gamepad2.back) {
                 Intake.setPower(0);
             }
-
 
             if (distanceSensor.getDistance(DistanceUnit.CM) < 5.5 && distanciaAnterior > 5.5) {
                 PixelsnaGarra += 1;
@@ -185,8 +189,8 @@ public class OpmodeCV extends LinearOpMode {
             telemetry.addData("Garra: ", garra.getPosition());
             telemetry.addLine("============= Sistema MOTORES ============");
             telemetry.addData("Intake: ", Intake.getPower());
-            //telemetry.addData("BraçoL: ", bracoL.getPower());
-            //telemetry.addData("BraçoR: ", bracoR.getPower());
+            telemetry.addData("LiftCurrentPos:", Lift.getCurrentPosition());
+            telemetry.addData("LiftTargetPos:", Lift.getTargetPosition());
             telemetry.addLine("============= Sistema SENSORES ===========");
             telemetry.addData("Distancia em cm: ", distanceSensor.getDistance(DistanceUnit.CM));
             telemetry.addData("Pixels na garra: ", PixelsnaGarra);
