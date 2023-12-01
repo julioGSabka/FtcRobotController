@@ -48,8 +48,8 @@ public class OpmodeCV extends LinearOpMode {
         motorBackLeft = hardwareMap.get(DcMotorEx.class,"motorBackLeft"); //3
         motorFrontRight = hardwareMap.get(DcMotorEx.class,"motorFrontRight"); //0
         motorBackRight = hardwareMap.get(DcMotorEx.class,"motorBackRight"); //1
-        Intake = hardwareMap.get(DcMotorEx.class,"Intake"); //0
-        Lift = hardwareMap.get(DcMotorEx.class, "Lift");
+        Intake = hardwareMap.get(DcMotorEx.class,"Intake"); //Ex0
+        Lift = hardwareMap.get(DcMotorEx.class, "Lift"); //Ex1
 
         colorSensor = hardwareMap.get(NormalizedColorSensor.class, "DistanceSensor"); //2
         distanceSensor = ((DistanceSensor) colorSensor);
@@ -67,6 +67,9 @@ public class OpmodeCV extends LinearOpMode {
         motorBackRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorBackRight.setDirection(DcMotorEx.Direction.REVERSE);
         motorFrontRight.setDirection(DcMotorEx.Direction.REVERSE);
+        motorBackLeft.setDirection(DcMotorEx.Direction.REVERSE);
+
+        
         Intake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         Lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         Lift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -104,10 +107,10 @@ public class OpmodeCV extends LinearOpMode {
             motorBackRight.setPower(backRightPower);
 
             if (gamepad2.a == true) {
-                cotovelo.setPosition(0.25);
+                cotovelo.setPosition(0);
                 sleep(1000);
-                ombroL.setPosition(0.9);
-                ombroR.setPosition(0.1);
+                ombroL.setPosition(1);
+                ombroR.setPosition(0);
                 sleep(500);
                 cotovelo.setPosition(1);
             }
