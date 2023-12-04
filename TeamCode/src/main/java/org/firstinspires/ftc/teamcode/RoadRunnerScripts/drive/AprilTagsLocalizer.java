@@ -3,39 +3,22 @@ package org.firstinspires.ftc.teamcode.RoadRunnerScripts.drive;
 import android.util.Size;
 
 import com.acmerobotics.dashboard.config.Config;
-import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.localization.Localizer;
-import com.arcrobotics.ftclib.geometry.Rotation2d;
+import com.arcrobotics.ftclib.geometry.Pose2d;
 import com.arcrobotics.ftclib.geometry.Transform2d;
-import com.arcrobotics.ftclib.geometry.Translation2d;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-import org.firstinspires.ftc.teamcode.Pipelines.AprilTagDetectionPipeline;
 import org.firstinspires.ftc.teamcode.vision.AprilTagCustomDatabase;
 import org.firstinspires.ftc.vision.VisionPortal;
+import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagPoseFtc;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
-import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
-import org.jetbrains.annotations.NotNull;
-import org.openftc.easyopencv.OpenCvCamera;
-import org.openftc.easyopencv.OpenCvCameraFactory;
-import org.openftc.easyopencv.OpenCvCameraRotation;
-import org.openftc.easyopencv.OpenCvWebcam;
-
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 @Config
 public class AprilTagsLocalizer implements Localizer {
@@ -135,10 +118,47 @@ public class AprilTagsLocalizer implements Localizer {
 
             for (AprilTagDetection tags : tag){
                 VectorF targetPose = tags.metadata.fieldPosition;
+                AprilTagPoseFtc camToTarget = tags.ftcPose;
+
 
             }
         }
 
+    }
+
+    private final List<State> m_states;
+    public Pose2d poseMeters;
+
+
+    public Trajectory transformBy(Transform2d transform) {
+        var firstState = m_states.get(0);
+        Pose2d firstPose = firstState.poseMeters;
+
+        // Calculate the transformed first pose.
+        Pose2d newFirstPose = firstPose.plus(transform);
+        List<State> newStates = new ArrayList<>();
+
+        newStates.add(
+            new State(
+                firstState.timeSeconds,
+                firstState.velocityMetersPerSecond,
+                firstState.accelerationMetersPerSecondSq,
+                newFirstPose,
+                firstState.curvatureRadPerMeter));
+
+        for (int i = 1; i < m_states.size(); i++) {
+            var state = m_states.get(i);
+            // We are transforming relative to the coordinate frame of the new initial pose.
+            newStates.add(
+                new State(
+                    state.timeSeconds,
+                    state.velocityMetersPerSecond,
+                    state.accelerationMetersPerSecondSq,
+                    newFirstPose.plus(state.poseMeters.minus(firstPose)),
+                    state.curvatureRadPerMeter));
+        }
+
+        return new Trajectory(newStates);
     }
 
 }
