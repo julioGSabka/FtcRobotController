@@ -1,3 +1,4 @@
+/*
 package org.firstinspires.ftc.teamcode.RoadRunnerScripts.drive;
 
 import com.acmerobotics.dashboard.config.Config;
@@ -24,6 +25,9 @@ import org.openftc.easyopencv.OpenCvWebcam;
 
 import java.util.ArrayList;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 @Config
 public class AprilTagsLocalizer implements Localizer {
 
@@ -33,6 +37,7 @@ public class AprilTagsLocalizer implements Localizer {
 
     private ArrayList<AprilTagDetection> detections = new ArrayList<AprilTagDetection>();
 
+
     OpenCvWebcam webcam;
     AprilTagDetectionPipeline aprilTagDetectionPipeline;
 
@@ -41,7 +46,7 @@ public class AprilTagsLocalizer implements Localizer {
     double fy = 578.272;
     double cx = 402.145;
     double cy = 221.506;
-    double tagsize = 0.04;
+    double tagsize = 0.127;
 
     int numFramesWithoutDetection = 0;
 
@@ -81,10 +86,10 @@ public class AprilTagsLocalizer implements Localizer {
 
         detections = aprilTagDetectionPipeline.getDetectionsUpdate();
 
-        if(detections.size() == 0) {
+        if (detections.size() == 0) {
             numFramesWithoutDetection++;
 
-            if(numFramesWithoutDetection >= THRESHOLD_NUM_FRAMES_NO_DETECTION_BEFORE_LOW_DECIMATION) {
+            if (numFramesWithoutDetection >= THRESHOLD_NUM_FRAMES_NO_DETECTION_BEFORE_LOW_DECIMATION) {
                 aprilTagDetectionPipeline.setDecimation(DECIMATION_LOW);
             }
         }
@@ -92,13 +97,13 @@ public class AprilTagsLocalizer implements Localizer {
         else {
             numFramesWithoutDetection = 0;
 
-            if(detections.get(0).pose.z < THRESHOLD_HIGH_DECIMATION_RANGE_METERS) {
+            if (detections.get(0).pose.z < THRESHOLD_HIGH_DECIMATION_RANGE_METERS) {
                 aprilTagDetectionPipeline.setDecimation(DECIMATION_HIGH);
             }
         }
 
 
-        for(AprilTagDetection detection : detections) {
+        for (AprilTagDetection detection : detections) {
             Orientation rot = Orientation.getOrientation(detection.pose.R, AxesReference.INTRINSIC, AxesOrder.YXZ, AngleUnit.DEGREES);
             /*
             telemetry.addData("Detected tag ID= ", detection.id);
@@ -109,28 +114,27 @@ public class AprilTagsLocalizer implements Localizer {
             telemetry.addData("Rotation Pitch: %.2f degrees", rot.secondAngle);
             telemetry.addData("Rotation Roll: %.2f degrees", rot.thirdAngle);
              */
-        }
 
-    }
+import org.jetbrains.annotations.NotNull;}
 
-    @NotNull
-    @Override
-    public Pose2d getPoseEstimate() {
+        @NotNull
+        @Override
+        public Pose2d getPoseEstimate() {
 
-        for(AprilTagDetection detection : detections) {
-            Orientation rot = Orientation.getOrientation(detection.pose.R, AxesReference.INTRINSIC, AxesOrder.YXZ, AngleUnit.DEGREES);
+            for (AprilTagDetection detection : detections) {
+                Orientation rot = Orientation.getOrientation(detection.pose.R, AxesReference.INTRINSIC, AxesOrder.YXZ, AngleUnit.DEGREES);
 
-            if (detection.id == 10){
+                if (detection.id == 10) {
 
+                }
+                if (detection.id == 7) {
+
+                }
             }
-            if (detection.id == 7){
+            //variable up is updated in update()
 
-            }
-        }
-        //variable up is updated in update()
-
-        //The FTC265 library uses Ftclib geometry, so I need to convert that to road runner Geometry
-        //TODO: convert all Ftclib geometry to ACME robotics geometry in T265Camera.java
+            //The FTC265 library uses Ftclib geometry, so I need to convert that to road runner Geometry
+            //TODO: convert all Ftclib geometry to ACME robotics geometry in T265Camera.java
         /*
         if (up != null) {
             Translation2d oldPose = up.pose.getTranslation();
@@ -145,6 +149,7 @@ public class AprilTagsLocalizer implements Localizer {
         return mPoseEstimate;
         */
 
+        }
     }
 }
-
+*/

@@ -25,12 +25,13 @@ public class AprilTagDetector extends LinearOpMode {
     AprilTagDetectionPipeline aprilTagDetectionPipeline;
 
     static final double FEET_PER_METER = 3.28084;
+    static final double FEET_PER_CM = 30.48;
 
-    double fx = 578.272;
-    double fy = 578.272;
-    double cx = 402.145;
-    double cy = 221.506;
-    double tagsize = 0.04;
+    double fx = 1367.369;
+    double fy = 1366.117;
+    double cx = 674.594;
+    double cy = 414.888;
+    double tagsize = 0.127;
 
     int numFramesWithoutDetection = 0;
 
@@ -54,7 +55,7 @@ public class AprilTagDetector extends LinearOpMode {
         webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
             @Override
             public void onOpened() {
-                webcam.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT);
+                webcam.startStreaming(640, 480, OpenCvCameraRotation.UPRIGHT);
             }
 
             @Override
@@ -75,7 +76,7 @@ public class AprilTagDetector extends LinearOpMode {
             telemetry.addData("Pipeline time ms", webcam.getPipelineTimeMs());
             telemetry.addData("Overhead time ms", webcam.getOverheadTimeMs());
             telemetry.addData("Theoretical max FPS", webcam.getCurrentPipelineMaxFps());
-            telemetry.update();
+            //telemetry.update();
 
             if (gamepad1.a) {
                 webcam.stopStreaming();
@@ -105,13 +106,13 @@ public class AprilTagDetector extends LinearOpMode {
                 for(AprilTagDetection detection : detections) {
                     Orientation rot = Orientation.getOrientation(detection.pose.R, AxesReference.INTRINSIC, AxesOrder.YXZ, AngleUnit.DEGREES);
 
-                    telemetry.addData("Detected tag ID= ", detection.id);
-                    telemetry.addData("Translation X: %.2f feet", detection.pose.x*FEET_PER_METER);
-                    telemetry.addData("Translation Y: %.2f feet", detection.pose.y*FEET_PER_METER);
-                    telemetry.addData("Translation Z: %.2f feet", detection.pose.z*FEET_PER_METER);
-                    telemetry.addData("Rotation Yaw: %.2f degrees", rot.firstAngle);
-                    telemetry.addData("Rotation Pitch: %.2f degrees", rot.secondAngle);
-                    telemetry.addData("Rotation Roll: %.2f degrees", rot.thirdAngle);
+                    telemetry.addData("Detected tag ID", detection.id);
+                    telemetry.addData("Translation X", detection.pose.x);
+                    telemetry.addData("Translation Y", detection.pose.y);
+                    telemetry.addData("Translation Z", detection.pose.z);
+                    telemetry.addData("Rotation Yaw", rot.firstAngle);
+                    telemetry.addData("Rotation Pitch", rot.secondAngle);
+                    telemetry.addData("Rotation Roll", rot.thirdAngle);
                 }
 
                 telemetry.update();
