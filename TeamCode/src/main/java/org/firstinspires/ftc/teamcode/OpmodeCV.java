@@ -2,11 +2,11 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
-import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -27,7 +27,7 @@ public class OpmodeCV extends LinearOpMode {
     private Servo ombroR = null;
     private Servo ombroL = null;
     private DistanceSensor distanceSensor = null;
-    private NormalizedColorSensor colorSensor = null;
+    private ColorSensor colorSensor = null;
 
     private int RB_presses = 0;
     private int PixelsnaGarra = 0;
@@ -35,6 +35,8 @@ public class OpmodeCV extends LinearOpMode {
     private double valorRed = 0;
     private double valorGreen = 0;
     private double valorBlue = 0;
+    private String corPixel_1 = null;
+    private String corPixel_2 = null;
 
     @Override
     public void runOpMode() {
@@ -51,8 +53,8 @@ public class OpmodeCV extends LinearOpMode {
         Intake = hardwareMap.get(DcMotorEx.class,"Intake"); //Ex0
         Lift = hardwareMap.get(DcMotorEx.class, "Lift"); //Ex1
 
-        colorSensor = hardwareMap.get(NormalizedColorSensor.class, "DistanceSensor"); //2
-        distanceSensor = ((DistanceSensor) colorSensor);
+        colorSensor = hardwareMap.get(ColorSensor.class, "ColorSensor"); //2
+        distanceSensor = hardwareMap.get(DistanceSensor.class, "DistanceSensor");
 
         //Servos
         garra = hardwareMap.get(Servo.class, "garra"); //Ex0
@@ -61,13 +63,14 @@ public class OpmodeCV extends LinearOpMode {
         ombroL = hardwareMap.get(Servo.class, "ombroL"); //0
 
         //Configure Motors
-        motorFrontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        motorBackLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        motorFrontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        motorBackRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        //motorFrontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        //motorBackLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        //motorFrontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        //motorBackRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorBackLeft.setDirection(DcMotorEx.Direction.REVERSE);
         motorBackRight.setDirection(DcMotorEx.Direction.REVERSE);
         motorFrontRight.setDirection(DcMotorEx.Direction.REVERSE);
-        motorBackLeft.setDirection(DcMotorEx.Direction.REVERSE);
+
 
         
         Intake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -90,7 +93,11 @@ public class OpmodeCV extends LinearOpMode {
         while (opModeIsActive()) {
             telemetry.addData("Status", "Running");
 
-            double velocity = (gamepad1.right_trigger * 0.80) + 0.20;
+            valorRed = colorSensor.red();
+            valorGreen = colorSensor.green();
+            valorBlue = colorSensor.blue();
+
+            double velocity = (gamepad1.right_trigger * 0.70) + 0.20;
             double y = gamepad1.left_stick_y * velocity;
             double x = gamepad1.left_stick_x * -1.1 * velocity;
             double rx = -gamepad1.right_stick_x * velocity;
@@ -163,6 +170,8 @@ public class OpmodeCV extends LinearOpMode {
             if (gamepad2.start) {
                 Intake.setPower(-10);
                 PixelsnaGarra = 0;
+                corPixel_1 = null;
+                corPixel_2 = null;
             }
 
             if (gamepad2.back) {
@@ -175,12 +184,35 @@ public class OpmodeCV extends LinearOpMode {
                     sleep(700);
                     Intake.setPower(0);
                 }
+                valorRed = colorSensor.red();
+                valorGreen = colorSensor.green();
+                valorBlue = colorSensor.blue();
+
+                if (valorBlue > 90) {
+                    if (PixelsnaGarra == 1) {
+                        corPixel_1 = "Roxo";
+                    } else {
+                        corPixel_2 = "Roxo";
+                    }
+                }
+                if (valorGreen > 120) {
+                    if (PixelsnaGarra == 1) {
+                        corPixel_1 = "Verde";
+                    } else {
+                        corPixel_2 = "Verde";
+                    }
+                }
+                if (valorRed < 70) {
+                    if (PixelsnaGarra == 1) {
+                        corPixel_1 = "Amarelo";
+                    } else {
+                        corPixel_2 = "Amarelo";
+                    }
+                }
             }
 
             distanciaAnterior = distanceSensor.getDistance(DistanceUnit.CM);
-            valorRed = colorSensor.getNormalizedColors().red * (colorSensor.getNormalizedColors().red + colorSensor.getNormalizedColors().green + colorSensor.getNormalizedColors().blue);
-            valorGreen = colorSensor.getNormalizedColors().green * (colorSensor.getNormalizedColors().red + colorSensor.getNormalizedColors().green + colorSensor.getNormalizedColors().blue);
-            valorBlue = colorSensor.getNormalizedColors().blue * (colorSensor.getNormalizedColors().red + colorSensor.getNormalizedColors().green + colorSensor.getNormalizedColors().blue);
+
 
 
             telemetry.addLine("Opmode");
@@ -200,7 +232,10 @@ public class OpmodeCV extends LinearOpMode {
             telemetry.addData("Valor Red: ", valorRed);
             telemetry.addData("Valor Green: ", valorGreen);
             telemetry.addData("Valor Blue: ", valorBlue);
-            telemetry.addData("Valor hexadecimal: ", colorSensor.getNormalizedColors());
+            telemetry.addData("Cor do Pixel 1: ", corPixel_1);
+            telemetry.addData("Cor do Pixel 2: ", corPixel_2);
+            //telemetry.addData("Valor hexadecimal: ", colorSensor.argb());
+
             telemetry.update();
 
 
