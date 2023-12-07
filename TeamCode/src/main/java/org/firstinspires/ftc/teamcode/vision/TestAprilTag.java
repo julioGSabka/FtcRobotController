@@ -52,7 +52,6 @@ public class TestAprilTag extends LinearOpMode {
 
                 ArrayList<AprilTagDetection> tag = tagProcessor.getDetections();
 
-
                 for (AprilTagDetection tags : tag){
                     telemetry.addData("Detected tag ID", tags.id);
                     telemetry.addData("Translation X", tags.ftcPose.x);
@@ -65,10 +64,12 @@ public class TestAprilTag extends LinearOpMode {
                     telemetry.addLine("=============");
                     telemetry.addData("Range", tags.ftcPose.range);
                     telemetry.addData("Elevation", tags.ftcPose.elevation);
-                    telemetry.addData("Bearing", Math.toRadians(tags.ftcPose.bearing));
+                    telemetry.addData("Bearing", tags.ftcPose.bearing);
                     telemetry.addLine("=============");
                     telemetry.addData("FieldPos", tags.metadata.fieldPosition);
-                    telemetry.addData("Tentativa X", tags.metadata.fieldPosition.get(0) - tags.ftcPose.y);
+                    telemetry.addData("RobotPosX:", tags.metadata.fieldPosition.get(0) + tags.ftcPose.y);
+                    telemetry.addData("RobotPosY:", tags.metadata.fieldPosition.get(1) + tags.ftcPose.x);
+                    telemetry.addData("Orientation:", -tags.metadata.fieldPosition.get(3) + 180 + (tags.ftcPose.bearing + (Math.atan(tags.ftcPose.x/tags.ftcPose.y))));
 
                 }
             }
