@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.ServoImplEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
@@ -23,9 +24,9 @@ public class OpmodeCV extends LinearOpMode {
     private DcMotorEx Intake = null;
     private DcMotorEx Lift = null;
     private Servo garra = null;
-    private Servo cotovelo = null;
-    private Servo ombroR = null;
-    private Servo ombroL = null;
+    private ServoImplEx cotovelo = null;
+    private ServoImplEx ombroR = null;
+    private ServoImplEx ombroL = null;
     private DistanceSensor distanceSensor = null;
     private ColorSensor colorSensor = null;
 
@@ -58,9 +59,9 @@ public class OpmodeCV extends LinearOpMode {
 
         //Servos
         garra = hardwareMap.get(Servo.class, "garra"); //Ex0
-        cotovelo = hardwareMap.get(Servo.class, "cotovelo"); //4
-        ombroR = hardwareMap.get(Servo.class, "ombroR"); //2
-        ombroL = hardwareMap.get(Servo.class, "ombroL"); //0
+        cotovelo = hardwareMap.get(ServoImplEx.class, "cotovelo"); //4
+        ombroR = hardwareMap.get(ServoImplEx.class, "ombroR"); //2
+        ombroL = hardwareMap.get(ServoImplEx.class, "ombroL"); //0
 
         //Configure Motors
         //motorFrontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -86,6 +87,8 @@ public class OpmodeCV extends LinearOpMode {
         ombroR.setPosition(0.97);
         sleep(1000);
         cotovelo.setPosition(0.47);
+        sleep(1500);
+        DisableServos();
 
         waitForStart();
         resetRuntime();
@@ -114,20 +117,23 @@ public class OpmodeCV extends LinearOpMode {
             motorBackRight.setPower(backRightPower);
 
             if (gamepad2.a == true) {
-                cotovelo.setPosition(0);
+                EnableServos();
+                cotovelo.setPosition(1);
                 sleep(1000);
                 ombroL.setPosition(1);
                 ombroR.setPosition(0);
                 sleep(500);
-                cotovelo.setPosition(1);
+                cotovelo.setPosition(0);
             }
             if (gamepad2.b == true) {
-                cotovelo.setPosition(0.2);
+                EnableServos();
+                cotovelo.setPosition(0.6);
                 sleep(500);
                 ombroL.setPosition(0.03);
                 ombroR.setPosition(0.97);
                 sleep(1000);
                 cotovelo.setPosition(0.47);
+                DisableServos();
             }
 
             if (gamepad2.dpad_up){
@@ -155,7 +161,7 @@ public class OpmodeCV extends LinearOpMode {
 
                 //Fazer a garra soltar os pixels
                 if (RB_presses == 1) {
-                    garra.setPosition(0.5);
+                    garra.setPosition(0.6);
                     PixelsnaGarra = 1;
                 } else if (RB_presses == 2) {
                     garra.setPosition(0);
@@ -213,8 +219,6 @@ public class OpmodeCV extends LinearOpMode {
 
             distanciaAnterior = distanceSensor.getDistance(DistanceUnit.CM);
 
-
-
             telemetry.addLine("Opmode");
             telemetry.addData("Status", "Run Time: " + runtime.toString());
             telemetry.addLine("============= Sistema SERVOS =============");
@@ -237,10 +241,18 @@ public class OpmodeCV extends LinearOpMode {
             //telemetry.addData("Valor hexadecimal: ", colorSensor.argb());
 
             telemetry.update();
-
-
-
-
         }
+    }
+
+    public void DisableServos(){
+        cotovelo.setPwmDisable();
+        ombroR.setPwmDisable();
+        ombroL.setPwmDisable();
+    }
+
+    public void EnableServos(){
+        cotovelo.setPwmEnable();
+        ombroR.setPwmEnable();
+        ombroL.setPwmEnable();
     }
 }
