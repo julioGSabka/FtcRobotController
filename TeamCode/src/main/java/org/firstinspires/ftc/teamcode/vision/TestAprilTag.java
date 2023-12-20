@@ -15,10 +15,17 @@ import java.util.ArrayList;
 @TeleOp
 public class TestAprilTag extends LinearOpMode {
 
+    AprilTagProcessor tagProcessor1;
+    AprilTagProcessor tagProcessor2;
+    VisionPortal visionPortal1;
+    VisionPortal visionPortal2;
+
     @Override
     public void runOpMode() {
 
-        AprilTagProcessor tagProcessor = new AprilTagProcessor.Builder()
+        int[] portalsList = VisionPortal.makeMultiPortalView(2, VisionPortal.MultiPortalLayout.HORIZONTAL);
+
+        tagProcessor1 = new AprilTagProcessor.Builder()
                 .setDrawTagID(true)
                 .setDrawTagOutline(true)
                 .setDrawAxes(true)
@@ -28,16 +35,38 @@ public class TestAprilTag extends LinearOpMode {
                 .setTagLibrary(AprilTagCustomDatabase.getCenterStageLibrary())
                 .build();
 
-        VisionPortal visionPortal = new VisionPortal.Builder()
+        tagProcessor2 = new AprilTagProcessor.Builder()
+                .setDrawTagID(true)
+                .setDrawTagOutline(true)
+                .setDrawAxes(true)
+                .setDrawCubeProjection(true)
+                .setLensIntrinsics(854.2712445, 875.96651965, 613.29710682, 537.91085293)
+                .setTagFamily(AprilTagProcessor.TagFamily.TAG_36h11)
+                .setTagLibrary(AprilTagCustomDatabase.getCenterStageLibrary())
+                .build();
+
+        visionPortal1 = new VisionPortal.Builder()
                 .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
-                .addProcessor(tagProcessor)
+                .addProcessor(tagProcessor1)
                 .setCameraResolution(new Size(640, 480))
                 .setStreamFormat(VisionPortal.StreamFormat.MJPEG)
                 .enableLiveView(true)
+                .setLiveViewContainerId(portalsList[0])
                 .setAutoStopLiveView(true)
                 .build();
 
-        visionPortal.setProcessorEnabled(tagProcessor, true);
+        visionPortal2 = new VisionPortal.Builder()
+                .setCamera(hardwareMap.get(WebcamName.class, "Webcam 2"))
+                .addProcessor(tagProcessor2)
+                .setCameraResolution(new Size(640, 480))
+                .setStreamFormat(VisionPortal.StreamFormat.MJPEG)
+                .enableLiveView(true)
+                .setLiveViewContainerId(portalsList[1])
+                .setAutoStopLiveView(true)
+                .build();
+
+        visionPortal1.setProcessorEnabled(tagProcessor1, true);
+        visionPortal2.setProcessorEnabled(tagProcessor2, true);
 
         telemetry.addLine("Waiting for start");
         telemetry.update();
@@ -46,36 +75,69 @@ public class TestAprilTag extends LinearOpMode {
 
         while (opModeIsActive()) {
 
-            tagProcessor.setPoseSolver(AprilTagProcessor.PoseSolver.OPENCV_SOLVEPNP_EPNP);
-
-            if (tagProcessor.getDetections().size() > 0){
-
-                ArrayList<AprilTagDetection> tag = tagProcessor.getDetections();
-
-                for (AprilTagDetection tags : tag){
-                    telemetry.addData("Detected tag ID", tags.id);
-                    telemetry.addData("Translation X", tags.ftcPose.x);
-                    telemetry.addData("Translation Y", tags.ftcPose.y);
-                    telemetry.addData("Translation Z", tags.ftcPose.x);
-                    telemetry.addLine("=============");
-                    telemetry.addData("Rotation Yaw", tags.ftcPose.yaw);
-                    telemetry.addData("Rotation Pitch", tags.ftcPose.pitch);
-                    telemetry.addData("Rotation Roll", tags.ftcPose.roll);
-                    telemetry.addLine("=============");
-                    telemetry.addData("Range", tags.ftcPose.range);
-                    telemetry.addData("Elevation", tags.ftcPose.elevation);
-                    telemetry.addData("Bearing", tags.ftcPose.bearing);
-                    telemetry.addLine("=============");
-                    telemetry.addData("FieldPos", tags.metadata.fieldPosition);
-                    telemetry.addData("RobotPosX:", tags.metadata.fieldPosition.get(0) + tags.ftcPose.y);
-                    telemetry.addData("RobotPosY:", tags.metadata.fieldPosition.get(1) + tags.ftcPose.x);
-                    telemetry.addData("Orientation:", -tags.metadata.fieldPosition.get(3) + 180 + (tags.ftcPose.bearing + (Math.atan(tags.ftcPose.x/tags.ftcPose.y))));
-
-                }
-            }
-
-            telemetry.update();
-
+            tagTelemtry();
         }
     }
+
+    public void tagTelemtry(){
+        tagProcessor1.setPoseSolver(AprilTagProcessor.PoseSolver.OPENCV_SOLVEPNP_EPNP);
+
+        if (tagProcessor1.getDetections().size() > 0){
+
+            ArrayList<AprilTagDetection> tag = tagProcessor1.getDetections();
+
+            for (AprilTagDetection tags : tag){
+                telemetry.addData("Detected tag ID", tags.id);
+                telemetry.addData("Translation X", tags.ftcPose.x);
+                telemetry.addData("Translation Y", tags.ftcPose.y);
+                telemetry.addData("Translation Z", tags.ftcPose.x);
+                telemetry.addLine("=============");
+                telemetry.addData("Rotation Yaw", tags.ftcPose.yaw);
+                telemetry.addData("Rotation Pitch", tags.ftcPose.pitch);
+                telemetry.addData("Rotation Roll", tags.ftcPose.roll);
+                telemetry.addLine("=============");
+                telemetry.addData("Range", tags.ftcPose.range);
+                telemetry.addData("Elevation", tags.ftcPose.elevation);
+                telemetry.addData("Bearing", tags.ftcPose.bearing);
+                telemetry.addLine("=============");
+                telemetry.addData("FieldPos", tags.metadata.fieldPosition);
+                telemetry.addData("RobotPosX:", tags.metadata.fieldPosition.get(0) + tags.ftcPose.y);
+                telemetry.addData("RobotPosY:", tags.metadata.fieldPosition.get(1) + tags.ftcPose.x);
+                telemetry.addData("Orientation:", -tags.metadata.fieldPosition.get(3) + 180 + (tags.ftcPose.bearing + (Math.atan(tags.ftcPose.x/tags.ftcPose.y))));
+
+            }
+        }
+
+        tagProcessor2.setPoseSolver(AprilTagProcessor.PoseSolver.OPENCV_SOLVEPNP_EPNP);
+
+        if (tagProcessor2.getDetections().size() > 0){
+
+            ArrayList<AprilTagDetection> tag = tagProcessor2.getDetections();
+
+            for (AprilTagDetection tags : tag){
+                telemetry.addData("Detected tag ID", tags.id);
+                telemetry.addData("Translation X", tags.ftcPose.x);
+                telemetry.addData("Translation Y", tags.ftcPose.y);
+                telemetry.addData("Translation Z", tags.ftcPose.x);
+                telemetry.addLine("=============");
+                telemetry.addData("Rotation Yaw", tags.ftcPose.yaw);
+                telemetry.addData("Rotation Pitch", tags.ftcPose.pitch);
+                telemetry.addData("Rotation Roll", tags.ftcPose.roll);
+                telemetry.addLine("=============");
+                telemetry.addData("Range", tags.ftcPose.range);
+                telemetry.addData("Elevation", tags.ftcPose.elevation);
+                telemetry.addData("Bearing", tags.ftcPose.bearing);
+                telemetry.addLine("=============");
+                telemetry.addData("FieldPos", tags.metadata.fieldPosition);
+                telemetry.addData("RobotPosX:", tags.metadata.fieldPosition.get(0) + tags.ftcPose.y);
+                telemetry.addData("RobotPosY:", tags.metadata.fieldPosition.get(1) + tags.ftcPose.x);
+                telemetry.addData("Orientation:", -tags.metadata.fieldPosition.get(3) + 180 + (tags.ftcPose.bearing + (Math.atan(tags.ftcPose.x/tags.ftcPose.y))));
+
+            }
+        }
+
+        telemetry.update();
+
+    }
+
 }

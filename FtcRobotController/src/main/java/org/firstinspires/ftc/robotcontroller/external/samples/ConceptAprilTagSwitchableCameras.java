@@ -178,7 +178,7 @@ public class ConceptAprilTagSwitchableCameras extends LinearOpMode {
      */
     private void doCameraSwitching() {
         if (visionPortal.getCameraState() == CameraState.STREAMING) {
-            // If the left bumper is pressed, use Webcam 1.
+            // If the left bumper is pressed, use Webcam  1.
             // If the right bumper is pressed, use Webcam 2.
             boolean newLeftBumper = gamepad1.left_bumper;
             boolean newRightBumper = gamepad1.right_bumper;
