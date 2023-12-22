@@ -4,9 +4,12 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.ServoImplEx;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 @TeleOp
 public class TesteElevacao extends LinearOpMode {
+
+    private ElapsedTime runtime = new ElapsedTime();
     private ServoImplEx servoElevacaoL = null;
     private ServoImplEx servoElevacaoR = null;
     private DcMotorEx motorElevacaoL = null;
@@ -29,7 +32,7 @@ public class TesteElevacao extends LinearOpMode {
         while (opModeIsActive()) {
             //Subir
             if (gamepad1.dpad_up) {
-                servoElevacaoL.setPosition(0);
+                servoElevacaoL.setPosition(1);
                 servoElevacaoR.setPosition(0);
             }
             if (gamepad1.dpad_left) {
@@ -39,13 +42,19 @@ public class TesteElevacao extends LinearOpMode {
 
             //Descer
             if (gamepad1.dpad_down) {
-                servoElevacaoL.setPosition(1);
+                servoElevacaoL.setPosition(0);
                 servoElevacaoR.setPosition(1);
             }
             if (gamepad1.dpad_right) {
-                motorElevacaoL.setPower(0);
-                motorElevacaoR.setPower(0);
+                motorElevacaoL.setPower(-10);
+                motorElevacaoR.setPower(-10);
             }
+
+            telemetry.addLine("Opmode");
+            telemetry.addData("Status", "Run Time: " + runtime.toString());
+            telemetry.addData("MotorElevacaoL:", motorElevacaoL);
+            telemetry.addData("MotorElevacaoR:", motorElevacaoR);
+            telemetry.update();
         }
     }
 

@@ -15,6 +15,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.vision.AprilTagCustomDatabase;
 import org.firstinspires.ftc.vision.VisionPortal;
@@ -34,23 +35,23 @@ public class OpmodeCV extends LinearOpMode {
     private DcMotorEx motorBackRight = null;
     private DcMotorEx Intake = null;
     private DcMotorEx Lift = null;
+    private DcMotorEx motorElevacaoL = null;
+    private DcMotorEx motorElevacaoR = null;
     private Servo garra = null;
     private ServoImplEx cotovelo = null;
     private ServoImplEx ombroR = null;
     private ServoImplEx ombroL = null;
+    private ServoImplEx servoElevacaoL = null;
+    private ServoImplEx servoElevacaoR = null;
     private DistanceSensor distanceSensor = null;
     private ColorSensor colorSensor = null;
 
     private int RB_presses = 0;
     private int PixelsnaGarra = 0;
+    private int matchState = 0;
 
     //Distance-Color Sensor Variables
     private double distanciaAnterior = 0;
-    private double valorRed = 0;
-    private double valorGreen = 0;
-    private double valorBlue = 0;
-    private String corPixel_1 = null;
-    private String corPixel_2 = null;
 
     //Vision Variables
     AprilTagProcessor tagProcessor1;
@@ -74,11 +75,9 @@ public class OpmodeCV extends LinearOpMode {
     final double MAX_AUTO_STRAFE = 0.5;   //  Clip the approach speed to this max value (adjust for your robot)
     final double MAX_AUTO_TURN   = 0.3;   //  Clip the turn speed to this max value (adjust for your robot)
 
-    double drive = 0;        // Desired forward power/speed (-1 to +1)
-    double strafe = 0;        // Desired strafe power/speed (-1 to +1)
-    double turn = 0;        // Desired turning power/speed (-1 to +1)
-
-    // PwmControl.PwmRange pwmRange = new PwmControl.PwmRange(600, 1200,20000);
+    double drive = 0;    // Desired forward power/speed (-1 to +1)
+    double strafe = 0;   // Desired strafe power/speed (-1 to +1)
+    double turn = 0;     // Desired turning power/speed (-1 to +1)
 
     @Override
     public void runOpMode() {
@@ -88,12 +87,14 @@ public class OpmodeCV extends LinearOpMode {
 
         //HardwareMap Config
         //Motors
-        motorFrontLeft = hardwareMap.get(DcMotorEx.class,"motorFrontLeft"); //2
-        motorBackLeft = hardwareMap.get(DcMotorEx.class,"motorBackLeft"); //3
-        motorFrontRight = hardwareMap.get(DcMotorEx.class,"motorFrontRight"); //0
-        motorBackRight = hardwareMap.get(DcMotorEx.class,"motorBackRight"); //1
+        motorFrontLeft = hardwareMap.get(DcMotorEx.class,"motorFrontLeft"); //0
+        motorBackLeft = hardwareMap.get(DcMotorEx.class,"motorBackLeft"); //1
+        motorFrontRight = hardwareMap.get(DcMotorEx.class,"motorFrontRight"); //2
+        motorBackRight = hardwareMap.get(DcMotorEx.class,"motorBackRight"); //3
         Intake = hardwareMap.get(DcMotorEx.class,"Intake"); //Ex0
         Lift = hardwareMap.get(DcMotorEx.class, "Lift"); //Ex1
+        motorElevacaoL = hardwareMap.get(DcMotorEx.class, "motorElevacaoL"); //Ex2
+        motorElevacaoR = hardwareMap.get(DcMotorEx.class, "motorElevacaoR"); //Ex3
 
         colorSensor = hardwareMap.get(ColorSensor.class, "ColorSensor"); //2
         distanceSensor = hardwareMap.get(DistanceSensor.class, "DistanceSensor");
@@ -103,12 +104,10 @@ public class OpmodeCV extends LinearOpMode {
         cotovelo = hardwareMap.get(ServoImplEx.class, "cotovelo"); //4
         ombroR = hardwareMap.get(ServoImplEx.class, "ombroR"); //2
         ombroL = hardwareMap.get(ServoImplEx.class, "ombroL"); //0
+        servoElevacaoL = hardwareMap.get(ServoImplEx.class, "servoElevacaoL"); //Ex2
+        servoElevacaoR = hardwareMap.get(ServoImplEx.class, "servoElevacaoR"); //Ex4
 
         //Configure Motors
-        //motorFrontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        //motorBackLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        //motorFrontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        //motorBackRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorBackLeft.setDirection(DcMotorEx.Direction.REVERSE);
         motorBackRight.setDirection(DcMotorEx.Direction.REVERSE);
         motorFrontRight.setDirection(DcMotorEx.Direction.REVERSE);
@@ -117,10 +116,8 @@ public class OpmodeCV extends LinearOpMode {
         Lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         Lift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         Lift.setDirection(DcMotorSimple.Direction.REVERSE);
-
-        //cotovelo.setPwmRange(pwmRange);
-        //ombroL.setPwmRange(pwmRange);
-        //ombroR.setPwmRange(pwmRange);
+        motorElevacaoL.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+        motorElevacaoR.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
 
         distanciaAnterior = distanceSensor.getDistance(DistanceUnit.CM);
 
@@ -142,10 +139,6 @@ public class OpmodeCV extends LinearOpMode {
 
         while (opModeIsActive()) {
             telemetry.addData("Status", "Running");
-
-            valorRed = colorSensor.red();
-            valorGreen = colorSensor.green();
-            valorBlue = colorSensor.blue();
 
             double velocity = (gamepad1.right_trigger * 0.70) + 0.20;
             double y = gamepad1.left_stick_y * velocity;
@@ -171,9 +164,7 @@ public class OpmodeCV extends LinearOpMode {
                 ombroR.setPosition(0);
                 sleep(500);
                 cotovelo.setPosition(0.1);
-
             }
-
 
             if (gamepad2.b == true) {
                 EnableServos();
@@ -187,7 +178,11 @@ public class OpmodeCV extends LinearOpMode {
                 DisableServos();
             }
 
-            if (gamepad2.dpad_up){
+            if (gamepad2.left_stick_button){
+                matchState = 1;
+            }
+
+            if (gamepad2.y){
                 Lift.setVelocity(700);
                 Lift.setVelocityPIDFCoefficients(6,0,0,45);
                 Lift.setTargetPosition(2000);
@@ -195,7 +190,7 @@ public class OpmodeCV extends LinearOpMode {
                 Lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             }
 
-            if (gamepad2.dpad_down){
+            if (gamepad2.x){
                 Lift.setVelocity(700);
                 Lift.setVelocityPIDFCoefficients(6,0,0,45);
                 Lift.setTargetPosition(0);
@@ -226,16 +221,10 @@ public class OpmodeCV extends LinearOpMode {
             if (gamepad2.start) {
                 Intake.setPower(-7);
                 PixelsnaGarra = 0;
-                corPixel_1 = null;
-                corPixel_2 = null;
             }
 
             if (gamepad2.back) {
                 Intake.setPower(0);
-            }
-       
-            if (gamepad1.back) {
-                Intake.setPower(7);
             }
 
             if (distanceSensor.getDistance(DistanceUnit.CM) < 5.5 && distanciaAnterior > 5.5) {
@@ -244,53 +233,51 @@ public class OpmodeCV extends LinearOpMode {
                     sleep(700);
                     Intake.setPower(0);
                 }
-                valorRed = colorSensor.red();
-                valorGreen = colorSensor.green();
-                valorBlue = colorSensor.blue();
-
-                if (valorBlue > 90) {
-                    if (PixelsnaGarra == 1) {
-                        corPixel_1 = "Roxo";
-                    } else {
-                        corPixel_2 = "Roxo";
-                    }
-                }
-                if (valorGreen > 120) {
-                    if (PixelsnaGarra == 1) {
-                        corPixel_1 = "Verde";
-                    } else {
-                        corPixel_2 = "Verde";
-                    }
-                }
-                if (valorRed < 70) {
-                    if (PixelsnaGarra == 1) {
-                        corPixel_1 = "Amarelo";
-                    } else {
-                        corPixel_2 = "Amarelo";
-                    }
-                }
             }
 
-            if (gamepad2.dpad_left) {
-                desiredBlueTagID = 1;
-                desiredRedTagID = 4;
-                AlinharNaAprilTag();
+            if (matchState == 0) {
+                if (gamepad2.dpad_left) {
+                    desiredBlueTagID = 1;
+                    desiredRedTagID = 4;
+                    AlinharNaAprilTag();
+                }
+                if (gamepad2.dpad_down) {
+                    desiredBlueTagID = 2;
+                    desiredRedTagID = 5;
+                    AlinharNaAprilTag();
+                }
+                if (gamepad2.dpad_right) {
+                    desiredBlueTagID = 3;
+                    desiredRedTagID = 6;
+                    AlinharNaAprilTag();
+                }
             }
-            if (gamepad2.dpad_down) {
-                desiredBlueTagID = 2;
-                desiredRedTagID = 5;
-                AlinharNaAprilTag();
-            }
-            if (gamepad2.dpad_right) {
-                desiredBlueTagID = 3;
-                desiredRedTagID = 6;
-                AlinharNaAprilTag();
+            if (matchState == 1 && getRuntime() > 30){
+                //Subir
+                if (gamepad2.dpad_up) {
+                    servoElevacaoL.setPosition(1);
+                    servoElevacaoR.setPosition(0);
+                }
+                if (gamepad2.dpad_left) {
+                    motorElevacaoL.setPower(10);
+                    motorElevacaoR.setPower(10);
+                }
+                //Descer
+                if (gamepad2.dpad_down) {
+                    servoElevacaoL.setPosition(0);
+                    servoElevacaoR.setPosition(1);
+                }
+                if (gamepad2.dpad_right) {
+                    motorElevacaoL.setPower(-10);
+                    motorElevacaoR.setPower(-10);
+                }
             }
 
             distanciaAnterior = distanceSensor.getDistance(DistanceUnit.CM);
 
             telemetry.addLine("Opmode");
             telemetry.addData("Status", "Run Time: " + runtime.toString());
+            telemetry.addData("MatchState: ", matchState);
             telemetry.addLine("============= Sistema SERVOS =============");
             telemetry.addData("OmbroR: ", ombroR.getPosition());
             telemetry.addData("OmbroL: ", ombroL.getPosition());
@@ -300,16 +287,11 @@ public class OpmodeCV extends LinearOpMode {
             telemetry.addData("Intake: ", Intake.getPower());
             telemetry.addData("LiftCurrentPos:", Lift.getCurrentPosition());
             telemetry.addData("LiftTargetPos:", Lift.getTargetPosition());
+            telemetry.addData("MotorElevacaoL:",motorElevacaoL.getCurrent(CurrentUnit.AMPS));
+            telemetry.addData("MotorElevacaoR:",motorElevacaoR.getCurrent(CurrentUnit.AMPS));
             telemetry.addLine("============= Sistema SENSORES ===========");
-            telemetry.addData("Distancia em cm: ", distanceSensor.getDistance(DistanceUnit.CM));
+            telemetry.addData("Distancia em CM: ", distanceSensor.getDistance(DistanceUnit.CM));
             telemetry.addData("Pixels na garra: ", PixelsnaGarra);
-            telemetry.addData("Valor Red: ", valorRed);
-            telemetry.addData("Valor Green: ", valorGreen);
-            telemetry.addData("Valor Blue: ", valorBlue);
-            telemetry.addData("Cor do Pixel 1: ", corPixel_1);
-            telemetry.addData("Cor do Pixel 2: ", corPixel_2);
-            //telemetry.addData("Valor hexadecimal: ", colorSensor.argb());
-
             telemetry.update();
         }
     }
