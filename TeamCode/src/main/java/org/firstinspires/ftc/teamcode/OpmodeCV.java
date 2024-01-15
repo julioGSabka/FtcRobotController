@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode;
 
 import android.util.Size;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.ColorSensor;
@@ -81,7 +83,7 @@ public class OpmodeCV extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-
+        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
@@ -108,7 +110,7 @@ public class OpmodeCV extends LinearOpMode {
         servoElevacaoR = hardwareMap.get(ServoImplEx.class, "servoElevacaoR"); //Ex4
 
         //Configure Motors
-        motorBackLeft.setDirection(DcMotorEx.Direction.REVERSE);
+        //motorBackLeft.setDirection(DcMotorEx.Direction.REVERSE);
         motorBackRight.setDirection(DcMotorEx.Direction.REVERSE);
         motorFrontRight.setDirection(DcMotorEx.Direction.REVERSE);
         
@@ -285,6 +287,7 @@ public class OpmodeCV extends LinearOpMode {
             telemetry.addData("Garra: ", garra.getPosition());
             telemetry.addLine("============= Sistema MOTORES ============");
             telemetry.addData("Intake: ", Intake.getPower());
+            telemetry.addData("IntakeCurrent", Intake.getCurrent(CurrentUnit.AMPS));
             telemetry.addData("LiftCurrentPos:", Lift.getCurrentPosition());
             telemetry.addData("LiftTargetPos:", Lift.getTargetPosition());
             telemetry.addData("MotorElevacaoL:",motorElevacaoL.getCurrent(CurrentUnit.AMPS));
