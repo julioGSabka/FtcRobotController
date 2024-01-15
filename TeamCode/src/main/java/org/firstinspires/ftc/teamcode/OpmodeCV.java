@@ -48,7 +48,6 @@ public class OpmodeCV extends LinearOpMode {
 
     private int RB_presses = 0;
     private int PixelsnaGarra = 0;
-    private int matchState = 0;
 
     //Distance-Color Sensor Variables
     private double distanciaAnterior = 0;
@@ -112,7 +111,7 @@ public class OpmodeCV extends LinearOpMode {
         motorBackRight.setDirection(DcMotorEx.Direction.REVERSE);
         motorFrontRight.setDirection(DcMotorEx.Direction.REVERSE);
         
-        Intake.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
         Lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         Lift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         Lift.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -178,10 +177,6 @@ public class OpmodeCV extends LinearOpMode {
                 DisableServos();
             }
 
-            if (gamepad2.left_stick_button){
-                matchState = 1;
-            }
-
             if (gamepad2.y){
                 Lift.setVelocity(700);
                 Lift.setVelocityPIDFCoefficients(6,0,0,45);
@@ -234,25 +229,24 @@ public class OpmodeCV extends LinearOpMode {
                     Intake.setPower(0);
                 }
             }
-
-            if (matchState == 0) {
-                if (gamepad2.dpad_left) {
-                    desiredBlueTagID = 1;
-                    desiredRedTagID = 4;
-                    AlinharNaAprilTag();
-                }
-                if (gamepad2.dpad_down) {
-                    desiredBlueTagID = 2;
-                    desiredRedTagID = 5;
-                    AlinharNaAprilTag();
-                }
-                if (gamepad2.dpad_right) {
-                    desiredBlueTagID = 3;
-                    desiredRedTagID = 6;
-                    AlinharNaAprilTag();
-                }
+            /*
+            if (gamepad2.dpad_left) {
+                desiredBlueTagID = 1;
+                desiredRedTagID = 4;
+                AlinharNaAprilTag();
             }
-            if (matchState == 1 && getRuntime() > 30){
+            if (gamepad2.dpad_down) {
+                desiredBlueTagID = 2;
+                desiredRedTagID = 5;
+                AlinharNaAprilTag();
+            }
+            if (gamepad2.dpad_right) {
+                desiredBlueTagID = 3;
+                desiredRedTagID = 6;
+                AlinharNaAprilTag();
+            }
+            */
+            if (getRuntime() > 30){
                 //Subir
                 if (gamepad2.dpad_up) {
                     servoElevacaoL.setPosition(1);
@@ -277,7 +271,6 @@ public class OpmodeCV extends LinearOpMode {
 
             telemetry.addLine("Opmode");
             telemetry.addData("Status", "Run Time: " + runtime.toString());
-            telemetry.addData("MatchState: ", matchState);
             telemetry.addLine("============= Sistema SERVOS =============");
             telemetry.addData("OmbroR: ", ombroR.getPosition());
             telemetry.addData("OmbroL: ", ombroL.getPosition());

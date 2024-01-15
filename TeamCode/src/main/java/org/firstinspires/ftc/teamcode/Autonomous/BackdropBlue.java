@@ -10,13 +10,18 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.ServoImplEx;
 
+import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.teamcode.RoadRunnerScripts.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.RoadRunnerScripts.trajectorysequence.TrajectorySequence;
-import org.firstinspires.ftc.teamcode.vision.DetectorHSVEDGE;
+import org.firstinspires.ftc.vision.VisionPortal;
+import org.firstinspires.ftc.vision.tfod.TfodProcessor;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
+
+import java.util.List;
 
 @Autonomous
 public class BackdropBlue extends LinearOpMode {
@@ -28,8 +33,17 @@ public class BackdropBlue extends LinearOpMode {
     private ServoImplEx ombroR = null;
     private ServoImplEx ombroL = null;
 
+    private static final boolean USE_WEBCAM = true;
+    private static final String TFOD_MODEL_ASSET = "model_20240115_155137.tflite";
+    private static final String[] LABELS = {
+            "Blue Cube", "Red Cube"
+    };
+    private TfodProcessor tfod;
+    private VisionPortal visionPortal;
+
     @Override
     public void runOpMode()  {
+        initTfod();
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();
@@ -62,7 +76,6 @@ public class BackdropBlue extends LinearOpMode {
         sleep(1000);
         DisableServos();
 
-        DetectorHSVEDGE colorfilter = new DetectorHSVEDGE();
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         WebcamName webcamName = hardwareMap.get(WebcamName.class, "Webcam 1");
         camera = OpenCvCameraFactory.getInstance().createWebcam(webcamName, cameraMonitorViewId);
@@ -71,7 +84,6 @@ public class BackdropBlue extends LinearOpMode {
             @Override
             public void onOpened()
             {
-                camera.setPipeline(colorfilter);
                 camera.startStreaming(1280, 720, OpenCvCameraRotation.UPRIGHT);
             }
 
@@ -127,16 +139,13 @@ public class BackdropBlue extends LinearOpMode {
         waitForStart();
         resetRuntime();
 
-        int analysis = 0;
-        while(analysis == 0 && isStarted() && getRuntime() < 2){
-            analysis = colorfilter.getAnalysis();
-        }
-
-        telemetry.addData("Analise: ", analysis);
-        telemetry.update();
-
         drive.followTrajectorySequence(toSpikeMarks);
         sleep(500);
+
+        int analysis = 0;
+        while (analysis == 0) {
+            detectTfod();
+        }
 
         if (analysis == 1) {
             drive.turn(Math.toRadians(90));
@@ -211,6 +220,46 @@ public class BackdropBlue extends LinearOpMode {
         sleep(1000);
         Intake.setPower(0);
         sleep(200);
+    }
+
+    private void initTfod() {
+
+        // Create the TensorFlow processor by using a builder.
+        tfod = new TfodProcessor.Builder().setModelAssetName(TFOD_MODEL_ASSET).setModelLabels(LABELS).build();
+
+        // Create the vision portal by using a builder.
+        VisionPortal.Builder builder = new VisionPortal.Builder();
+
+        // Set the camera (webcam vs. built-in RC phone camera).
+        if (USE_WEBCAM) {
+            builder.setCamera(hardwareMap.get(WebcamName.class, "Webcam 2"));
+        } else {
+            builder.setCamera(BuiltinCameraDirection.BACK);
+        }
+
+        builder.addProcessor(tfod);
+
+        // Build the Vision Portal, using the above settings.
+        visionPortal = builder.build();
+    }
+
+    private void detectTfod() {
+
+        List<Recognition> currentRecognitions = tfod.getRecognitions();
+        telemetry.addData("# Objects Detected", currentRecognitions.size());
+
+        // Step through the list of recognitions and display info for each one.
+        for (Recognition recognition : currentRecognitions) {
+            double x = (recognition.getLeft() + recognition.getRight()) / 2 ;
+            double y = (recognition.getTop()  + recognition.getBottom()) / 2 ;
+
+            telemetry.addData(""," ");
+            telemetry.addData("Image", "%s (%.0f %% Conf.)", recognition.getLabel(), recognition.getConfidence() * 100);
+            telemetry.addData("- Position", "%.0f / %.0f", x, y);
+            telemetry.addData("- Size", "%.0f x %.0f", recognition.getWidth(), recognition.getHeight());
+        }   // end for() loop
+
+
     }
 }
 
