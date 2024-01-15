@@ -58,7 +58,7 @@ public class TestAprilTag extends LinearOpMode {
         visionPortal2 = new VisionPortal.Builder()
                 .setCamera(hardwareMap.get(WebcamName.class, "Webcam 2"))
                 .addProcessor(tagProcessor2)
-                .setCameraResolution(new Size(640, 480))
+                .setCameraResolution(new Size(1920, 1080))
                 .setStreamFormat(VisionPortal.StreamFormat.MJPEG)
                 .enableLiveView(true)
                 .setLiveViewContainerId(portalsList[1])
@@ -87,27 +87,59 @@ public class TestAprilTag extends LinearOpMode {
             ArrayList<AprilTagDetection> tag = tagProcessor1.getDetections();
 
             for (AprilTagDetection tags : tag){
+
+                double PosicaoX, PosicaoY, Orientation;
+
+                if (tags.metadata.fieldPosition.get(0) >= 0){
+                    PosicaoX = tags.metadata.fieldPosition.get(0) - tags.ftcPose.y;
+                } else {
+                    PosicaoX = tags.metadata.fieldPosition.get(0) + tags.ftcPose.y;
+                }
+                if (tags.metadata.fieldPosition.get(1) < 0){
+                    PosicaoY = tags.metadata.fieldPosition.get(1) + tags.ftcPose.x;
+                } else {
+                    PosicaoY = tags.metadata.fieldPosition.get(1) - tags.ftcPose.x;
+                }
+
+                // Ponto original (x, y)
+                double x = PosicaoX;
+                double y = PosicaoY;
+                // Ponto de rotação (h, k)
+                double h = tags.metadata.fieldPosition.get(0);
+                double k = tags.metadata.fieldPosition.get(1);
+                // Ângulo de rotação em radianos
+                double theta = Math.toRadians(tags.ftcPose.yaw);
+                // Aplicar rotação
+                double xRotacionado = (((x - h) * Math.cos(theta)) - ((y - k) * Math.sin(theta))) + h;
+                double yRotacionado = (((x - h) * Math.sin(theta)) + ((y - k) * Math.cos(theta))) + k;
+
+
+                Orientation = -tags.metadata.fieldPosition.get(3) + 180 + (tags.ftcPose.bearing + (Math.atan2(tags.ftcPose.x, tags.ftcPose.y))) + tags.ftcPose.yaw;
+
+                telemetry.addLine("==========================");
                 telemetry.addData("Detected tag ID", tags.id);
                 telemetry.addData("Translation X", tags.ftcPose.x);
                 telemetry.addData("Translation Y", tags.ftcPose.y);
-                telemetry.addData("Translation Z", tags.ftcPose.x);
-                telemetry.addLine("=============");
+                //telemetry.addData("Translation Z", tags.ftcPose.x);
+                //telemetry.addLine("=============");
                 telemetry.addData("Rotation Yaw", tags.ftcPose.yaw);
-                telemetry.addData("Rotation Pitch", tags.ftcPose.pitch);
-                telemetry.addData("Rotation Roll", tags.ftcPose.roll);
+                //telemetry.addData("Rotation Pitch", tags.ftcPose.pitch);
+                //telemetry.addData("Rotation Roll", tags.ftcPose.roll);
                 telemetry.addLine("=============");
                 telemetry.addData("Range", tags.ftcPose.range);
                 telemetry.addData("Elevation", tags.ftcPose.elevation);
                 telemetry.addData("Bearing", tags.ftcPose.bearing);
                 telemetry.addLine("=============");
+                telemetry.addData("Confidence:", tags.decisionMargin);
                 telemetry.addData("FieldPos", tags.metadata.fieldPosition);
-                telemetry.addData("RobotPosX:", tags.metadata.fieldPosition.get(0) + tags.ftcPose.y);
-                telemetry.addData("RobotPosY:", tags.metadata.fieldPosition.get(1) + tags.ftcPose.x);
-                telemetry.addData("Orientation:", -tags.metadata.fieldPosition.get(3) + 180 + (tags.ftcPose.bearing + (Math.atan(tags.ftcPose.x/tags.ftcPose.y))));
+
+                telemetry.addData("RobotPosX:", PosicaoX);
+                telemetry.addData("RobotPosY:", PosicaoY);
+                telemetry.addData("Orientation:", Orientation);
 
             }
         }
-
+        /*
         tagProcessor2.setPoseSolver(AprilTagProcessor.PoseSolver.OPENCV_SOLVEPNP_EPNP);
 
         if (tagProcessor2.getDetections().size() > 0){
@@ -135,7 +167,7 @@ public class TestAprilTag extends LinearOpMode {
 
             }
         }
-
+        */
         telemetry.update();
 
     }

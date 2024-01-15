@@ -89,7 +89,7 @@ public class T265Localizer implements Localizer {
     }
 
 
-    //@return the heading of the robot (in radains)
+    //@return the heading of the robot (in radians)
 
     public static double getHeading() {
         return mPoseEstimate.getHeading();
