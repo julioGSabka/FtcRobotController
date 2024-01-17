@@ -90,16 +90,12 @@ public class TestAprilTag extends LinearOpMode {
 
                 double PosicaoX, PosicaoY, Orientation;
 
-                if (tags.metadata.fieldPosition.get(0) >= 0){
-                    PosicaoX = tags.metadata.fieldPosition.get(0) - tags.ftcPose.y;
-                } else {
-                    PosicaoX = tags.metadata.fieldPosition.get(0) + tags.ftcPose.y;
-                }
-                if (tags.metadata.fieldPosition.get(1) < 0){
-                    PosicaoY = tags.metadata.fieldPosition.get(1) + tags.ftcPose.x;
-                } else {
-                    PosicaoY = tags.metadata.fieldPosition.get(1) - tags.ftcPose.x;
-                }
+                // daq em diante é tudo cordenada do roadrunner
+
+                PosicaoX = tags.metadata.fieldPosition.get(0) + (tags.ftcPose.y *  Math.cos(Math.toRadians(tags.metadata.fieldPosition.get(3)))) +
+                        (tags.ftcPose.x * Math.sin(Math.toRadians(tags.metadata.fieldPosition.get(3))));
+                PosicaoY = tags.metadata.fieldPosition.get(1) + (tags.ftcPose.x * -Math.cos(Math.toRadians(tags.metadata.fieldPosition.get(3)))) +
+                        (tags.ftcPose.x * Math.sin(Math.toRadians(tags.metadata.fieldPosition.get(3))));
 
                 // Ponto original (x, y)
                 double x = PosicaoX;
