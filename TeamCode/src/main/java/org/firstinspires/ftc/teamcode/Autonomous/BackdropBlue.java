@@ -1,5 +1,9 @@
 package org.firstinspires.ftc.teamcode.Autonomous;
 
+import android.util.Size;
+
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -10,22 +14,20 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.ServoImplEx;
 
-import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.teamcode.RoadRunnerScripts.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.RoadRunnerScripts.trajectorysequence.TrajectorySequence;
+import org.firstinspires.ftc.teamcode.vision.AprilTagCustomDatabase;
 import org.firstinspires.ftc.vision.VisionPortal;
+import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import org.firstinspires.ftc.vision.tfod.TfodProcessor;
-import org.openftc.easyopencv.OpenCvCamera;
-import org.openftc.easyopencv.OpenCvCameraFactory;
-import org.openftc.easyopencv.OpenCvCameraRotation;
 
 import java.util.List;
 
 @Autonomous
 public class BackdropBlue extends LinearOpMode {
-    OpenCvCamera camera;
+
     private DcMotorEx Intake = null;
     private DcMotorEx Lift = null;
     private Servo garra = null;
@@ -33,17 +35,19 @@ public class BackdropBlue extends LinearOpMode {
     private ServoImplEx ombroR = null;
     private ServoImplEx ombroL = null;
 
-    private static final boolean USE_WEBCAM = true;
+    AprilTagProcessor tagProcessor1;
+    AprilTagProcessor tagProcessor2;
+    VisionPortal visionPortal1;
+    VisionPortal visionPortal2;
+
     private static final String TFOD_MODEL_ASSET = "model_20240115_155137.tflite";
     private static final String[] LABELS = {
             "Blue Cube", "Red Cube"
     };
     private TfodProcessor tfod;
-    private VisionPortal visionPortal;
 
     @Override
     public void runOpMode()  {
-        initTfod();
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();
@@ -52,7 +56,6 @@ public class BackdropBlue extends LinearOpMode {
         //Motors
         Intake = hardwareMap.get(DcMotorEx.class,"Intake"); //Ex0
         Lift = hardwareMap.get(DcMotorEx.class, "Lift"); //Ex1
-
         //Servos
         garra = hardwareMap.get(Servo.class, "garra"); //Ex0
         cotovelo = hardwareMap.get(ServoImplEx.class, "cotovelo"); //4
@@ -63,10 +66,7 @@ public class BackdropBlue extends LinearOpMode {
         Lift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         Lift.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        //initTags();
-        //visionPortal1.stopStreaming();
-        //visionPortal2.stopStreaming();
-
+        //System Adjustments
         garra.setPosition(0);
         cotovelo.setPosition(0.6);
         ombroL.setPosition(0);
@@ -76,31 +76,11 @@ public class BackdropBlue extends LinearOpMode {
         sleep(1000);
         DisableServos();
 
-        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        WebcamName webcamName = hardwareMap.get(WebcamName.class, "Webcam 1");
-        camera = OpenCvCameraFactory.getInstance().createWebcam(webcamName, cameraMonitorViewId);
-        camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
-        {
-            @Override
-            public void onOpened()
-            {
-                camera.startStreaming(1280, 720, OpenCvCameraRotation.UPRIGHT);
-            }
-
-            @Override
-            public void onError(int errorCode)
-            {
-                /*
-                 * This will be called if the camera could not be opened
-                 */
-            }
-        });
-
+        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
-
         Pose2d startPose = new Pose2d(12,63.55, Math.toRadians(270));
 
-        //start trajectory
+        //Trajectory Construct
         TrajectorySequence toSpikeMarks = drive.trajectorySequenceBuilder(startPose)
                 .lineToLinearHeading(new Pose2d(12,36, Math.toRadians(270)))
                 .build();
@@ -136,16 +116,21 @@ public class BackdropBlue extends LinearOpMode {
                 .lineToLinearHeading(new Pose2d(60, 60, Math.toRadians(180)))
                 .build();
 
+        initVisionPipelines();
+
         waitForStart();
         resetRuntime();
 
+        int analysis = 0;
+        while(analysis == 0 && isStarted() && getRuntime() < 2){
+            analysis = detectTfod();
+        }
+
+        telemetry.addData("Analise: ", analysis);
+        telemetry.update();
+
         drive.followTrajectorySequence(toSpikeMarks);
         sleep(500);
-
-        int analysis = 0;
-        while (analysis == 0) {
-            detectTfod();
-        }
 
         if (analysis == 1) {
             drive.turn(Math.toRadians(90));
@@ -163,7 +148,6 @@ public class BackdropBlue extends LinearOpMode {
             drive.turn(Math.toRadians(-90));
             sleep(200);
             CuspirPixel();
-
             drive.followTrajectorySequence(toBackdropANALISE3);
             sleep(500);
             drive.followTrajectorySequence(toRightAprilTag);
@@ -216,49 +200,90 @@ public class BackdropBlue extends LinearOpMode {
     }
 
     public void CuspirPixel(){
-        Intake.setPower(-2);
+        Intake.setPower(2);
         sleep(1000);
         Intake.setPower(0);
         sleep(200);
     }
 
-    private void initTfod() {
+    private void initVisionPipelines() {
 
-        // Create the TensorFlow processor by using a builder.
-        tfod = new TfodProcessor.Builder().setModelAssetName(TFOD_MODEL_ASSET).setModelLabels(LABELS).build();
+        int[] portalsList = VisionPortal.makeMultiPortalView(2, VisionPortal.MultiPortalLayout.HORIZONTAL);
 
-        // Create the vision portal by using a builder.
-        VisionPortal.Builder builder = new VisionPortal.Builder();
+        tfod = new TfodProcessor.Builder()
+                .setModelAssetName(TFOD_MODEL_ASSET)
+                .setModelLabels(LABELS)
+                .build();
 
-        // Set the camera (webcam vs. built-in RC phone camera).
-        if (USE_WEBCAM) {
-            builder.setCamera(hardwareMap.get(WebcamName.class, "Webcam 2"));
-        } else {
-            builder.setCamera(BuiltinCameraDirection.BACK);
-        }
+        tagProcessor1 = new AprilTagProcessor.Builder()
+                .setDrawTagID(true)
+                .setDrawTagOutline(true)
+                .setDrawAxes(true)
+                .setDrawCubeProjection(true)
+                .setLensIntrinsics(822.317, 822.317, 319.495, 242.502)
+                .setTagFamily(AprilTagProcessor.TagFamily.TAG_36h11)
+                .setTagLibrary(AprilTagCustomDatabase.getCenterStageLibrary())
+                .build();
 
-        builder.addProcessor(tfod);
+        tagProcessor2 = new AprilTagProcessor.Builder()
+                .setDrawTagID(true)
+                .setDrawTagOutline(true)
+                .setDrawAxes(true)
+                .setDrawCubeProjection(true)
+                .setLensIntrinsics(854.2712445, 875.96651965, 613.29710682, 537.91085293)
+                .setTagFamily(AprilTagProcessor.TagFamily.TAG_36h11)
+                .setTagLibrary(AprilTagCustomDatabase.getCenterStageLibrary())
+                .build();
 
-        // Build the Vision Portal, using the above settings.
-        visionPortal = builder.build();
+        visionPortal1 = new VisionPortal.Builder()
+                .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
+                .addProcessor(tagProcessor1)
+                .setCameraResolution(new Size(640, 480))
+                .setStreamFormat(VisionPortal.StreamFormat.MJPEG)
+                .enableLiveView(true)
+                .setLiveViewContainerId(portalsList[0])
+                .setAutoStopLiveView(true)
+                .build();
+
+        visionPortal2 = new VisionPortal.Builder()
+                .setCamera(hardwareMap.get(WebcamName.class, "Webcam 2"))
+                .addProcessors(tfod, tagProcessor2)
+                .setCameraResolution(new Size(1920, 1080))
+                .setStreamFormat(VisionPortal.StreamFormat.MJPEG)
+                .enableLiveView(true)
+                .setLiveViewContainerId(portalsList[1])
+                .setAutoStopLiveView(true)
+                .build();
+
+        visionPortal1.setProcessorEnabled(tagProcessor1, true);
+        visionPortal2.setProcessorEnabled(tagProcessor2, true);
     }
 
-    private void detectTfod() {
+    private int detectTfod() {
+        int detection = 0;
 
         List<Recognition> currentRecognitions = tfod.getRecognitions();
-        telemetry.addData("# Objects Detected", currentRecognitions.size());
+        telemetry.addData("Objects Detected", currentRecognitions.size());
 
         // Step through the list of recognitions and display info for each one.
         for (Recognition recognition : currentRecognitions) {
             double x = (recognition.getLeft() + recognition.getRight()) / 2 ;
             double y = (recognition.getTop()  + recognition.getBottom()) / 2 ;
 
-            telemetry.addData(""," ");
-            telemetry.addData("Image", "%s (%.0f %% Conf.)", recognition.getLabel(), recognition.getConfidence() * 100);
-            telemetry.addData("- Position", "%.0f / %.0f", x, y);
-            telemetry.addData("- Size", "%.0f x %.0f", recognition.getWidth(), recognition.getHeight());
-        }   // end for() loop
+            if (recognition.getLabel() == "Blue Cube") {
+                if (x <= 440) {
+                    detection = 1;
+                } else if (x > 440 && x < 1280) {
+                    detection = 2;
+                } else if (x >= 1280) {
+                    detection = 3;
+                }
+                telemetry.addData("Detection", detection);
+            }
+        }
+        telemetry.update();
 
+        return detection;
 
     }
 }
