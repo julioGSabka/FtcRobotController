@@ -29,6 +29,8 @@
 
 package org.firstinspires.ftc.teamcode.vision;
 
+import android.util.Size;
+
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -146,7 +148,10 @@ public class TFOD_Team_Props extends LinearOpMode {
         }
 
         // Choose a camera resolution. Not all cameras support all resolutions.
-        //builder.setCameraResolution(new Size(640, 480));
+        builder.setCameraResolution(new Size(1920, 1080));
+        builder.setStreamFormat(VisionPortal.StreamFormat.MJPEG);
+        builder.enableLiveView(true);
+        builder.setAutoStopLiveView(true);
 
         // Enable the RC preview (LiveView).  Set "false" to omit camera monitoring.
         //builder.enableLiveView(true);
@@ -161,6 +166,8 @@ public class TFOD_Team_Props extends LinearOpMode {
 
         // Set and enable the processor.
         builder.addProcessor(tfod);
+
+
 
         // Build the Vision Portal, using the above settings.
         visionPortal = builder.build();
