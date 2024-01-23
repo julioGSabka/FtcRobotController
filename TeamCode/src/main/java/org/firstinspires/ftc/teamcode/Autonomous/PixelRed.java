@@ -128,7 +128,7 @@ public class PixelRed extends LinearOpMode {
         resetRuntime();
 
         int analysis = 0;
-        while(analysis == 0 && isStarted() && getRuntime() < 2){
+        while(analysis == 0 && isStarted() && getRuntime() < 3.5){
             analysis = detectTfod();
         }
 
