@@ -104,18 +104,19 @@ public class ApriltagOdometryTest extends LinearOpMode {
     }
 
     public void tagTelemtry(){
+        TelemetryPacket packet = new TelemetryPacket();
         if (tagProcessor1.getDetections().size() > 0){
-            TelemetryPacket packet = new TelemetryPacket();
             ArrayList<AprilTagDetection> tags = tagProcessor1.getDetections();
             for(AprilTagDetection tag : tags){
 
-                Pose2d rpose = Positioner.tagToCamPose(tag);
+                Pose2d rpose = Positioner.getRobotPose(tag, new Transform2d(new Translation2d(-6.5, 0), new Rotation2d(Math.toRadians(180))));
+                //Positioner.tagToCamPose(tag);
                 packet.put("tag X", tag.ftcPose.x);
                 packet.put("tag Y", tag.ftcPose.y);
-                packet.put("tag rot", tag.ftcPose.yaw);
+                packet.put("tag rot DEGREES:", tag.ftcPose.yaw);
                 packet.put("tag teoreticalpose", Positioner.tagTheoreticalPose(tag));
 
-                //Positioner.getRobotPose(tags.get(0), new Transform2d(new Translation2d(0, 6.5), new Rotation2d(0)));
+
 
                 packet.put("pose ", rpose);
 
@@ -124,34 +125,32 @@ public class ApriltagOdometryTest extends LinearOpMode {
                         .strokeCircle(rpose.getX(), rpose.getY(), 10)
                         .strokeLine(rpose.getX(), rpose.getY(), rpose.getX() + 10*rpose.getRotation().getCos(), rpose.getY()+ 10*rpose.getRotation().getSin());
             }
-            dashboard.sendTelemetryPacket(packet);
         }
-        /*
+
         if (tagProcessor2.getDetections().size() > 0){
 
-            ArrayList<AprilTagDetection> tag = tagProcessor2.getDetections();
+            ArrayList<AprilTagDetection> tags = tagProcessor2.getDetections();
 
-            for (AprilTagDetection tags : tag){
-                telemetry.addData("Detected tag ID", tags.id);
-                telemetry.addData("Translation X", tags.ftcPose.x);
-                telemetry.addData("Translation Y", tags.ftcPose.y);
-                telemetry.addData("Translation Z", tags.ftcPose.x);
-                telemetry.addLine("=============");
-                telemetry.addData("Rotation Yaw", tags.ftcPose.yaw);
-                telemetry.addData("Rotation Pitch", tags.ftcPose.pitch);
-                telemetry.addData("Rotation Roll", tags.ftcPose.roll);
-                telemetry.addLine("=============");
-                telemetry.addData("Range", tags.ftcPose.range);
-                telemetry.addData("Elevation", tags.ftcPose.elevation);
-                telemetry.addData("Bearing", tags.ftcPose.bearing);
-                telemetry.addLine("=============");
-                telemetry.addData("FieldPos", tags.metadata.fieldPosition);
-                telemetry.addData("RobotPosX:", tags.metadata.fieldPosition.get(0) + tags.ftcPose.y);
-                telemetry.addData("RobotPosY:", tags.metadata.fieldPosition.get(1) + tags.ftcPose.x);
-                telemetry.addData("Orientation:", -tags.metadata.fieldPosition.get(3) + 180 + (tags.ftcPose.bearing + (Math.atan(tags.ftcPose.x/tags.ftcPose.y))));
+            for (AprilTagDetection tag : tags){
+
+                Pose2d rpose = Positioner.getRobotPose(tag, new Transform2d(new Translation2d(-6.5, 0), new Rotation2d(Math.toRadians(0))));
+
+
+                packet.put("tag X", tag.ftcPose.x);
+                packet.put("tag Y", tag.ftcPose.y);
+                packet.put("tag rot DEGREES:", tag.ftcPose.yaw);
+                packet.put("tag teoreticalpose", Positioner.tagTheoreticalPose(tag));
+
+                packet.put("pose ", rpose);
+
+                packet.fieldOverlay()
+                        .setStroke(colors[tag.id])
+                        .strokeCircle(rpose.getX(), rpose.getY(), 10)
+                        .strokeLine(rpose.getX(), rpose.getY(), rpose.getX() + 10*rpose.getRotation().getCos(), rpose.getY()+ 10*rpose.getRotation().getSin());
+
             }
         }
-        */
+        dashboard.sendTelemetryPacket(packet);
         //telemetry.update();
 
     }

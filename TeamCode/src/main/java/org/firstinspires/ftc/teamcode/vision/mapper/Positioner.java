@@ -6,10 +6,6 @@ import com.arcrobotics.ftclib.geometry.Rotation2d;
 import com.arcrobotics.ftclib.geometry.Transform2d;
 import com.arcrobotics.ftclib.geometry.Translation2d;
 
-import org.apache.commons.math3.complex.Quaternion;
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
 
@@ -31,20 +27,28 @@ public class Positioner {
     }
 
     public static Pose2d tagToCamPose(AprilTagDetection tag){
-        //cam position relative to tag on Origin
-        Pose2d cam_base_tag_pose = tagPose(tag);
-        //transforms arena coordinate to tag coordinate
-        Transform2d arena_to_tag = new Transform2d(
-                new Translation2d(tag.metadata.fieldPosition.get(0), tag.metadata.fieldPosition.get(1)),
-                // pegarmos a rotação EXTRINSICA, ou seja, rotação com relação ao espaço de coordenadas en não do objeto.
-                // Rotação em Z ou seja o yaw
-                new Rotation2d(Math.toRadians(tag.metadata.fieldPosition.get(3)))
-        );
+        double x, y, Orientation;
 
-        // gets the inverse, this case transforming tag coordinate to arena coordinate
-        Transform2d tag_to_arena = arena_to_tag.inverse();
+        // daq em diante é tudo cordenada do roadrunner
 
-        Pose2d camPose = cam_base_tag_pose.transformBy(tag_to_arena);
+        x = tag.metadata.fieldPosition.get(0) + (tag.ftcPose.y *  Math.cos(Math.toRadians(tag.metadata.fieldPosition.get(3)))) +
+                (tag.ftcPose.x * Math.sin(Math.toRadians(tag.metadata.fieldPosition.get(3))));
+        y = tag.metadata.fieldPosition.get(1) + (tag.ftcPose.x * -Math.cos(Math.toRadians(tag.metadata.fieldPosition.get(3)))) +
+                (tag.ftcPose.x * Math.sin(Math.toRadians(tag.metadata.fieldPosition.get(3))));
+
+        Orientation = Math.toRadians(180 + tag.metadata.fieldPosition.get(3) - tag.ftcPose.yaw);
+
+
+        double theta = Math.toRadians(-tag.ftcPose.yaw);
+
+        double h = tag.metadata.fieldPosition.get(0);
+        double k = tag.metadata.fieldPosition.get(1);
+
+        double xRotacionado = (((x - h) * Math.cos(theta)) - ((y - k) * Math.sin(theta))) + h;
+        double yRotacionado = (((x - h) * Math.sin(theta)) + ((y - k) * Math.cos(theta))) + k;
+
+
+        Pose2d camPose = new Pose2d(new Translation2d(xRotacionado, yRotacionado), new Rotation2d(Orientation));
 
         return camPose;
     }
