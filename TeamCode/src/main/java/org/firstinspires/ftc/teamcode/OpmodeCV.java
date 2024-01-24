@@ -48,7 +48,7 @@ public class OpmodeCV extends LinearOpMode {
     private DistanceSensor distanceSensor = null;
     private ColorSensor colorSensor = null;
 
-    private int RB_presses = 0;
+    private int LB_presses = 0;
     private int PixelsnaGarra = 0;
 
     //Distance-Color Sensor Variables
@@ -122,16 +122,18 @@ public class OpmodeCV extends LinearOpMode {
 
         distanciaAnterior = distanceSensor.getDistance(DistanceUnit.CM);
 
+        boolean lastPress = false;
+
         //initTags();
         //visionPortal1.stopStreaming();
         //visionPortal2.stopStreaming();
 
         garra.setPosition(0);
-        cotovelo.setPosition(0.6);
-        ombroL.setPosition(0);
-        ombroR.setPosition(1);
+        cotovelo.setPosition(1);
+        ombroL.setPosition(0.05);
+        ombroR.setPosition(0.95);
         sleep(1000);
-        cotovelo.setPosition(0.5);
+        cotovelo.setPosition(0.726);
         sleep(1000);
         DisableServos();
 
@@ -144,7 +146,7 @@ public class OpmodeCV extends LinearOpMode {
             double velocity = (gamepad1.right_trigger * 0.70) + 0.20;
             double y = gamepad1.left_stick_y * velocity;
             double x = gamepad1.left_stick_x * -1.1 * velocity;
-            double rx = -gamepad1.right_stick_x * velocity;
+            double rx = gamepad1.right_stick_x * velocity;
 
             double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
             double frontLeftPower = (y + x + rx) / denominator;
@@ -161,10 +163,10 @@ public class OpmodeCV extends LinearOpMode {
                 EnableServos();
                 cotovelo.setPosition(1);
                 sleep(1000);
-                ombroL.setPosition(0.9);
-                ombroR.setPosition(0.1);
+                ombroL.setPosition(1);
+                ombroR.setPosition(0);
                 sleep(500);
-                cotovelo.setPosition(0.4);
+                cotovelo.setPosition(0.35);
             }
 
             if (gamepad2.b == true) {
@@ -174,7 +176,7 @@ public class OpmodeCV extends LinearOpMode {
                 ombroL.setPosition(0.05);
                 ombroR.setPosition(0.95);
                 sleep(1000);
-                cotovelo.setPosition(0.72);
+                cotovelo.setPosition(0.726);
                 sleep(1000);
                 DisableServos();
             }
@@ -195,23 +197,29 @@ public class OpmodeCV extends LinearOpMode {
                 Lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             }
 
-            if (gamepad2.right_bumper) {
-                RB_presses += 1;
-                if (RB_presses == 3) { //Se apertar 3 vezes, faz a mesma coisa que 1 vez
-                    RB_presses = 1;
-                }
+            if (gamepad2.left_bumper) {
+                if(!lastPress) {
+                    LB_presses += 1;
+                    if (LB_presses == 3) { //Se apertar 3 vezes, faz a mesma coisa que 1 vez
+                        LB_presses = 1;
+                    }
 
-                //Fazer a garra soltar os pixels
-                if (RB_presses == 1) {
-                    garra.setPosition(0.6);
-                    PixelsnaGarra = 1;
-                } else if (RB_presses == 2) {
-                    garra.setPosition(0);
-                    PixelsnaGarra = 0;
+                    //Fazer a garra soltar os pixels
+                    if (LB_presses == 1) {
+                        garra.setPosition(0.5);
+                        PixelsnaGarra = 1;
+                    } else if (LB_presses == 2) {
+                        garra.setPosition(0);
+                        PixelsnaGarra = 0;
+                    }
                 }
+                lastPress = true;
+            }else{
+                lastPress = false;
             }
 
-            if (gamepad2.left_bumper) {
+            //Fecha
+            if (gamepad2.right_bumper) {
                 garra.setPosition(1);
             }
 
