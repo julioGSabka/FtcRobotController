@@ -182,21 +182,21 @@ public class BackdropRed extends LinearOpMode {
     public void LevantarBraco() {
         EnableServos();
         cotovelo.setPosition(1);
-        sleep(1000);
+        sleep(500);
         ombroL.setPosition(1);
         ombroR.setPosition(0);
         sleep(500);
-        cotovelo.setPosition(0.1);
+        cotovelo.setPosition(0.35);
     }
 
     public void BaixarBraco() {
         EnableServos();
         cotovelo.setPosition(1);
         sleep(500);
-        ombroL.setPosition(0);
-        ombroR.setPosition(1);
+        ombroL.setPosition(0.05);
+        ombroR.setPosition(0.95);
         sleep(1000);
-        cotovelo.setPosition(0.4);
+        cotovelo.setPosition(0.726);
         sleep(1000);
         DisableServos();
     }

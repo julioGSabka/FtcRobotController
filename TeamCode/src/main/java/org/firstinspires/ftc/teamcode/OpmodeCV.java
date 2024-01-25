@@ -124,7 +124,7 @@ public class OpmodeCV extends LinearOpMode {
 
         boolean lastPress = false;
 
-        //initTags();
+        initTags();
         //visionPortal1.stopStreaming();
         //visionPortal2.stopStreaming();
 
@@ -239,23 +239,23 @@ public class OpmodeCV extends LinearOpMode {
                     Intake.setPower(0);
                 }
             }
-            /*
-            if (gamepad2.dpad_left) {
+
+            if (gamepad1.dpad_left) {
                 desiredBlueTagID = 1;
                 desiredRedTagID = 4;
-                AlinharNaAprilTag();
+                AlignToBackdropTag();
             }
-            if (gamepad2.dpad_down) {
+            if (gamepad1.dpad_down) {
                 desiredBlueTagID = 2;
                 desiredRedTagID = 5;
-                AlinharNaAprilTag();
+                AlignToBackdropTag();
             }
-            if (gamepad2.dpad_right) {
+            if (gamepad1.dpad_right) {
                 desiredBlueTagID = 3;
                 desiredRedTagID = 6;
-                AlinharNaAprilTag();
+                AlignToBackdropTag();
             }
-            */
+
             if (getRuntime() > 30){
                 //Subir
                 if (gamepad2.dpad_up) {
@@ -359,68 +359,66 @@ public class OpmodeCV extends LinearOpMode {
         visionPortal2.setProcessorEnabled(tagProcessor2, true);
     }
 
-    public void AlinharNaAprilTag() {
-        targetFound = false;
-        desiredTag  = null;
+    public void AlignToBackdropTag() {
 
-        List<AprilTagDetection> currentDetections = tagProcessor2.getDetections();
+
+        List<AprilTagDetection> currentDetections = tagProcessor1.getDetections();
         for (AprilTagDetection detection : currentDetections) {
-            // Look to see if we have size info on this tag.
+
             if (detection.metadata != null) {
-                //  Check to see if we want to track towards this tag.
-                if ((detection.id == desiredBlueTagID) || (detection.id == desiredRedTagID)) {
-                    // Yes, we want to use this tag.
+
+                if (detection.id == desiredBlueTagID || detection.id == desiredRedTagID) {
                     targetFound = true;
                     desiredTag = detection;
-                    break;  // don't look any further.
+                    break;
                 } else {
-                    // This tag is in the library, but we do not want to track it right now.
                     telemetry.addData("Skipping", "Tag ID %d is not desired", detection.id);
                 }
+
             } else {
-                // This tag is NOT in the library, so we don't have enough information to track to it.
                 telemetry.addData("Unknown", "Tag ID %d is not in TagLibrary", detection.id);
             }
         }
 
         // Tell the driver what we see, and what to do.
         if (targetFound) {
+            telemetry.addData("\n>","HOLD Left-Bumper to Drive to Target\n");
             telemetry.addData("Found", "ID %d (%s)", desiredTag.id, desiredTag.metadata.name);
             telemetry.addData("Range",  "%5.1f inches", desiredTag.ftcPose.range);
             telemetry.addData("Bearing","%3.0f degrees", desiredTag.ftcPose.bearing);
             telemetry.addData("Yaw","%3.0f degrees", desiredTag.ftcPose.yaw);
-
-            // Drive to target Automatically
-            double  rangeError      = (desiredTag.ftcPose.y - DESIRED_DISTANCE);
-            double  headingError    = desiredTag.ftcPose.bearing;
-            double  yawError        = desiredTag.ftcPose.x;
-
-            // Use the speed and turn "gains" to calculate how we want the robot to move.
-            drive  = Range.clip(rangeError * SPEED_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
-            turn   = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN) ;
-            strafe = Range.clip(yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
-
-            telemetry.addData("Auto","Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
-
-            desiredBlueTagID = -1;
-            desiredRedTagID = -1;
+        } else {
+            telemetry.addData("\n>","Drive using joysticks to find valid target\n");
         }
 
+        // If Left Bumper is being pressed, AND we have found the desired target, Drive to target Automatically .
+        if (targetFound) {
+
+            // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
+            double  rangeError      = (desiredTag.ftcPose.range - DESIRED_DISTANCE);
+            double  headingError    = desiredTag.ftcPose.bearing;
+            double  yawError        = desiredTag.ftcPose.yaw;
+
+            // Use the speed and turn "gains" to calculate how we want the robot to move.
+            drive  = -Range.clip(rangeError * SPEED_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
+            turn   = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN) ;
+            strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
+
+            telemetry.addData("Auto","Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
+        }
         telemetry.update();
 
         // Apply desired axes motions to the drivetrain.
-        moveRobot(strafe, drive, turn);
+        moveRobot(drive, strafe, turn);
         sleep(10);
     }
 
     public void moveRobot(double x, double y, double yaw) {
-        double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(yaw), 1);
-
         // Calculate wheel powers.
-        double leftFrontPower    = (y + x + yaw) / denominator;
-        double rightFrontPower   = (y - x - yaw) / denominator;
-        double leftBackPower     = (y - x + yaw) / denominator;
-        double rightBackPower    = (y + x - yaw) / denominator;
+        double leftFrontPower    =  x -y -yaw;
+        double rightFrontPower   =  x +y +yaw;
+        double leftBackPower     =  x +y -yaw;
+        double rightBackPower    =  x -y +yaw;
 
         // Normalize wheel powers to be less than 1.0
         double max = Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower));
@@ -440,5 +438,6 @@ public class OpmodeCV extends LinearOpMode {
         motorBackLeft.setPower(leftBackPower);
         motorBackRight.setPower(rightBackPower);
     }
+
 
 }
