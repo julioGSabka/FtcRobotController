@@ -159,27 +159,35 @@ public class OpmodeCV extends LinearOpMode {
             motorFrontRight.setPower(frontRightPower);
             motorBackRight.setPower(backRightPower);
 
-            if (gamepad2.a == true) {
-                EnableServos();
-                cotovelo.setPosition(1);
-                sleep(1000);
-                ombroL.setPosition(1);
-                ombroR.setPosition(0);
-                sleep(500);
-                cotovelo.setPosition(0.35);
-            }
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    if (gamepad2.a == true) {
+                        EnableServos();
+                        cotovelo.setPosition(1);
+                        sleep(1000);
+                        ombroL.setPosition(1);
+                        ombroR.setPosition(0);
+                        sleep(500);
+                        cotovelo.setPosition(0.35);
+                    }
 
-            if (gamepad2.b == true) {
-                EnableServos();
-                cotovelo.setPosition(1);
-                sleep(500);
-                ombroL.setPosition(0.05);
-                ombroR.setPosition(0.95);
-                sleep(1000);
-                cotovelo.setPosition(0.726);
-                sleep(1000);
-                DisableServos();
-            }
+                    if (gamepad2.b == true) {
+                        EnableServos();
+                        cotovelo.setPosition(1);
+                        sleep(500);
+                        ombroL.setPosition(0.15);
+                        ombroR.setPosition(0.85);
+                        sleep(500);
+                        ombroL.setPosition(0.05);
+                        ombroR.setPosition(0.95);
+                        sleep(1000);
+                        cotovelo.setPosition(0.726);
+                        sleep(1000);
+                        DisableServos();
+                    }
+                }
+            }).start();
 
             if (gamepad2.y){
                 Lift.setVelocity(700);
@@ -293,6 +301,11 @@ public class OpmodeCV extends LinearOpMode {
             telemetry.addData("LiftTargetPos:", Lift.getTargetPosition());
             telemetry.addData("MotorElevacaoL:",motorElevacaoL.getCurrent(CurrentUnit.AMPS));
             telemetry.addData("MotorElevacaoR:",motorElevacaoR.getCurrent(CurrentUnit.AMPS));
+            telemetry.addLine("============= Sistema MOTORES movimentação ============");
+            telemetry.addData("MotorLeftBack:",motorBackLeft.getCurrent(CurrentUnit.AMPS));
+            telemetry.addData("MotorLeftFront:",motorFrontLeft.getCurrent(CurrentUnit.AMPS));
+            telemetry.addData("MotorRightBack:",motorBackRight.getCurrent(CurrentUnit.AMPS));
+            telemetry.addData("MotorRightFront:",motorFrontRight.getCurrent(CurrentUnit.AMPS));
             telemetry.addLine("============= Sistema SENSORES ===========");
             telemetry.addData("Distancia em CM: ", distanceSensor.getDistance(DistanceUnit.CM));
             telemetry.addData("Pixels na garra: ", PixelsnaGarra);
