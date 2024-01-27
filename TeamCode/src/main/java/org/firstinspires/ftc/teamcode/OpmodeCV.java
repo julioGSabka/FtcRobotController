@@ -186,24 +186,42 @@ public class OpmodeCV extends LinearOpMode {
                         sleep(1000);
                         DisableServos();
                     }
+                    if (gamepad2.y){
+                        EnableServos();
+                        cotovelo.setPosition(1);
+                        sleep(1000);
+                        Lift.setVelocity(700);
+                        Lift.setVelocityPIDFCoefficients(6,0,0,45);
+                        Lift.setTargetPosition(2400);
+                        Lift.setTargetPositionTolerance(10);
+                        Lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                        ombroL.setPosition(1);
+                        ombroR.setPosition(0);
+                        sleep(500);
+                        cotovelo.setPosition(0.35);
+                    }
+                    if (gamepad2.x){
+                        Lift.setVelocity(700);
+                        Lift.setVelocityPIDFCoefficients(6,0,0,45);
+                        Lift.setTargetPosition(0);
+                        Lift.setTargetPositionTolerance(10);
+                        Lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                        EnableServos();
+                        cotovelo.setPosition(1);
+                        sleep(500);
+                        ombroL.setPosition(0.15);
+                        ombroR.setPosition(0.85);
+                        sleep(500);
+                        ombroL.setPosition(0.05);
+                        ombroR.setPosition(0.95);
+                        sleep(1000);
+                        cotovelo.setPosition(0.726);
+                        sleep(1000);
+                        DisableServos();
+                    }
                 }
             }).start();
 
-            if (gamepad2.y){
-                Lift.setVelocity(700);
-                Lift.setVelocityPIDFCoefficients(6,0,0,45);
-                Lift.setTargetPosition(2000);
-                Lift.setTargetPositionTolerance(10);
-                Lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            }
-
-            if (gamepad2.x){
-                Lift.setVelocity(700);
-                Lift.setVelocityPIDFCoefficients(6,0,0,45);
-                Lift.setTargetPosition(0);
-                Lift.setTargetPositionTolerance(10);
-                Lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            }
 
             if (gamepad2.left_bumper) {
                 if(!lastPress) {
