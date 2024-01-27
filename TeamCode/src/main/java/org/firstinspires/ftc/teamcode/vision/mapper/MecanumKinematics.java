@@ -6,7 +6,7 @@ import com.arcrobotics.ftclib.geometry.Translation2d;
 
 public class MecanumKinematics {
 
-    static Pose2d wheelToVel(float vFrontLeft, float vFrontRight, float vBackLeft, float vBackRight, float lengthX, float lengthY){
+    static Pose2d wheelToVel(double vFrontLeft, double vFrontRight, double vBackLeft, double vBackRight, double lengthX, double lengthY){
         return new Pose2d(
                 new Translation2d(
                         vFrontLeft + vFrontRight + vBackLeft + vBackRight,

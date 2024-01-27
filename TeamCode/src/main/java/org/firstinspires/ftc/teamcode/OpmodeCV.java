@@ -112,7 +112,6 @@ public class OpmodeCV extends LinearOpMode {
         //motorBackLeft.setDirection(DcMotorEx.Direction.REVERSE);
         motorBackRight.setDirection(DcMotorEx.Direction.REVERSE);
         motorFrontRight.setDirection(DcMotorEx.Direction.REVERSE);
-        
 
         Lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         Lift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);

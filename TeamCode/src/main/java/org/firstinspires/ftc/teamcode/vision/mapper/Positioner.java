@@ -6,10 +6,6 @@ import com.arcrobotics.ftclib.geometry.Rotation2d;
 import com.arcrobotics.ftclib.geometry.Transform2d;
 import com.arcrobotics.ftclib.geometry.Translation2d;
 
-import org.apache.commons.math3.complex.Quaternion;
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
 
@@ -33,7 +29,7 @@ public class Positioner {
     public static Pose2d tagToCamPose(AprilTagDetection tag){
         double x, y, Orientation;
 
-        // daq em diante é tudo cordenada do roadrunner
+        // daq em diante é tudo coordenada do roadrunner
 
         x = tag.metadata.fieldPosition.get(0) + (tag.ftcPose.y *  Math.cos(Math.toRadians(tag.metadata.fieldPosition.get(3)))) +
                 (tag.ftcPose.x * Math.sin(Math.toRadians(tag.metadata.fieldPosition.get(3))));

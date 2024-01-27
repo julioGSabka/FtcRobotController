@@ -12,12 +12,14 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.teamcode.RoadRunnerScripts.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.vision.AprilTagCustomDatabase;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @TeleOp
 public class KalmanTestOpmode extends LinearOpMode {
@@ -26,6 +28,8 @@ public class KalmanTestOpmode extends LinearOpMode {
     AprilTagProcessor tagProcessor2;
     VisionPortal visionPortal1;
     VisionPortal visionPortal2;
+
+    List<Pose2d> measurePoses;
 
     FtcDashboard dashboard;
     String[] colors = {
@@ -40,8 +44,16 @@ public class KalmanTestOpmode extends LinearOpMode {
             "gray",
             "black"
     };
+
+    SampleMecanumDrive drive;
+    KalmanPose kalmanPose;
+
     @Override
     public void runOpMode() {
+
+        measurePoses = new ArrayList<>();
+        kalmanPose = new KalmanPose();
+        drive = new SampleMecanumDrive(hardwareMap);
 
         int[] portalsList = VisionPortal.makeMultiPortalView(2, VisionPortal.MultiPortalLayout.HORIZONTAL);
 
@@ -109,12 +121,13 @@ public class KalmanTestOpmode extends LinearOpMode {
             for(AprilTagDetection tag : tags){
 
                 Pose2d rpose = Positioner.getRobotPose(tag, new Transform2d(new Translation2d(-6.5, 0), new Rotation2d(Math.toRadians(180))));
+                measurePoses.add(rpose);
+
                 //Positioner.tagToCamPose(tag);
                 packet.put("tag X", tag.ftcPose.x);
                 packet.put("tag Y", tag.ftcPose.y);
                 packet.put("tag rot DEGREES:", tag.ftcPose.yaw);
                 packet.put("tag teoreticalpose", Positioner.tagTheoreticalPose(tag));
-
 
 
                 packet.put("pose ", rpose);
@@ -133,7 +146,7 @@ public class KalmanTestOpmode extends LinearOpMode {
             for (AprilTagDetection tag : tags){
 
                 Pose2d rpose = Positioner.getRobotPose(tag, new Transform2d(new Translation2d(-6.5, 0), new Rotation2d(Math.toRadians(0))));
-
+                measurePoses.add(rpose);
 
                 packet.put("tag X", tag.ftcPose.x);
                 packet.put("tag Y", tag.ftcPose.y);
@@ -149,6 +162,28 @@ public class KalmanTestOpmode extends LinearOpMode {
 
             }
         }
+
+        //Obtenção da velocidade do robo(vel)
+        List<Double> wheelsVels = drive.getWheelVelocities();
+        Pose2d vel = MecanumKinematics.wheelToVel(wheelsVels.get(0), wheelsVels.get(3), wheelsVels.get(1), wheelsVels.get(2), 38.5, 34);
+        //Drive: FL, Bl, BR, FR
+        //wheelToVel: FL, FR, BL, BR
+
+        //Obtenção da posição estimada do roadrunner(statePose)
+        com.acmerobotics.roadrunner.geometry.Pose2d RoadrunnerStatePose = drive.getPoseEstimate();
+        packet.put("RoadrunnerStatePose", RoadrunnerStatePose);
+        Pose2d statePose = new Pose2d(RoadrunnerStatePose.getX(), RoadrunnerStatePose.getY(), new Rotation2d(RoadrunnerStatePose.getHeading()));
+
+        //Chama o fitro e passa os valores (vel, statePose, measurePoses)
+        Pose2d filteredPose = kalmanPose.updateFilter(vel, statePose, measurePoses);
+
+        //Desenha a estimativa
+        packet.fieldOverlay()
+                .setStroke("black")
+                .strokeCircle(filteredPose.getX(), filteredPose.getY(), 10)
+                .strokeLine(filteredPose.getX(), filteredPose.getY(), filteredPose.getX() + 10*filteredPose.getRotation().getCos(), filteredPose.getY()+ 10*filteredPose.getRotation().getSin());
+        packet.put("FilteredPose", filteredPose);
+
         dashboard.sendTelemetryPacket(packet);
         //telemetry.update();
 

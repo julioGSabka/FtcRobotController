@@ -1,11 +1,5 @@
 package org.firstinspires.ftc.teamcode.vision.mapper;
 
-import com.arcrobotics.ftclib.geometry.Pose2d;
-
-import org.apache.commons.math3.linear.RealMatrix;
-
-import java.util.List;
-
 public class KalmanFilter {
     double x; // your initial state
     double Q = 0.1; // your model covariance
@@ -23,9 +17,9 @@ public class KalmanFilter {
         this.R = R;
     }
 
-    double updateFilter(double velocity, double pose){
-        //TODO: converter pose2d para real matrix
+    double updateFilter(double velocity, double statePose, double measurePose){
 
+        x = statePose;
         u = velocity; // Ex: change in position from odometry.
         x = x_previous + u;
 
@@ -33,7 +27,7 @@ public class KalmanFilter {
 
         K = p/(p + R);
 
-        z = pose; // Pose Estimate from April Tag / Distance Sensor
+        z = measurePose; // Pose Estimate from April Tag / Distance Sensor
 
         x = x + K * (z - x);
 
@@ -44,4 +38,5 @@ public class KalmanFilter {
 
         return x;
     }
+
 }
