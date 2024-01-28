@@ -40,6 +40,7 @@ public class OpmodeCV extends LinearOpMode {
     private DcMotorEx motorElevacaoL = null;
     private DcMotorEx motorElevacaoR = null;
     private Servo garra = null;
+    private Servo airplaneLauncher = null;
     private ServoImplEx cotovelo = null;
     private ServoImplEx ombroR = null;
     private ServoImplEx ombroL = null;
@@ -107,6 +108,7 @@ public class OpmodeCV extends LinearOpMode {
         ombroL = hardwareMap.get(ServoImplEx.class, "ombroL"); //0
         servoElevacaoL = hardwareMap.get(ServoImplEx.class, "servoElevacaoL"); //Ex2
         servoElevacaoR = hardwareMap.get(ServoImplEx.class, "servoElevacaoR"); //Ex4
+        airplaneLauncher = hardwareMap.get(Servo.class, "airplaneLauncher");
 
         //Configure Motors
         //motorBackLeft.setDirection(DcMotorEx.Direction.REVERSE);
@@ -300,6 +302,10 @@ public class OpmodeCV extends LinearOpMode {
                 if (gamepad2.dpad_right) {
                     motorElevacaoL.setPower(-10);
                     motorElevacaoR.setPower(-10);
+                }
+
+                if (gamepad1.right_bumper){
+                    airplaneLauncher.setPosition(1);
                 }
             }
 
