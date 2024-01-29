@@ -1,21 +1,26 @@
-package org.firstinspires.ftc.teamcode.vision.mapper;
+package org.firstinspires.ftc.teamcode.RoadRunnerScripts.drive;
 
 import static org.firstinspires.ftc.teamcode.RoadRunnerScripts.drive.DriveConstants.encoderTicksToInches;
 
 import android.util.Size;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
-import com.arcrobotics.ftclib.geometry.Pose2d;
+import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.localization.Localizer;
 import com.arcrobotics.ftclib.geometry.Rotation2d;
 import com.arcrobotics.ftclib.geometry.Transform2d;
 import com.arcrobotics.ftclib.geometry.Translation2d;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.teamcode.RoadRunnerScripts.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.vision.AprilTagCustomDatabase;
+import org.firstinspires.ftc.teamcode.vision.mapper.KalmanPose;
+import org.firstinspires.ftc.teamcode.vision.mapper.MecanumKinematics;
+import org.firstinspires.ftc.teamcode.vision.mapper.Positioner;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
@@ -23,15 +28,14 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import java.util.ArrayList;
 import java.util.List;
 
-@TeleOp
-public class KalmanTestOpmode extends LinearOpMode {
+public class KalmanTagsOdometry implements Localizer {
 
     AprilTagProcessor tagProcessor1;
     AprilTagProcessor tagProcessor2;
     VisionPortal visionPortal1;
     VisionPortal visionPortal2;
 
-    List<Pose2d> measurePoses;
+    List<com.arcrobotics.ftclib.geometry.Pose2d> measurePoses;
     List<Double> wheelsVels;
 
     FtcDashboard dashboard;
@@ -51,9 +55,11 @@ public class KalmanTestOpmode extends LinearOpMode {
     SampleMecanumDrive drive;
     KalmanPose kalmanPose;
 
-    @Override
-    public void runOpMode() {
+    public KalmanTagsOdometry(HardwareMap hardwareMap) {
+        new KalmanTagsOdometry(hardwareMap, true);
+    }
 
+    public KalmanTagsOdometry(HardwareMap hardwareMap, boolean resetPos) {
         measurePoses = new ArrayList<>();
         kalmanPose = new KalmanPose();
         drive = new SampleMecanumDrive(hardwareMap);
@@ -103,29 +109,21 @@ public class KalmanTestOpmode extends LinearOpMode {
         visionPortal1.setProcessorEnabled(tagProcessor1, true);
         visionPortal2.setProcessorEnabled(tagProcessor2, true);
 
-        telemetry.addLine("Waiting for start");
-        telemetry.update();
-
-        waitForStart();
-
         tagProcessor1.setPoseSolver(AprilTagProcessor.PoseSolver.OPENCV_SOLVEPNP_EPNP);
         tagProcessor2.setPoseSolver(AprilTagProcessor.PoseSolver.OPENCV_SOLVEPNP_EPNP);
         dashboard = FtcDashboard.getInstance();
-
-        drive.setPoseEstimate(new com.acmerobotics.roadrunner.geometry.Pose2d(0,0,Math.toRadians(0)));
-
-        while (opModeIsActive()) {
-            tagTelemtry();
-        }
     }
 
-    public void tagTelemtry(){
+    @NonNull
+    @Override
+    public Pose2d getPoseEstimate() {
+
         TelemetryPacket packet = new TelemetryPacket();
         if (tagProcessor1.getDetections().size() > 0){
             ArrayList<AprilTagDetection> tags = tagProcessor1.getDetections();
             for(AprilTagDetection tag : tags){
 
-                Pose2d rpose = Positioner.getRobotPose(tag, new Transform2d(new Translation2d(-6.5, 0), new Rotation2d(Math.toRadians(180))));
+                com.arcrobotics.ftclib.geometry.Pose2d rpose = Positioner.getRobotPose(tag, new Transform2d(new Translation2d(-6.5, 0), new Rotation2d(Math.toRadians(180))));
                 measurePoses.add(rpose);
 
                 //Positioner.tagToCamPose(tag);
@@ -150,7 +148,7 @@ public class KalmanTestOpmode extends LinearOpMode {
 
             for (AprilTagDetection tag : tags){
 
-                Pose2d rpose = Positioner.getRobotPose(tag, new Transform2d(new Translation2d(-6.5, 0), new Rotation2d(Math.toRadians(0))));
+                com.arcrobotics.ftclib.geometry.Pose2d rpose = Positioner.getRobotPose(tag, new Transform2d(new Translation2d(-6.5, 0), new Rotation2d(Math.toRadians(0))));
                 measurePoses.add(rpose);
 
                 packet.put("tag X", tag.ftcPose.x);
@@ -173,17 +171,17 @@ public class KalmanTestOpmode extends LinearOpMode {
         for (double vels : TickVels){
             wheelsVels.add(encoderTicksToInches(vels));
         }
-        Pose2d vel = MecanumKinematics.wheelToVel(wheelsVels.get(0), wheelsVels.get(3), wheelsVels.get(1), wheelsVels.get(2), 15.15749, 13.3859);
+        com.arcrobotics.ftclib.geometry.Pose2d vel = MecanumKinematics.wheelToVel(wheelsVels.get(0), wheelsVels.get(3), wheelsVels.get(1), wheelsVels.get(2), 15.15749, 13.3859);
         //Drive: FL, Bl, BR, FR
         //wheelToVel: FL, FR, BL, BR
 
         //Obtenção da posição estimada do roadrunner(statePose)
         com.acmerobotics.roadrunner.geometry.Pose2d RoadrunnerStatePose = drive.getPoseEstimate();
         packet.put("RoadrunnerStatePose", RoadrunnerStatePose);
-        Pose2d statePose = new Pose2d(RoadrunnerStatePose.getX(), RoadrunnerStatePose.getY(), new Rotation2d(RoadrunnerStatePose.getHeading()));
+        com.arcrobotics.ftclib.geometry.Pose2d statePose = new com.arcrobotics.ftclib.geometry.Pose2d(RoadrunnerStatePose.getX(), RoadrunnerStatePose.getY(), new Rotation2d(RoadrunnerStatePose.getHeading()));
 
         //Chama o fitro e passa os valores (vel, statePose, measurePoses)
-        Pose2d filteredPose = kalmanPose.updateFilter(vel, statePose, measurePoses);
+        com.arcrobotics.ftclib.geometry.Pose2d filteredPose = kalmanPose.updateFilter(vel, statePose, measurePoses);
 
         //Desenha a estimativa
         packet.fieldOverlay()
@@ -193,7 +191,36 @@ public class KalmanTestOpmode extends LinearOpMode {
         packet.put("FilteredPose", filteredPose);
 
         dashboard.sendTelemetryPacket(packet);
-        //telemetry.update();
+
+        Pose2d estimatePose = new Pose2d(filteredPose.getX(), filteredPose.getY(), filteredPose.getHeading());
+
+        return estimatePose;
+    }
+
+    @Override
+    public void setPoseEstimate(@NonNull Pose2d pose2d) {
+        drive.setPoseEstimate(pose2d);
+    }
+
+    @Nullable
+    @Override
+    public Pose2d getPoseVelocity() {
+        //Obtenção da velocidade do robo(vel)
+        List<Double> TickVels = drive.getWheelVelocities();
+        for (double vels : TickVels){
+            wheelsVels.add(encoderTicksToInches(vels));
+        }
+        com.arcrobotics.ftclib.geometry.Pose2d vel = MecanumKinematics.wheelToVel(wheelsVels.get(0), wheelsVels.get(3), wheelsVels.get(1), wheelsVels.get(2), 15.15749, 13.3859);
+        //Drive: FL, Bl, BR, FR
+        //wheelToVel: FL, FR, BL, BR
+
+        Pose2d poseVelocity = new Pose2d(vel.getX(), vel.getY(), vel.getHeading());
+
+        return poseVelocity;
+    }
+
+    @Override
+    public void update() {
 
     }
 }

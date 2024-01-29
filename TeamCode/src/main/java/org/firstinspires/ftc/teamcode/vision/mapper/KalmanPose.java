@@ -16,7 +16,7 @@ public class KalmanPose {
 
     Pose2d correctPose;
 
-    Pose2d updateFilter(Pose2d vel, Pose2d statePose, List<Pose2d> measurePoses) {
+    public Pose2d updateFilter(Pose2d vel, Pose2d statePose, List<Pose2d> measurePoses) {
 
         xFilter = new KalmanFilter(0.1, 0.4);
         yFilter = new KalmanFilter(0.1, 0.4);
