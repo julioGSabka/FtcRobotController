@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.vision.mapper;
 
+import static org.firstinspires.ftc.teamcode.RoadRunnerScripts.drive.DriveConstants.encoderTicksToInches;
+
 import android.util.Size;
 
 import com.acmerobotics.dashboard.FtcDashboard;
@@ -30,6 +32,7 @@ public class KalmanTestOpmode extends LinearOpMode {
     VisionPortal visionPortal2;
 
     List<Pose2d> measurePoses;
+    List<Double> wheelsVels;
 
     FtcDashboard dashboard;
     String[] colors = {
@@ -164,8 +167,11 @@ public class KalmanTestOpmode extends LinearOpMode {
         }
 
         //Obtenção da velocidade do robo(vel)
-        List<Double> wheelsVels = drive.getWheelVelocities();
-        Pose2d vel = MecanumKinematics.wheelToVel(wheelsVels.get(0), wheelsVels.get(3), wheelsVels.get(1), wheelsVels.get(2), 38.5, 34);
+        List<Double> TickVels = drive.getWheelVelocities();
+        for (double vels : TickVels){
+            wheelsVels.add(encoderTicksToInches(vels));
+        }
+        Pose2d vel = MecanumKinematics.wheelToVel(wheelsVels.get(0), wheelsVels.get(3), wheelsVels.get(1), wheelsVels.get(2), 15.15749, 13.3859);
         //Drive: FL, Bl, BR, FR
         //wheelToVel: FL, FR, BL, BR
 
