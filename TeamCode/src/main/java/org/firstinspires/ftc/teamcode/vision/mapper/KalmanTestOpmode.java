@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.vision.mapper;
 
-import static org.firstinspires.ftc.teamcode.RoadRunnerScripts.drive.DriveConstants.encoderTicksToInches;
-
 import android.util.Size;
 
 import com.acmerobotics.dashboard.FtcDashboard;
@@ -12,6 +10,7 @@ import com.arcrobotics.ftclib.geometry.Transform2d;
 import com.arcrobotics.ftclib.geometry.Translation2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.RoadRunnerScripts.drive.SampleMecanumDrive;
@@ -21,6 +20,7 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @TeleOp
@@ -31,8 +31,8 @@ public class KalmanTestOpmode extends LinearOpMode {
     VisionPortal visionPortal1;
     VisionPortal visionPortal2;
 
-    List<Pose2d> measurePoses;
-    List<Double> wheelsVels;
+    List<Pose2d> measurePoses = new ArrayList<>();;
+    List<Double> wheelsVels = new ArrayList<>();;
 
     FtcDashboard dashboard;
     String[] colors = {
@@ -51,12 +51,26 @@ public class KalmanTestOpmode extends LinearOpMode {
     SampleMecanumDrive drive;
     KalmanPose kalmanPose;
 
+    double WHEEL_RADIUS = 1.47;
+    double GEAR_RATIO = 1.0;
+    double TICKS_PER_REV = 537.6;
+
+    private DcMotorEx leftFront, leftRear, rightRear, rightFront;
+    private List<DcMotorEx> motors;
+
+    private List<Integer> lastEncVels = new ArrayList<>();
+
     @Override
     public void runOpMode() {
 
+        leftFront = hardwareMap.get(DcMotorEx.class, "motorFrontLeft");
+        leftRear = hardwareMap.get(DcMotorEx.class, "motorBackLeft");
+        rightRear = hardwareMap.get(DcMotorEx.class, "motorBackRight");
+        rightFront = hardwareMap.get(DcMotorEx.class, "motorFrontRight");
+        motors = Arrays.asList(leftFront, leftRear, rightRear, rightFront);
+
         measurePoses = new ArrayList<>();
         kalmanPose = new KalmanPose();
-        drive = new SampleMecanumDrive(hardwareMap);
 
         int[] portalsList = VisionPortal.makeMultiPortalView(2, VisionPortal.MultiPortalLayout.HORIZONTAL);
 
@@ -106,17 +120,26 @@ public class KalmanTestOpmode extends LinearOpMode {
         telemetry.addLine("Waiting for start");
         telemetry.update();
 
-        waitForStart();
-
         tagProcessor1.setPoseSolver(AprilTagProcessor.PoseSolver.OPENCV_SOLVEPNP_EPNP);
         tagProcessor2.setPoseSolver(AprilTagProcessor.PoseSolver.OPENCV_SOLVEPNP_EPNP);
         dashboard = FtcDashboard.getInstance();
 
-        drive.setPoseEstimate(new com.acmerobotics.roadrunner.geometry.Pose2d(0,0,Math.toRadians(0)));
+        drive = new SampleMecanumDrive(hardwareMap);
+
+        drive.setPoseEstimate(new com.acmerobotics.roadrunner.geometry.Pose2d(-36,-12, Math.toRadians(180)));
+
+        waitForStart();
 
         while (opModeIsActive()) {
             tagTelemtry();
         }
+
+        visionPortal1.stopLiveView();
+        visionPortal2.stopLiveView();
+        visionPortal1.stopStreaming();
+        visionPortal2.stopStreaming();
+        visionPortal1.close();
+        visionPortal2.close();
     }
 
     public void tagTelemtry(){
@@ -133,7 +156,6 @@ public class KalmanTestOpmode extends LinearOpMode {
                 packet.put("tag Y", tag.ftcPose.y);
                 packet.put("tag rot DEGREES:", tag.ftcPose.yaw);
                 packet.put("tag teoreticalpose", Positioner.tagTheoreticalPose(tag));
-
 
                 packet.put("pose ", rpose);
 
@@ -169,7 +191,7 @@ public class KalmanTestOpmode extends LinearOpMode {
         }
 
         //Obtenção da velocidade do robo(vel)
-        List<Double> TickVels = drive.getWheelVelocities();
+        List<Double> TickVels = getWheelVelocities();
         for (double vels : TickVels){
             wheelsVels.add(encoderTicksToInches(vels));
         }
@@ -196,4 +218,21 @@ public class KalmanTestOpmode extends LinearOpMode {
         //telemetry.update();
 
     }
+
+    public double encoderTicksToInches(double ticks) {
+        return WHEEL_RADIUS * 2 * Math.PI * GEAR_RATIO * ticks / TICKS_PER_REV;
+    }
+
+    public List<Double> getWheelVelocities() {
+        lastEncVels.clear();
+
+        List<Double> wheelVelocities = new ArrayList<>();
+        for (DcMotorEx motor : motors) {
+            int vel = (int) motor.getVelocity();
+            lastEncVels.add(vel);
+            wheelVelocities.add(encoderTicksToInches(vel));
+        }
+        return wheelVelocities;
+    }
+
 }
