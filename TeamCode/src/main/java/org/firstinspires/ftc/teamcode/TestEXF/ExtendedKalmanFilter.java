@@ -18,17 +18,54 @@ public class ExtendedKalmanFilter {
     double[][] measurement = new double[6][1];
     double[][] previous_measurement = new double[6][1];
 
+    double[][] Qvec = { {0.002*deltaT,  0.002*deltaT, 0.002*deltaT, 0.45, 0.45, 0.45} };
+    double[][] Rvec = { {0.002*deltaT,  0.002*deltaT, 0.002*deltaT, 0.45, 0.45, 0.45} };
+
 
     private void initializeState() {
         // Assuming you have constants defined for WHEEL_RADIUS, L, and l
-        state = stateTransition(previous_state, previous_vels);
-        measurement = stateToMeasurement(state) + measurement;
-
+        state = MatrixSum((stateTransition(previous_state, vels)), diag(Qvec));
+        measurement = MatrixSum(stateToMeasurement(state), diag(Rvec));
     }
-    /*
-    public RealMatrix stateTransitionJacobian(RealMatrix state, RealMatrix vels){
-        double[][] A = { { 1, 0, deltaT *((-state.getEntry(3,0)*Math.sin(state.getEntry(2,0))) -(state.getEntry(4,0)*Math.cos(state.getEntry(2,0)))), deltaT * Math.cos(state.getEntry(2,0)), -deltaT * Math.sin(state.getEntry(2,0)), 0 },
-                { 0, 1, deltaT *((state.get(3)*Math.cos(state.get(2))) -(state.get(4)*Math.sin(state.get(2)))), deltaT * Math.sin(state.get(2)), deltaT * Math.cos(state.get(2)), 0 },
+
+
+    public double[][] diag(double[][] matrix){
+        double [][] matriz = new double[matrix[0].length][matrix[0].length];
+        for(int i=0; i<matrix[0].length; i++){
+            matriz[i][i] = matrix[0][i];
+        }
+        return matriz;
+    }
+
+    public double[][] MatrixSum(double[][] Mtx1, double[][] Mtx2) {
+        double[][] finalMatrix = new double[Mtx1.length][Mtx2.length];
+
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                finalMatrix[i][j] = Mtx1[i][j] + Mtx2[i][j];
+            }
+        }
+
+        return finalMatrix;
+    }
+
+    public double[][] MatrixSubtract(double[][] Mtx1, double[][] Mtx2) {
+        double[][] finalMatrix = new double[Mtx1.length][Mtx2.length];
+
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                finalMatrix[i][j] = Mtx1[i][j] - Mtx2[i][j];
+            }
+        }
+
+        return finalMatrix;
+    }
+
+
+
+    public double[][] stateTransitionJacobian(double[][] state, double[][] vels){
+        double[][] A = { { 1, 0, deltaT *((-state[3][0]*Math.sin(state[2][0])) -(state[4][0]*Math.cos(state[2][0]))), deltaT * Math.cos(state[2][0]), -deltaT * Math.sin(state[2][0]), 0 },
+                { 0, 1, deltaT *((state[3][0]*Math.cos(state[2][0])) -(state[4][0]*Math.sin(state[2][0]))), deltaT * Math.sin(state[2][0]), deltaT * Math.cos(state[2][0]), 0 },
                 { 0, 0, 1, 0, 0, deltaT },
                 { 0, 0, 0, 0, 0, 0 },
                 { 0, 0, 0, 0, 0, 0 },
@@ -37,38 +74,32 @@ public class ExtendedKalmanFilter {
         return A;
     }
 
-    public double[][] stateMeasurementJacobian(List<Double> state, List<Double> vels){
+    public double[][] stateMeasurementJacobian(double[][] state, double[][] vels){
         double[][] H = { { 1, 0, 0, 0, 0, 0 },
-                         { 0, 1, 0, 0, 0, 0 },
-                         { 0, 0, 1, 0, 0, 0 },
-                         { 0, 0, 0, 1, 0, -W_dis },
-                         { 0, 0, 0, 1, 0, W_dis },
-                         { 0, 0, 0, 0, 1, -D_dis } };
+                { 0, 1, 0, 0, 0, 0 },
+                { 0, 0, 1, 0, 0, 0 },
+                { 0, 0, 0, 1, 0, -W_dis },
+                { 0, 0, 0, 1, 0, W_dis },
+                { 0, 0, 0, 0, 1, -D_dis } };
 
         return H;
     }
 
-    public List<Double> stateToMeasurement(List<Double> state){
-        double theta = state.get(2);
-        double xVel = state.get(3);
-        double yVel = state.get(4);
-        double thetaVel = state.get(5);
 
-        double a = yVel - D_dis * thetaVel;
-        double R = xVel + W_dis * thetaVel;
-        double L = xVel - W_dis * thetaVel;
+    public double[][] stateToMeasurement(double[][] state){
 
-        List<Double> transformed = new ArrayList<>();
-        transformed.add(state.get(0));
-        transformed.add(state.get(1));
-        transformed.add(state.get(2));
-        transformed.add(L);
-        transformed.add(R);
-        transformed.add(a);
+        //Row x Collum
+        double[][] A = new double[6][1];
+        A [0][0] = state[0][0];
+        A [1][0] = state[1][0];
+        A [2][0] = state[2][0];
+        A [3][0] = state[3][0];
+        A [4][0] = state[3][0];
+        A [5][0] = state[4][0];
 
-        return transformed;
+        return A;
     }
-    */
+
 
     public double[][] stateTransition(double[][] state, double[][] vels){
 
