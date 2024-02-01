@@ -179,10 +179,10 @@ public class OpmodeCV extends LinearOpMode {
                         ombroL.setPosition(0.15);
                         ombroR.setPosition(0.85);
                         sleep(500);
-                        ombroL.setPosition(0.05);
-                        ombroR.setPosition(0.95);
+                        ombroL.setPosition(0.09);
+                        ombroR.setPosition(0.91);
                         sleep(1000);
-                        cotovelo.setPosition(0.726);
+                        cotovelo.setPosition(0.724);
                         sleep(1000);
                         DisableServos();
                     }
@@ -232,10 +232,11 @@ public class OpmodeCV extends LinearOpMode {
 
                     //Fazer a garra soltar os pixels
                     if (LB_presses == 1) {
-                        garra.setPosition(0.5);
+                        garra.setPosition(0.7);
                         PixelsnaGarra = 1;
                     } else if (LB_presses == 2) {
-                        garra.setPosition(0);
+                        garra.setPosition(0.07
+                        );
                         PixelsnaGarra = 0;
                     }
                 }
@@ -250,12 +251,15 @@ public class OpmodeCV extends LinearOpMode {
             }
 
             if (gamepad2.start) {
-                Intake.setPower(-7);
+                Intake.setPower(7);
                 PixelsnaGarra = 0;
             }
 
             if (gamepad2.back) {
                 Intake.setPower(0);
+            }
+            if (gamepad2.left_stick_button) {
+                Intake.setPower(-7);
             }
 
             if (distanceSensor.getDistance(DistanceUnit.CM) < 5.5 && distanciaAnterior > 5.5) {
@@ -289,8 +293,8 @@ public class OpmodeCV extends LinearOpMode {
                     servoElevacaoR.setPosition(0);
                 }
                 if (gamepad2.dpad_left) {
-                    motorElevacaoL.setPower(10);
-                    motorElevacaoR.setPower(10);
+                    motorElevacaoL.setPower(0);
+                    motorElevacaoR.setPower(0);
                 }
                 //Descer
                 if (gamepad2.dpad_down) {
@@ -298,8 +302,8 @@ public class OpmodeCV extends LinearOpMode {
                     servoElevacaoR.setPosition(1);
                 }
                 if (gamepad2.dpad_right) {
-                    motorElevacaoL.setPower(-10);
-                    motorElevacaoR.setPower(-10);
+                    motorElevacaoL.setPower(10);
+                    motorElevacaoR.setPower(10);
                 }
             }
 
