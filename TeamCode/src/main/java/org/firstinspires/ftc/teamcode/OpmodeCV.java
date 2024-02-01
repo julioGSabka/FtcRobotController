@@ -132,11 +132,15 @@ public class OpmodeCV extends LinearOpMode {
 
         garra.setPosition(0);
         cotovelo.setPosition(1);
-        ombroL.setPosition(0.05);
-        ombroR.setPosition(0.95);
-        sleep(1000);
-        cotovelo.setPosition(0.726);
-        sleep(1000);
+        sleep(500);
+        ombroL.setPosition(0.15);
+        ombroR.setPosition(0.85);
+        sleep(500);
+        ombroL.setPosition(0.09);
+        ombroR.setPosition(0.91);
+        sleep(500);
+        cotovelo.setPosition(0.724);
+        sleep(500);
         DisableServos();
 
         waitForStart();
@@ -214,10 +218,10 @@ public class OpmodeCV extends LinearOpMode {
                         ombroL.setPosition(0.15);
                         ombroR.setPosition(0.85);
                         sleep(500);
-                        ombroL.setPosition(0.05);
-                        ombroR.setPosition(0.95);
+                        ombroL.setPosition(0.09);
+                        ombroR.setPosition(0.91);
                         sleep(1000);
-                        cotovelo.setPosition(0.726);
+                        cotovelo.setPosition(0.724);
                         sleep(1000);
                         DisableServos();
                     }
@@ -294,19 +298,14 @@ public class OpmodeCV extends LinearOpMode {
                     servoElevacaoL.setPosition(1);
                     servoElevacaoR.setPosition(0);
                 }
-                if (gamepad2.dpad_left) {
-                    motorElevacaoL.setPower(0);
-                    motorElevacaoR.setPower(0);
-                }
                 //Descer
                 if (gamepad2.dpad_down) {
                     servoElevacaoL.setPosition(0);
                     servoElevacaoR.setPosition(1);
                 }
-                if (gamepad2.dpad_right) {
-                    motorElevacaoL.setPower(10);
-                    motorElevacaoR.setPower(10);
-                }
+                motorElevacaoR.setPower(gamepad2.right_trigger * 10);
+                motorElevacaoL.setPower(gamepad2.left_trigger * 10);
+
 
                 if (gamepad1.right_bumper){
                     airplaneLauncher.setPosition(1);
