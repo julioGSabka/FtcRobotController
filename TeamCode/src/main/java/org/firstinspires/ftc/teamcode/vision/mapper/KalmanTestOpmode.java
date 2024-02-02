@@ -52,8 +52,6 @@ public class KalmanTestOpmode extends LinearOpMode {
             "gray",
             "black"
     };
-
-    SampleMecanumDrive drive;
     KalmanPose kalmanPose;
 
     IMU imu;
@@ -74,6 +72,7 @@ public class KalmanTestOpmode extends LinearOpMode {
         leftRear = hardwareMap.get(DcMotorEx.class, "motorBackLeft");
         rightRear = hardwareMap.get(DcMotorEx.class, "motorBackRight");
         rightFront = hardwareMap.get(DcMotorEx.class, "motorFrontRight");
+
         motors = Arrays.asList(leftFront, leftRear, rightRear, rightFront);
 
         imu = hardwareMap.get(IMU.class, "imu");
@@ -86,7 +85,7 @@ public class KalmanTestOpmode extends LinearOpMode {
         imu.initialize(new IMU.Parameters(orientationOnRobot));
 
         measurePoses = new ArrayList<>();
-        kalmanPose = new KalmanPose();
+        kalmanPose = new KalmanPose(new Pose2d(0, 0, new Rotation2d(0)));
 
         int[] portalsList = VisionPortal.makeMultiPortalView(2, VisionPortal.MultiPortalLayout.HORIZONTAL);
 
@@ -140,15 +139,12 @@ public class KalmanTestOpmode extends LinearOpMode {
         tagProcessor2.setPoseSolver(AprilTagProcessor.PoseSolver.OPENCV_SOLVEPNP_EPNP);
         dashboard = FtcDashboard.getInstance();
 
-        drive = new SampleMecanumDrive(hardwareMap);
-
-        drive.setPoseEstimate(new com.acmerobotics.roadrunner.geometry.Pose2d(-36,-12, Math.toRadians(180)));
-
         waitForStart();
 
+        imu.resetYaw();
+
         while (opModeIsActive()) {
-            imu.resetYaw();
-            tagTelemtry();
+            tagTelemetry();
         }
 
         visionPortal1.stopLiveView();
@@ -159,7 +155,7 @@ public class KalmanTestOpmode extends LinearOpMode {
         visionPortal2.close();
     }
 
-    public void tagTelemtry(){
+    public void tagTelemetry(){
         TelemetryPacket packet = new TelemetryPacket();
         if (tagProcessor1.getDetections().size() > 0){
             ArrayList<AprilTagDetection> tags = tagProcessor1.getDetections();
@@ -215,18 +211,13 @@ public class KalmanTestOpmode extends LinearOpMode {
         Pose2d vel = MecanumKinematics.wheelToVel(wheelsVels.get(0), wheelsVels.get(3), wheelsVels.get(1), wheelsVels.get(2), 15.15749, 13.3859);
         //Drive: FL, Bl, BR, FR
         //wheelToVel: FL, FR, BL, BR
-
-        //Obtenção da posição estimada do roadrunner(statePose)
-        com.acmerobotics.roadrunner.geometry.Pose2d RoadrunnerStatePose = drive.getPoseEstimate();
-        packet.put("RoadrunnerStatePose", RoadrunnerStatePose);
-        Pose2d statePose = new Pose2d(RoadrunnerStatePose.getX(), RoadrunnerStatePose.getY(), new Rotation2d(RoadrunnerStatePose.getHeading()));
-
+        packet.put("mecanumVel", vel);
         YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
         AngularVelocity angularVelocity = imu.getRobotAngularVelocity(AngleUnit.RADIANS);
 
         //Chama o fitro e passa os valores (vel, statePose, measurePoses)
 
-        Pose2d filteredPose = kalmanPose.updateFilter(vel, statePose, measurePoses, orientation.getYaw(AngleUnit.RADIANS));
+        Pose2d filteredPose = kalmanPose.updateFilter(vel, measurePoses, orientation.getYaw(AngleUnit.RADIANS));
 
         //Desenha a estimativa
         packet.fieldOverlay()
