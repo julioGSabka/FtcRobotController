@@ -47,6 +47,8 @@ public class ApriltagLocalizer implements Localizer {
 
     private List<Integer> lastEncVels = new ArrayList<>();
 
+    Pose2d filterPose;
+
     public ApriltagLocalizer(HardwareMap hardwareMap) {
         new ApriltagLocalizer(hardwareMap, true);
     }
@@ -84,22 +86,16 @@ public class ApriltagLocalizer implements Localizer {
         if (instancia.returnTagProcessor1().getDetections().size() > 0){
             ArrayList<AprilTagDetection> tags = instancia.returnTagProcessor1().getDetections();
             for(AprilTagDetection tag : tags){
-
                 com.arcrobotics.ftclib.geometry.Pose2d rpose = Positioner.getRobotPose(tag, new Transform2d(new Translation2d(-6.5, 0), new Rotation2d(Math.toRadians(180))));
                 measurePoses.add(rpose);
-
             }
         }
 
         if (instancia.returnTagProcessor2().getDetections().size() > 0){
-
             ArrayList<AprilTagDetection> tags = instancia.returnTagProcessor2().getDetections();
-
             for (AprilTagDetection tag : tags){
-
                 com.arcrobotics.ftclib.geometry.Pose2d rpose = Positioner.getRobotPose(tag, new Transform2d(new Translation2d(-6.5, 0), new Rotation2d(Math.toRadians(0))));
                 measurePoses.add(rpose);
-
             }
         }
 
@@ -115,15 +111,15 @@ public class ApriltagLocalizer implements Localizer {
         AngularVelocity angularVelocity = imu.getRobotAngularVelocity(AngleUnit.RADIANS);
 
         //Chama o fitro e passa os valores (vel, statePose, measurePoses)
-
         com.arcrobotics.ftclib.geometry.Pose2d filteredPose = kalmanPose.updateFilter(vel, measurePoses, orientation.getYaw(AngleUnit.RADIANS));
+        filterPose = new Pose2d(filteredPose.getX(), filteredPose.getY(), filteredPose.getHeading());
 
-        return null;
+        return filterPose;
     }
 
     @Override
     public void setPoseEstimate(@NonNull Pose2d pose2d) {
-
+        filterPose = pose2d;
     }
 
     @Nullable
