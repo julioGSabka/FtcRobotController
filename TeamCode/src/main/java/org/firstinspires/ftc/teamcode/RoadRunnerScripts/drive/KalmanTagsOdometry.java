@@ -55,7 +55,7 @@ public class KalmanTagsOdometry implements Localizer {
 
     public KalmanTagsOdometry(HardwareMap hardwareMap, boolean resetPos) {
         measurePoses = new ArrayList<>();
-        kalmanPose = new KalmanPose();
+        kalmanPose = new KalmanPose(new com.arcrobotics.ftclib.geometry.Pose2d(0, 0, new Rotation2d(0)));
         drive = new SampleMecanumDrive(hardwareMap);
 
         int[] portalsList = VisionPortal.makeMultiPortalView(2, VisionPortal.MultiPortalLayout.HORIZONTAL);
@@ -149,7 +149,7 @@ public class KalmanTagsOdometry implements Localizer {
         com.arcrobotics.ftclib.geometry.Pose2d statePose = new com.arcrobotics.ftclib.geometry.Pose2d(RoadrunnerStatePose.getX(), RoadrunnerStatePose.getY(), new Rotation2d(RoadrunnerStatePose.getHeading()));
 
         //Chama o fitro e passa os valores (vel, statePose, measurePoses)
-        com.arcrobotics.ftclib.geometry.Pose2d filteredPose = kalmanPose.updateFilter(vel, statePose, measurePoses);
+        com.arcrobotics.ftclib.geometry.Pose2d filteredPose = kalmanPose.updateFilter(vel, measurePoses, 0);
 
         Pose2d estimatePose = new Pose2d(filteredPose.getX(), filteredPose.getY(), filteredPose.getHeading());
 

@@ -10,8 +10,9 @@ import org.apache.commons.math3.linear.RealVector;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ExtendedKalmanFilter {
 
+public class ExtendedKalmanFilter {
+    /*
     double[][] P = new double[6][6];
     double[][] states = new double[1][6];
     double[][] previous_state = new double[1][6];

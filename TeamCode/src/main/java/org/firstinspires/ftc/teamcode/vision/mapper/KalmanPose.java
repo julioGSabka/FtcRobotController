@@ -30,17 +30,17 @@ public class KalmanPose {
     Rotation2d finalHeading;
 
     Pose2d correctPose;
-
-    public Pose2d updateFilter(Pose2d vel, Pose2d statePose, List<Pose2d> measurePoses, double heading) {
+    public KalmanPose(Pose2d startpose){
+        this.correctPose = startpose;
+    }
+    public Pose2d updateFilter(Pose2d vel, List<Pose2d> measurePoses, double heading) {
         xFilter = new KalmanFilter(0.1, 0.4);
         yFilter = new KalmanFilter(0.1, 0.4);
         wFilter = new KalmanFilter(0.1, 0.4);
 
-        Pose2d filterPose = statePose;
-
         for (Pose2d pose : measurePoses) {
-            x = xFilter.updateFilter(vel.getX()*Math.cos(heading) + vel.getY()*Math.sin(heading), filterPose.getX(), pose.getX());
-            y = yFilter.updateFilter(vel.getY()*Math.cos(heading) + vel.getX()*Math.sin(heading), filterPose.getY(), pose.getY());
+            x = xFilter.updateFilter(vel.getX()*Math.cos(heading) + vel.getY()*Math.sin(heading), correctPose.getX(), pose.getX());
+            y = yFilter.updateFilter(vel.getY()*Math.cos(heading) + vel.getX()*Math.sin(heading), correctPose.getY(), pose.getY());
 
 
 
@@ -57,10 +57,8 @@ public class KalmanPose {
             List<Double> Euler = quaternion_to_euler(qw, qx, qy, qz);
              */
 
-            filterPose = new Pose2d(x, y, new Rotation2d(heading));
+            correctPose = new Pose2d(x, y, new Rotation2d(heading));
         }
-
-        correctPose = filterPose;
 
         return correctPose;
     }
