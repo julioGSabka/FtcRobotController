@@ -16,6 +16,8 @@ public class TesteIntake extends LinearOpMode {
     private DcMotorEx Intake = null;
     private double power;
 
+    boolean one_press = false;
+
     @Override
     public void runOpMode() {
 
@@ -50,22 +52,28 @@ public class TesteIntake extends LinearOpMode {
             motorFrontRight.setPower(frontRightPower);
             motorBackRight.setPower(backRightPower);
 
+
             if (gamepad2.b){
                 power = 0;
             }
 
-            if (gamepad2.dpad_up){
+            if (gamepad2.dpad_up & one_press == false){
                 power += 0.05;
+                one_press = true;
             }
 
-            if (gamepad2.dpad_up){
+
+            if (gamepad2.dpad_up & one_press == false){
                 power += 0.05;
+                one_press = true;
             }
+            one_press = false;
 
             Intake.setPower(Math.min(power, 1));
 
             telemetry.addData("Power", power);
             telemetry.addData("MotorPower", Intake.getPower());
+            telemetry.update();
         }
 
 
