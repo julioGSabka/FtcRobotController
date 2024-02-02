@@ -28,6 +28,8 @@ public class ApriltagOdometryTest extends LinearOpMode {
     VisionPortal visionPortal1;
     VisionPortal visionPortal2;
 
+
+
     FtcDashboard dashboard;
     String[] colors = {
             "red",

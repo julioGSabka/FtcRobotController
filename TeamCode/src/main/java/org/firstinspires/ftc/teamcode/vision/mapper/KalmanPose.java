@@ -3,6 +3,8 @@ package org.firstinspires.ftc.teamcode.vision.mapper;
 import com.arcrobotics.ftclib.geometry.Pose2d;
 import com.arcrobotics.ftclib.geometry.Rotation2d;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,27 +27,24 @@ public class KalmanPose {
     double qy = 0;
     double qz = 0;
 
-    Rotation2d finalW;
+    Rotation2d finalHeading;
 
     Pose2d correctPose;
 
-    public Pose2d updateFilter(Pose2d vel, Pose2d statePose, List<Pose2d> measurePoses) {
-
+    public Pose2d updateFilter(Pose2d vel, Pose2d statePose, List<Pose2d> measurePoses, double heading) {
         xFilter = new KalmanFilter(0.1, 0.4);
         yFilter = new KalmanFilter(0.1, 0.4);
         wFilter = new KalmanFilter(0.1, 0.4);
 
-        qwFilter = new KalmanFilter(0.1, 0.4);
-        qxFilter = new KalmanFilter(0.1, 0.4);
-        qyFilter = new KalmanFilter(0.1, 0.4);
-        qzFilter = new KalmanFilter(0.1, 0.4);
-
         Pose2d filterPose = statePose;
 
         for (Pose2d pose : measurePoses) {
-            x = xFilter.updateFilter(vel.getX(), filterPose.getX(), pose.getX());
-            y = yFilter.updateFilter(vel.getY(), filterPose.getY(), pose.getY());
+            x = xFilter.updateFilter(vel.getX()*Math.cos(heading) + vel.getY()*Math.sin(heading), filterPose.getX(), pose.getX());
+            y = yFilter.updateFilter(vel.getY()*Math.cos(heading) + vel.getX()*Math.sin(heading), filterPose.getY(), pose.getY());
 
+
+
+            /*
             List<Double> quatPose = euler_to_quaternion(0,0, pose.getHeading());
             List<Double> quatVel = euler_to_quaternion(0,0, vel.getHeading());
             List<Double> quatFilterPose = euler_to_quaternion(0,0, vel.getHeading());
@@ -56,10 +55,9 @@ public class KalmanPose {
             qz = qzFilter.updateFilter(quatVel.get(3), quatFilterPose.get(3), quatPose.get(3));
 
             List<Double> Euler = quaternion_to_euler(qw, qx, qy, qz);
+             */
 
-            finalW = new Rotation2d(Euler.get(2));
-
-            filterPose = new Pose2d(x, y, finalW);
+            filterPose = new Pose2d(x, y, new Rotation2d(heading));
         }
 
         correctPose = filterPose;
