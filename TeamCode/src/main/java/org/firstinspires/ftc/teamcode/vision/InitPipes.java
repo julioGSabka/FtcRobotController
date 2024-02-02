@@ -15,6 +15,7 @@ public class InitPipes {
     AprilTagProcessor tagProcessor2;
     VisionPortal visionPortal1;
     VisionPortal visionPortal2;
+    TfodProcessor teamPropTFOD;
 
     private static final String TFOD_MODEL_ASSET = "model_20240115_155137.tflite";
     private static final String[] LABELS = {
@@ -57,7 +58,7 @@ public class InitPipes {
                 .setTagLibrary(AprilTagCustomDatabase.getCenterStageLibrary())
                 .build();
 
-        TfodProcessor myTfodProcessor = new TfodProcessor.Builder()
+        teamPropTFOD = new TfodProcessor.Builder()
                 .setMaxNumRecognitions(10)
                 .setUseObjectTracker(true)
                 .setTrackerMaxOverlap((float) 0.2)
@@ -78,7 +79,7 @@ public class InitPipes {
 
         visionPortal2 = new VisionPortal.Builder()
                 .setCamera(hardwareMap.get(WebcamName.class, "Webcam 2"))
-                .addProcessors(tagProcessor2, myTfodProcessor)
+                .addProcessors(tagProcessor2, teamPropTFOD)
                 .setCameraResolution(new Size(1920, 1080))
                 .setStreamFormat(VisionPortal.StreamFormat.MJPEG)
                 .enableLiveView(true)
@@ -88,6 +89,9 @@ public class InitPipes {
 
         visionPortal1.setProcessorEnabled(tagProcessor1, true);
         visionPortal2.setProcessorEnabled(tagProcessor2, true);
+
+        tagProcessor1.setPoseSolver(AprilTagProcessor.PoseSolver.OPENCV_SOLVEPNP_EPNP);
+        tagProcessor2.setPoseSolver(AprilTagProcessor.PoseSolver.OPENCV_SOLVEPNP_EPNP);
     }
 
     public void closeCams(){
@@ -97,5 +101,21 @@ public class InitPipes {
         visionPortal2.stopLiveView();
         visionPortal2.stopStreaming();
         visionPortal2.close();
+    }
+    
+    public AprilTagProcessor returnTagProcessor1(){
+        return tagProcessor1;
+    }
+    public AprilTagProcessor returnTagProcessor2(){
+        return tagProcessor2;
+    }
+    public VisionPortal returnVisionPortal1(){
+        return visionPortal1;
+    }
+    public VisionPortal returnVisionPortal2(){
+        return visionPortal2;
+    }
+    public TfodProcessor returnTFOD(){
+        return teamPropTFOD;
     }
 }
