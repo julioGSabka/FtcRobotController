@@ -40,7 +40,7 @@ public class OpmodeCV extends LinearOpMode {
     private DcMotorEx motorElevacaoL = null;
     private DcMotorEx motorElevacaoR = null;
     private Servo garra = null;
-    private Servo airplaneLauncher = null;
+    private Servo launcher = null;
     private ServoImplEx cotovelo = null;
     private ServoImplEx ombroR = null;
     private ServoImplEx ombroL = null;
@@ -108,7 +108,7 @@ public class OpmodeCV extends LinearOpMode {
         ombroL = hardwareMap.get(ServoImplEx.class, "ombroL"); //0
         servoElevacaoL = hardwareMap.get(ServoImplEx.class, "servoElevacaoL"); //Ex2
         servoElevacaoR = hardwareMap.get(ServoImplEx.class, "servoElevacaoR"); //Ex4
-        airplaneLauncher = hardwareMap.get(Servo.class, "airplaneLauncher");
+        launcher = hardwareMap.get(Servo.class, "launcher");
 
         //Configure Motors
         //motorBackLeft.setDirection(DcMotorEx.Direction.REVERSE);
@@ -127,8 +127,7 @@ public class OpmodeCV extends LinearOpMode {
         boolean lastPress = false;
 
         initTags();
-        //visionPortal1.stopStreaming();
-        //visionPortal2.stopStreaming();
+
 
         garra.setPosition(0);
         cotovelo.setPosition(1);
@@ -190,7 +189,6 @@ public class OpmodeCV extends LinearOpMode {
                         sleep(1000);
                         cotovelo.setPosition(0.724);
                         sleep(1000);
-                        DisableServos();
                     }
                     if (gamepad2.y){
                         EnableServos();
@@ -223,7 +221,6 @@ public class OpmodeCV extends LinearOpMode {
                         sleep(1000);
                         cotovelo.setPosition(0.724);
                         sleep(1000);
-                        DisableServos();
                     }
                 }
             }).start();
@@ -265,7 +262,7 @@ public class OpmodeCV extends LinearOpMode {
                 Intake.setPower(0);
             }
             if (gamepad2.left_stick_button) {
-                Intake.setPower(-7);
+                Intake.setPower(-1);
             }
 
             if (distanceSensor.getDistance(DistanceUnit.CM) < 5.5 && distanciaAnterior > 5.5) {
@@ -303,12 +300,12 @@ public class OpmodeCV extends LinearOpMode {
                     servoElevacaoL.setPosition(0);
                     servoElevacaoR.setPosition(1);
                 }
-                motorElevacaoR.setPower(gamepad2.right_trigger * 10);
-                motorElevacaoL.setPower(gamepad2.left_trigger * 10);
+                motorElevacaoR.setPower(gamepad2.right_trigger);
+                motorElevacaoL.setPower(gamepad2.left_trigger);
 
 
                 if (gamepad1.right_bumper){
-                    airplaneLauncher.setPosition(1);
+                    launcher.setPosition(1);
                 }
             }
 
@@ -338,6 +335,13 @@ public class OpmodeCV extends LinearOpMode {
             telemetry.addData("Pixels na garra: ", PixelsnaGarra);
             telemetry.update();
         }
+
+        visionPortal1.stopStreaming();
+        visionPortal1.stopLiveView();
+        visionPortal1.close();
+        visionPortal2.stopStreaming();
+        visionPortal2.stopLiveView();
+        visionPortal2.close();
     }
 
     public void DisableServos(){
