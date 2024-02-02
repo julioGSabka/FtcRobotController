@@ -21,6 +21,19 @@ public class InitPipes {
             "Blue Cube", "Red Cube"
     };
 
+    private static InitPipes instancia;
+
+    private InitPipes() {
+        // Inicialização da classe
+    }
+
+    public static InitPipes getInstancia() {
+        if (instancia == null) {
+            instancia = new InitPipes();
+        }
+        return instancia;
+    }
+
     public void initVision(HardwareMap hardwareMap){
         int[] portalsList = VisionPortal.makeMultiPortalView(2, VisionPortal.MultiPortalLayout.HORIZONTAL);
 

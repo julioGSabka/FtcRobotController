@@ -15,6 +15,7 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.teamcode.RoadRunnerScripts.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.RoadRunnerScripts.trajectorysequence.TrajectorySequence;
+import org.firstinspires.ftc.teamcode.vision.InitPipes;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.tfod.TfodProcessor;
 import org.openftc.easyopencv.OpenCvCamera;
@@ -41,8 +42,14 @@ public class BackdropBlue extends LinearOpMode {
     private TfodProcessor tfod;
     private VisionPortal visionPortal;
 
+    InitPipes instancia = InitPipes.getInstancia();
+
     @Override
     public void runOpMode()  {
+
+        // Usar a instância para chamar métodos
+        instancia.initVision(hardwareMap);
+
         initTfod();
 
         telemetry.addData("Status", "Initialized");
