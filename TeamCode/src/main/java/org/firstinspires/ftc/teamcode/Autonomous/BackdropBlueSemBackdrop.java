@@ -55,16 +55,19 @@ public class BackdropBlueSemBackdrop extends LinearOpMode {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         Pose2d startPose = new Pose2d(12,63.55, Math.toRadians(270));
 
-        //Trajectory Construct
+        ///Trajectory Construct
         TrajectorySequence toSpikeMarks = drive.trajectorySequenceBuilder(startPose)
                 .lineToLinearHeading(new Pose2d(12,36, Math.toRadians(270)))
                 .build();
-        TrajectorySequence parkANALISE1ou2 = drive.trajectorySequenceBuilder(new Pose2d())
-                .lineToLinearHeading(new Pose2d(48, 36, Math.toRadians(270)))
+        TrajectorySequence parkANALISE1 = drive.trajectorySequenceBuilder( new Pose2d(12,36, Math.toRadians(0)))
+                .lineToLinearHeading(new Pose2d(12, 60, Math.toRadians(0)))
+                .lineToLinearHeading(new Pose2d(52, 60, Math.toRadians(0)))
                 .build();
-        TrajectorySequence parkANALISE3 = drive.trajectorySequenceBuilder(new Pose2d())
-                .lineToLinearHeading(new Pose2d(12, 60, Math.toRadians(270)))
-                .lineToLinearHeading(new Pose2d(60, 60, Math.toRadians(270)))
+        TrajectorySequence parkANALISE2 = drive.trajectorySequenceBuilder(new Pose2d(12,36, Math.toRadians(270)))
+                .lineToLinearHeading(new Pose2d(60, 36, Math.toRadians(270)))
+                .build();
+        TrajectorySequence parkANALISE3 = drive.trajectorySequenceBuilder(new Pose2d(12, 36, Math.toRadians(180)))
+                .lineToLinearHeading(new Pose2d(50, 36, Math.toRadians(180)))
                 .build();
 
         initVisionPipelines();
@@ -87,21 +90,19 @@ public class BackdropBlueSemBackdrop extends LinearOpMode {
             drive.turn(Math.toRadians(90));
             sleep(200);
             CuspirPixel();
-            drive.turn(Math.toRadians(-90));
-            sleep(1500);
-            drive.followTrajectorySequence(parkANALISE1ou2);
+            sleep(750);
+            drive.followTrajectorySequence(parkANALISE1);
 
         } else if (analysis == 2) {
             CuspirPixel();
             sleep(1500);
-            drive.followTrajectorySequence(parkANALISE1ou2);
+            drive.followTrajectorySequence(parkANALISE2);
 
         } else if (analysis == 3) {
             drive.turn(Math.toRadians(-90));
             sleep(200);
             CuspirPixel();
-            drive.turn(Math.toRadians(90));
-            sleep(1500);
+            sleep(750);
             drive.followTrajectorySequence(parkANALISE3);
 
         }
@@ -109,7 +110,7 @@ public class BackdropBlueSemBackdrop extends LinearOpMode {
     }
 
     public void CuspirPixel(){
-        Intake.setPower(2);
+        Intake.setPower(-0.9);
         sleep(1000);
         Intake.setPower(0);
         sleep(200);

@@ -42,10 +42,13 @@ public class PixelRedSemBackdrop extends LinearOpMode {
 
     @Override
     public void runOpMode()  {
-        initVisionPipelines();
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();
+
+        //HardwareMap Config
+        //Motors
+        Intake = hardwareMap.get(DcMotorEx.class,"Intake"); //Ex0
 
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
@@ -55,26 +58,37 @@ public class PixelRedSemBackdrop extends LinearOpMode {
         TrajectorySequence toSpikeMarks = drive.trajectorySequenceBuilder(startPose)
                 .lineToLinearHeading(new Pose2d(-36,-36, Math.toRadians(90)))
                 .build();
-        TrajectorySequence parkANALISE1ou3 = drive.trajectorySequenceBuilder(new Pose2d())
-                .lineToLinearHeading(new Pose2d(-36, -12, Math.toRadians(180)))
-                .lineToLinearHeading(new Pose2d(60, -12, Math.toRadians(180)))
+        TrajectorySequence parkANALISE1 = drive.trajectorySequenceBuilder(new Pose2d(-36,-36, Math.toRadians(180)))
+                .lineToLinearHeading(new Pose2d(-36, -2, Math.toRadians(180)))
+                .lineToLinearHeading(new Pose2d(55, -2, Math.toRadians(180)))
                 .build();
-        TrajectorySequence parkANALISE2 = drive.trajectorySequenceBuilder(new Pose2d())
-                .lineToLinearHeading(new Pose2d(-36, -60, Math.toRadians(180)))
-                .lineToLinearHeading(new Pose2d(60, -60, Math.toRadians(180)))
+        TrajectorySequence parkANALISE2 = drive.trajectorySequenceBuilder(toSpikeMarks.end())
+                .lineToLinearHeading(new Pose2d(-60, -36, Math.toRadians(90)))
+                .lineToLinearHeading(new Pose2d(-60, -12, Math.toRadians(90)))
+                .lineToLinearHeading(new Pose2d(75, -12, Math.toRadians(90)))
                 .build();
+        TrajectorySequence parkANALISE3 = drive.trajectorySequenceBuilder(new Pose2d(-36,-36, Math.toRadians(0)))
+                .back(5)
+                .turn(Math.toRadians(90))
+                .lineToLinearHeading(new Pose2d(-36, -12, Math.toRadians(90)))
+                .lineToLinearHeading(new Pose2d(75, -12, Math.toRadians(90)))
+                .build();
+
+        initVisionPipelines(); //Inicialização da Visão
+
+        telemetry.addData("Status", "Initialized");
+        telemetry.update();
 
         waitForStart();
         resetRuntime();
 
         int analysis = 0;
-        while(analysis == 0 && isStarted() && getRuntime() < 3.5){
+        while(analysis == 0 && isStarted() && getRuntime() < 5){
             analysis = detectTfod();
         }
 
         telemetry.addData("Analise: ", analysis);
         telemetry.update();
-
 
         drive.followTrajectorySequence(toSpikeMarks);
         sleep(500);
@@ -83,28 +97,36 @@ public class PixelRedSemBackdrop extends LinearOpMode {
             drive.turn(Math.toRadians(90));
             sleep(200);
             CuspirPixel();
-            drive.turn(Math.toRadians(-90));
-            sleep(1500);
-            drive.followTrajectorySequence(parkANALISE1ou3);
+            sleep(750);
+            drive.followTrajectorySequence(parkANALISE1);
 
         } else if (analysis == 2) {
             CuspirPixel();
             sleep(1500);
             drive.followTrajectorySequence(parkANALISE2);
 
-        } else if (analysis == 3) {
+        } else {
             drive.turn(Math.toRadians(-90));
             sleep(200);
             CuspirPixel();
-            drive.turn(Math.toRadians(90));
-            sleep(1500);
-            drive.followTrajectorySequence(parkANALISE1ou3);
+            sleep(750);
+            drive.followTrajectorySequence(parkANALISE3);
         }
 
 
+        /*
+        else if (analysis == 3) {
+            drive.turn(Math.toRadians(-90));
+            sleep(200);
+            CuspirPixel();
+            sleep(750);
+            drive.followTrajectorySequence(parkANALISE3);
+        }
+        */
+
     }
     public void CuspirPixel(){
-        Intake.setPower(2);
+        Intake.setPower(-0.9);
         sleep(1000);
         Intake.setPower(0);
         sleep(200);
