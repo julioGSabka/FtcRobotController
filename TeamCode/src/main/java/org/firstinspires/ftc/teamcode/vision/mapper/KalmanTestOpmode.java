@@ -8,11 +8,16 @@ import com.arcrobotics.ftclib.geometry.Pose2d;
 import com.arcrobotics.ftclib.geometry.Rotation2d;
 import com.arcrobotics.ftclib.geometry.Transform2d;
 import com.arcrobotics.ftclib.geometry.Translation2d;
+import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.IMU;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AngularVelocity;
+import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 import org.firstinspires.ftc.teamcode.RoadRunnerScripts.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.vision.AprilTagCustomDatabase;
 import org.firstinspires.ftc.vision.VisionPortal;
@@ -51,6 +56,8 @@ public class KalmanTestOpmode extends LinearOpMode {
     SampleMecanumDrive drive;
     KalmanPose kalmanPose;
 
+    IMU imu;
+
     double WHEEL_RADIUS = 1.47;
     double GEAR_RATIO = 1.0;
     double TICKS_PER_REV = 537.6;
@@ -68,6 +75,15 @@ public class KalmanTestOpmode extends LinearOpMode {
         rightRear = hardwareMap.get(DcMotorEx.class, "motorBackRight");
         rightFront = hardwareMap.get(DcMotorEx.class, "motorFrontRight");
         motors = Arrays.asList(leftFront, leftRear, rightRear, rightFront);
+
+        imu = hardwareMap.get(IMU.class, "imu");
+
+        RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.UP;
+        RevHubOrientationOnRobot.UsbFacingDirection  usbDirection  = RevHubOrientationOnRobot.UsbFacingDirection.RIGHT;
+
+        RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logoDirection, usbDirection);
+
+        imu.initialize(new IMU.Parameters(orientationOnRobot));
 
         measurePoses = new ArrayList<>();
         kalmanPose = new KalmanPose();
@@ -131,6 +147,7 @@ public class KalmanTestOpmode extends LinearOpMode {
         waitForStart();
 
         while (opModeIsActive()) {
+            imu.resetYaw();
             tagTelemtry();
         }
 
@@ -204,8 +221,12 @@ public class KalmanTestOpmode extends LinearOpMode {
         packet.put("RoadrunnerStatePose", RoadrunnerStatePose);
         Pose2d statePose = new Pose2d(RoadrunnerStatePose.getX(), RoadrunnerStatePose.getY(), new Rotation2d(RoadrunnerStatePose.getHeading()));
 
+        YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
+        AngularVelocity angularVelocity = imu.getRobotAngularVelocity(AngleUnit.RADIANS);
+
         //Chama o fitro e passa os valores (vel, statePose, measurePoses)
-        Pose2d filteredPose = kalmanPose.updateFilter(vel, statePose, measurePoses);
+
+        Pose2d filteredPose = kalmanPose.updateFilter(vel, statePose, measurePoses, orientation.getYaw(AngleUnit.RADIANS));
 
         //Desenha a estimativa
         packet.fieldOverlay()
