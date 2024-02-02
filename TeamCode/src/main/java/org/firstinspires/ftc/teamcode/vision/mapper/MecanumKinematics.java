@@ -20,4 +20,27 @@ public class MecanumKinematics {
                 )
         );
     }
+
+    double lastPFrontLeft = 0;
+    double lastPFrontRight = 0;
+    double lastPBackLeft = 0;
+    double lastPBackRight = 0;
+
+
+    public Pose2d mecanumDeltaPose(double pFrontLeft, double pFrontRight, double pBackLeft, double pBackRight, double lengthX, double lengthY){
+        Pose2d delPose = wheelToVel(
+                pFrontLeft - this.lastPFrontLeft,
+                pFrontRight - this.lastPFrontRight,
+                pBackLeft - this.lastPBackLeft,
+                pBackRight - this.lastPBackRight,
+                lengthX,
+                lengthY
+                );
+
+        this.lastPFrontLeft = pFrontLeft;
+        this.lastPFrontRight = pFrontRight;
+        this.lastPBackLeft = pBackLeft;
+        this.lastPBackRight = pBackRight;
+        return delPose;
+    }
 }
