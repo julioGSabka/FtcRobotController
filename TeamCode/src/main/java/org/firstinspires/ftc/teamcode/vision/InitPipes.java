@@ -89,6 +89,7 @@ public class InitPipes {
 
         visionPortal1.setProcessorEnabled(tagProcessor1, true);
         visionPortal2.setProcessorEnabled(tagProcessor2, true);
+        visionPortal2.setProcessorEnabled(teamPropTFOD, true);
 
         tagProcessor1.setPoseSolver(AprilTagProcessor.PoseSolver.OPENCV_SOLVEPNP_EPNP);
         tagProcessor2.setPoseSolver(AprilTagProcessor.PoseSolver.OPENCV_SOLVEPNP_EPNP);
