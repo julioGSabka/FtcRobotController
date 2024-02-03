@@ -108,7 +108,7 @@ public class ApriltagLocalizer implements Localizer {
         //Drive: FL, Bl, BR, FR
         //wheelToVel: FL, FR, BL, BR
         YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
-        AngularVelocity angularVelocity = imu.getRobotAngularVelocity(AngleUnit.RADIANS);
+        //AngularVelocity angularVelocity = imu.getRobotAngularVelocity(AngleUnit.RADIANS);
 
         //Chama o fitro e passa os valores (vel, statePose, measurePoses)
         kalmanPose.updateFilter(vel, measurePoses, orientation.getYaw(AngleUnit.RADIANS));

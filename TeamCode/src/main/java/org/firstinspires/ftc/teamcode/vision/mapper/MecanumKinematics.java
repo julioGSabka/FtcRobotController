@@ -9,14 +9,11 @@ public class MecanumKinematics {
     public static Pose2d wheelToVel(double vFrontLeft, double vFrontRight, double vBackLeft, double vBackRight, double lengthX, double lengthY){
         return new Pose2d(
                 new Translation2d(
-                        vFrontLeft + vFrontRight + vBackLeft + vBackRight,
-                        vFrontLeft - vFrontRight - vBackLeft + vBackRight
+                        (vFrontLeft + vFrontRight + vBackLeft + vBackRight)*0.25,
+                        (-vFrontLeft + vFrontRight + vBackLeft - vBackRight)*0.25
                 ),
                 new Rotation2d(
-                        -vFrontLeft/(lengthX + lengthY) +
-                                vFrontRight/(lengthX + lengthY) +
-                                -vBackLeft/(lengthX + lengthY) +
-                                vBackRight/(lengthX + lengthY)
+                        (-vFrontLeft + vFrontRight - vBackLeft + vBackRight)/(lengthX + lengthY)
                 )
         );
     }
