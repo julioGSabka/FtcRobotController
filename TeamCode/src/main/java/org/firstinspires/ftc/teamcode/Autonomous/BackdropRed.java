@@ -193,12 +193,14 @@ public class BackdropRed extends LinearOpMode {
         EnableServos();
         cotovelo.setPosition(1);
         sleep(500);
-        ombroL.setPosition(0.05);
-        ombroR.setPosition(0.95);
+        ombroL.setPosition(0.15);
+        ombroR.setPosition(0.85);
+        sleep(500);
+        ombroL.setPosition(0.09);
+        ombroR.setPosition(0.91);
         sleep(1000);
-        cotovelo.setPosition(0.726);
+        cotovelo.setPosition(0.724);
         sleep(1000);
-        DisableServos();
     }
 
     public void CuspirPixel(){

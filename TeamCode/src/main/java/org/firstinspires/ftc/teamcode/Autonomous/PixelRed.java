@@ -187,11 +187,15 @@ public class PixelRed extends LinearOpMode {
     public void LevantarBraco() {
         EnableServos();
         cotovelo.setPosition(1);
-        sleep(1000);
-        ombroL.setPosition(1);
-        ombroR.setPosition(0);
         sleep(500);
-        cotovelo.setPosition(0.35);
+        ombroL.setPosition(0.15);
+        ombroR.setPosition(0.85);
+        sleep(500);
+        ombroL.setPosition(0.09);
+        ombroR.setPosition(0.91);
+        sleep(1000);
+        cotovelo.setPosition(0.724);
+        sleep(1000);
     }
 
     public void BaixarBraco() {
