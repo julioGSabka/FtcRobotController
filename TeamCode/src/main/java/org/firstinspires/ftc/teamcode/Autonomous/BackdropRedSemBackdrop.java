@@ -95,18 +95,19 @@ public class BackdropRedSemBackdrop extends LinearOpMode {
             sleep(1500);
             drive.followTrajectorySequence(parkANALISE1);
 
-        } else if (analysis == 2) {
-            CuspirPixel();
-            sleep(1500);
-            drive.turn(Math.toRadians(90));
-            drive.followTrajectorySequence(parkANALISE2);
-
         } else if (analysis == 3) {
             drive.turn(Math.toRadians(-90));
             sleep(200);
             CuspirPixel();
             sleep(750);
             drive.followTrajectorySequence(parkANALISE3);
+
+        } else {
+            CuspirPixel();
+            sleep(1500);
+            drive.turn(Math.toRadians(90));
+            drive.followTrajectorySequence(parkANALISE2);
+
         }
 
     }

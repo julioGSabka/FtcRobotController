@@ -71,6 +71,7 @@ public class PixelBlueSemBackdrop extends LinearOpMode {
         TrajectorySequence parkANALISE3 = drive.trajectorySequenceBuilder(new Pose2d(-36,36, Math.toRadians(180)))
                 .lineToLinearHeading(new Pose2d(-36, 2, Math.toRadians(180)))
                 .lineToLinearHeading(new Pose2d(55, 2, Math.toRadians(180)))
+                .lineToLinearHeading(new Pose2d(55, 36, Math.toRadians(180)))
                 .build();
 
         initVisionPipelines();

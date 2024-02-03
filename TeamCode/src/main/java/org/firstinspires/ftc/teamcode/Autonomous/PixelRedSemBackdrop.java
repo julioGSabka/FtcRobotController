@@ -61,6 +61,7 @@ public class PixelRedSemBackdrop extends LinearOpMode {
         TrajectorySequence parkANALISE1 = drive.trajectorySequenceBuilder(new Pose2d(-36,-36, Math.toRadians(180)))
                 .lineToLinearHeading(new Pose2d(-36, -2, Math.toRadians(180)))
                 .lineToLinearHeading(new Pose2d(55, -2, Math.toRadians(180)))
+                .lineToLinearHeading(new Pose2d(55, -36, Math.toRadians(180)))
                 .build();
         TrajectorySequence parkANALISE2 = drive.trajectorySequenceBuilder(toSpikeMarks.end())
                 .lineToLinearHeading(new Pose2d(-60, -36, Math.toRadians(90)))
@@ -93,24 +94,24 @@ public class PixelRedSemBackdrop extends LinearOpMode {
         drive.followTrajectorySequence(toSpikeMarks);
         sleep(500);
 
-        if (analysis == 1) {
+        if (analysis == 2) {
+            CuspirPixel();
+            sleep(1500);
+            drive.followTrajectorySequence(parkANALISE2);
+
+        } else if (analysis == 3){
+            drive.turn(Math.toRadians(-90));
+            sleep(200);
+            CuspirPixel();
+            sleep(750);
+            drive.followTrajectorySequence(parkANALISE3);
+        } else {
             drive.turn(Math.toRadians(90));
             sleep(200);
             CuspirPixel();
             sleep(750);
             drive.followTrajectorySequence(parkANALISE1);
 
-        } else if (analysis == 2) {
-            CuspirPixel();
-            sleep(1500);
-            drive.followTrajectorySequence(parkANALISE2);
-
-        } else {
-            drive.turn(Math.toRadians(-90));
-            sleep(200);
-            CuspirPixel();
-            sleep(750);
-            drive.followTrajectorySequence(parkANALISE3);
         }
 
 

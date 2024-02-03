@@ -98,7 +98,7 @@ public class BackdropBlueSemBackdrop extends LinearOpMode {
             sleep(1500);
             drive.followTrajectorySequence(parkANALISE2);
 
-        } else if (analysis == 3) {
+        } else {
             drive.turn(Math.toRadians(-90));
             sleep(200);
             CuspirPixel();
