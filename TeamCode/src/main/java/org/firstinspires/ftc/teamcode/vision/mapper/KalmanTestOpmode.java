@@ -65,6 +65,8 @@ public class KalmanTestOpmode extends LinearOpMode {
 
     private List<Integer> lastEncVels = new ArrayList<>();
 
+    MecanumKinematics mecdrive = new MecanumKinematics();
+
     @Override
     public void runOpMode() {
 
@@ -88,6 +90,8 @@ public class KalmanTestOpmode extends LinearOpMode {
         kalmanPose = new KalmanPose(new Pose2d(0, 0, new Rotation2d(0)));
 
         int[] portalsList = VisionPortal.makeMultiPortalView(2, VisionPortal.MultiPortalLayout.HORIZONTAL);
+
+
 
         tagProcessor1 = new AprilTagProcessor.Builder()
                 .setDrawTagID(true)
@@ -203,21 +207,35 @@ public class KalmanTestOpmode extends LinearOpMode {
             }
         }
 
-        //Obtenção da velocidade do robo(vel)
-        List<Double> TickVels = getWheelVelocities();
-        for (double vels : TickVels){
-            wheelsVels.add(encoderTicksToInches(vels));
-        }
-        Pose2d vel = MecanumKinematics.wheelToVel(wheelsVels.get(0), wheelsVels.get(3), wheelsVels.get(1), wheelsVels.get(2), 15.15749, 13.3859);
-        //Drive: FL, Bl, BR, FR
-        //wheelToVel: FL, FR, BL, BR
-        packet.put("mecanumVel", vel);
+        //obtençao do ângulo
         YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
         AngularVelocity angularVelocity = imu.getRobotAngularVelocity(AngleUnit.RADIANS);
 
         //Chama o fitro e passa os valores (vel, statePose, measurePoses)
 
-        Pose2d filteredPose = kalmanPose.updateFilter(vel, measurePoses, orientation.getYaw(AngleUnit.RADIANS));
+        if(measurePoses.size() > 0){
+            //Obtenção da velocidade do robo(vel)
+            List<Double> TickVels = getWheelVelocities();
+            for (double vels : TickVels){
+                wheelsVels.add(encoderTicksToInches(vels));
+            }
+            Pose2d vel = MecanumKinematics.wheelToVel(wheelsVels.get(0), wheelsVels.get(3), wheelsVels.get(1), wheelsVels.get(2), 15.15749, 13.3859);
+            //Drive: FL, Bl, BR, FR
+            //wheelToVel: FL, FR, BL, BR
+            packet.put("mecanumVel", vel);
+            kalmanPose.updateFilter(vel, measurePoses, orientation.getYaw(AngleUnit.RADIANS));
+        }else{
+            Pose2d delPose = mecdrive.mecanumDeltaPose(
+                    leftFront.getCurrentPosition(),
+                    rightFront.getCurrentPosition(),
+                    leftRear.getCurrentPosition(),
+                    rightRear.getCurrentPosition(),
+                    15.15749,
+                    13.3859
+                    );
+            kalmanPose.addDelta(delPose);
+        }
+        Pose2d filteredPose = kalmanPose.getPose();
 
         //Desenha a estimativa
         packet.fieldOverlay()

@@ -149,7 +149,8 @@ public class KalmanTagsOdometry implements Localizer {
         com.arcrobotics.ftclib.geometry.Pose2d statePose = new com.arcrobotics.ftclib.geometry.Pose2d(RoadrunnerStatePose.getX(), RoadrunnerStatePose.getY(), new Rotation2d(RoadrunnerStatePose.getHeading()));
 
         //Chama o fitro e passa os valores (vel, statePose, measurePoses)
-        com.arcrobotics.ftclib.geometry.Pose2d filteredPose = kalmanPose.updateFilter(vel, measurePoses, 0);
+        kalmanPose.updateFilter(vel, measurePoses, 0);
+        com.arcrobotics.ftclib.geometry.Pose2d filteredPose = kalmanPose.getPose();
 
         Pose2d estimatePose = new Pose2d(filteredPose.getX(), filteredPose.getY(), filteredPose.getHeading());
 

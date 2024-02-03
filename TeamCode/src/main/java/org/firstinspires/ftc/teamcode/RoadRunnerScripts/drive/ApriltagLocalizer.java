@@ -111,7 +111,8 @@ public class ApriltagLocalizer implements Localizer {
         AngularVelocity angularVelocity = imu.getRobotAngularVelocity(AngleUnit.RADIANS);
 
         //Chama o fitro e passa os valores (vel, statePose, measurePoses)
-        com.arcrobotics.ftclib.geometry.Pose2d filteredPose = kalmanPose.updateFilter(vel, measurePoses, orientation.getYaw(AngleUnit.RADIANS));
+        kalmanPose.updateFilter(vel, measurePoses, orientation.getYaw(AngleUnit.RADIANS));
+        com.arcrobotics.ftclib.geometry.Pose2d filteredPose = kalmanPose.getPose();
         filterPose = new Pose2d(filteredPose.getX(), filteredPose.getY(), filteredPose.getHeading());
 
         return filterPose;

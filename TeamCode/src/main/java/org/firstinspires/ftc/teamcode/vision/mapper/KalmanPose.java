@@ -33,7 +33,7 @@ public class KalmanPose {
     public KalmanPose(Pose2d startpose){
         this.correctPose = startpose;
     }
-    public Pose2d updateFilter(Pose2d vel, List<Pose2d> measurePoses, double heading) {
+    public void updateFilter(Pose2d vel, List<Pose2d> measurePoses, double heading) {
         xFilter = new KalmanFilter(0.1, 0.4);
         yFilter = new KalmanFilter(0.1, 0.4);
         wFilter = new KalmanFilter(0.1, 0.4);
@@ -59,11 +59,9 @@ public class KalmanPose {
 
             correctPose = new Pose2d(x, y, new Rotation2d(heading));
         }
-
-        return correctPose;
     }
 
-    public List<Double> euler_to_quaternion(double roll, double pitch, double yaw){
+    public static List<Double> euler_to_quaternion(double roll, double pitch, double yaw){
         double q_w = Math.cos(roll / 2) * Math.cos(pitch / 2) * Math.cos(yaw / 2) + Math.sin(roll / 2) * Math.sin(pitch / 2) * Math.sin(yaw / 2);
         double q_x = Math.sin(roll / 2) * Math.cos(pitch / 2) * Math.cos(yaw / 2) - Math.cos(roll / 2) * Math.sin(pitch / 2) * Math.sin(yaw / 2);
         double q_y = Math.cos(roll / 2) * Math.sin(pitch / 2) * Math.cos(yaw / 2) + Math.sin(roll / 2) * Math.cos(pitch / 2) * Math.sin(yaw / 2);
@@ -78,7 +76,7 @@ public class KalmanPose {
         return quaternion;
     }
 
-    public List<Double> quaternion_to_euler(double q_w, double q_x, double q_y, double q_z){
+    public static List<Double> quaternion_to_euler(double q_w, double q_x, double q_y, double q_z){
         double phi = Math.toDegrees(Math.atan2(2 * (q_w * q_x + q_y * q_z), 1 - 2 * (q_x * q_x + q_y * q_y)));
         double theta = Math.toDegrees(Math.asin(2 * (q_w * q_y - q_z * q_x)));
         double omega = Math.toDegrees(Math.atan2(2 * (q_w * q_z + q_x * q_y), 1 - 2 * (q_y * q_y + q_z * q_z)));
@@ -90,4 +88,18 @@ public class KalmanPose {
 
         return euler;
     }
+
+    //isso aq ne é do kalman mas a classe é minha e eu faço oq eu quero (até a build dar erro)
+    //não é uma fase mãe!
+    public void addDelta(Pose2d deltaPose){
+        this.correctPose = new Pose2d(
+                this.correctPose.getX() + deltaPose.getX(),
+                this.correctPose.getY() + deltaPose.getY(),
+                this.correctPose.getRotation().plus(deltaPose.getRotation()));
+    }
+
+    public Pose2d getPose(){
+        return this.correctPose;
+    }
+
 }
