@@ -289,25 +289,25 @@ public class OpmodeCV extends LinearOpMode {
                 AlignToBackdropTag();
             }
 
-            if (getRuntime() > 30){
-                //Subir
-                if (gamepad2.dpad_up) {
-                    servoElevacaoL.setPosition(1);
-                    servoElevacaoR.setPosition(0);
-                }
-                //Descer
-                if (gamepad2.dpad_down) {
-                    servoElevacaoL.setPosition(0);
-                    servoElevacaoR.setPosition(1);
-                }
-                motorElevacaoR.setPower(gamepad2.right_trigger);
-                motorElevacaoL.setPower(gamepad2.left_trigger);
 
-
-                if (gamepad1.right_bumper){
-                    launcher.setPosition(1);
-                }
+            //Subir
+            if (gamepad2.dpad_up) {
+                servoElevacaoL.setPosition(1);
+                servoElevacaoR.setPosition(0);
             }
+            //Descer
+            if (gamepad2.dpad_down) {
+                servoElevacaoL.setPosition(0);
+                servoElevacaoR.setPosition(1);
+            }
+            motorElevacaoR.setPower(gamepad2.right_trigger);
+            motorElevacaoL.setPower(gamepad2.left_trigger);
+
+
+            if (gamepad1.right_bumper){
+                launcher.setPosition(1);
+            }
+
 
             distanciaAnterior = distanceSensor.getDistance(DistanceUnit.CM);
 

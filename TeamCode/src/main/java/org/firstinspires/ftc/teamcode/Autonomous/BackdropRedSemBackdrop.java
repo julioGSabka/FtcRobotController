@@ -5,14 +5,9 @@ import android.util.Size;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.hardware.ServoImplEx;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
@@ -34,6 +29,7 @@ public class BackdropRedSemBackdrop extends LinearOpMode {
     VisionPortal visionPortal2;
 
     private static final String TFOD_MODEL_ASSET = "model_20240115_155137.tflite";
+    //newTFOD_teamProps.tflite
     private static final String[] LABELS = {
             "Blue Cube", "Red Cube"
     };
@@ -80,10 +76,9 @@ public class BackdropRedSemBackdrop extends LinearOpMode {
         int analysis = 0;
         while(analysis == 0 && isStarted() && getRuntime() < 3.5){
             analysis = detectTfod();
+            telemetry.addData("Analise: ", analysis);
+            telemetry.update();
         }
-
-        telemetry.addData("Analise: ", analysis);
-        telemetry.update();
 
         drive.followTrajectorySequence(toSpikeMarks);
         sleep(500);
