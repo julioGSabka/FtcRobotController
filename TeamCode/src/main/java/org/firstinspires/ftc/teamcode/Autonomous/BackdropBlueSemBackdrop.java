@@ -110,7 +110,7 @@ public class BackdropBlueSemBackdrop extends LinearOpMode {
     }
 
     public void CuspirPixel(){
-        Intake.setPower(-0.9);
+        Intake.setPower(-0.6);
         sleep(1000);
         Intake.setPower(0);
         sleep(200);

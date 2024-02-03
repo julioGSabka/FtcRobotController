@@ -129,7 +129,7 @@ public class OpmodeCV extends LinearOpMode {
         initTags();
 
 
-        garra.setPosition(0);
+        garra.setPosition(1);
         cotovelo.setPosition(1);
         sleep(500);
         ombroL.setPosition(0.15);
@@ -254,7 +254,7 @@ public class OpmodeCV extends LinearOpMode {
             }
 
             if (gamepad2.start) {
-                Intake.setPower(7);
+                Intake.setPower(0.65);
                 PixelsnaGarra = 0;
             }
 
