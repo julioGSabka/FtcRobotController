@@ -64,8 +64,8 @@ public class BackdropRedSemBackdrop extends LinearOpMode {
                 .lineToLinearHeading(new Pose2d(48, -36, Math.toRadians(180)))
                 .build();
         TrajectorySequence parkANALISE3 = drive.trajectorySequenceBuilder(new Pose2d(12, -36, Math.toRadians(0)))
-                .lineToLinearHeading(new Pose2d(12, -60, Math.toRadians(0)))
-                .lineToLinearHeading(new Pose2d(55, -60, Math.toRadians(0)))
+                .lineToLinearHeading(new Pose2d(12, -12, Math.toRadians(0)))
+                .lineToLinearHeading(new Pose2d(55, -12, Math.toRadians(0)))
                 .build();
 
 
