@@ -7,16 +7,13 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.hardware.ServoImplEx;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.teamcode.RoadRunnerScripts.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.RoadRunnerScripts.trajectorysequence.TrajectorySequence;
+import org.firstinspires.ftc.teamcode.Subsystems.ArmSystem;
+import org.firstinspires.ftc.teamcode.Subsystems.IntakeSystem;
 import org.firstinspires.ftc.teamcode.vision.AprilTagCustomDatabase;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
@@ -38,12 +35,8 @@ public class PixelBlue extends LinearOpMode {
     };
     private TfodProcessor tfod;
 
-    private DcMotorEx Intake = null;
-    private DcMotorEx Lift = null;
-    private Servo garra = null;
-    private ServoImplEx cotovelo = null;
-    private ServoImplEx ombroR = null;
-    private ServoImplEx ombroL = null;
+    ArmSystem arm;
+    IntakeSystem intake;
 
     @Override
     public void runOpMode()  {
@@ -51,28 +44,12 @@ public class PixelBlue extends LinearOpMode {
         telemetry.update();
 
         //HardwareMap Config
-        //Motors
-        Intake = hardwareMap.get(DcMotorEx.class,"Intake"); //Ex0
-        Lift = hardwareMap.get(DcMotorEx.class, "Lift"); //Ex1
-        //Servos
-        garra = hardwareMap.get(Servo.class, "garra"); //Ex0
-        cotovelo = hardwareMap.get(ServoImplEx.class, "cotovelo"); //4
-        ombroR = hardwareMap.get(ServoImplEx.class, "ombroR"); //2
-        ombroL = hardwareMap.get(ServoImplEx.class, "ombroL"); //0
-
-        Lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        Lift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        Lift.setDirection(DcMotorSimple.Direction.REVERSE);
+        arm = new ArmSystem(hardwareMap);
+        intake = new IntakeSystem(hardwareMap);
 
         //System Adjustments
-        garra.setPosition(0);
-        cotovelo.setPosition(0.6);
-        ombroL.setPosition(0);
-        ombroR.setPosition(1);
-        sleep(1000);
-        cotovelo.setPosition(0.5);
-        sleep(1000);
-        DisableServos();
+        arm.closeGarra();
+        arm.DownArm();
 
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
@@ -140,77 +117,34 @@ public class PixelBlue extends LinearOpMode {
         if (analysis == 1) {
             drive.turn(Math.toRadians(90));
             sleep(200);
-            CuspirPixel();
+            intake.cuspirPixel();
             drive.followTrajectorySequence(toBackdropANALISE1);
             sleep(500);
             drive.followTrajectorySequence(toRightAprilTag);
         } else if (analysis == 2) {
-            CuspirPixel();
+            intake.cuspirPixel();
             drive.followTrajectorySequence(toBackdropANALISE2);
             sleep(500);
             drive.followTrajectorySequence(toMiddleAprilTag);
         } else if (analysis == 3) {
             drive.turn(Math.toRadians(-90));
             sleep(200);
-            CuspirPixel();
+            intake.cuspirPixel();
             drive.followTrajectorySequence(toBackdropANALISE3);
             sleep(500);
             drive.followTrajectorySequence(toLeftAprilTag);
         }
 
-        LevantarBraco();
+        arm.UpArm();
         drive.followTrajectorySequence(forward);
         sleep(200);
-        garra.setPosition(0);
+        arm.openGarra();
         sleep(200);
         drive.followTrajectorySequence(backward);
-        BaixarBraco();
+        arm.DownArm();
         sleep(200);
         drive.followTrajectorySequence(park);
 
-    }
-
-    public void DisableServos(){
-        cotovelo.setPwmDisable();
-        ombroR.setPwmDisable();
-        ombroL.setPwmDisable();
-    }
-
-    public void EnableServos(){
-        cotovelo.setPwmEnable();
-        ombroR.setPwmEnable();
-        ombroL.setPwmEnable();
-    }
-
-    public void LevantarBraco() {
-        EnableServos();
-        cotovelo.setPosition(1);
-        sleep(500);
-        ombroL.setPosition(1);
-        ombroR.setPosition(0);
-        sleep(500);
-        cotovelo.setPosition(0.35);
-    }
-
-    public void BaixarBraco() {
-        EnableServos();
-        cotovelo.setPosition(1);
-        sleep(500);
-        ombroL.setPosition(0.15);
-        ombroR.setPosition(0.85);
-        sleep(500);
-        ombroL.setPosition(0.09);
-        ombroR.setPosition(0.91);
-        sleep(1000);
-        cotovelo.setPosition(0.724);
-        sleep(1000);
-    }
-
-    public void CuspirPixel(){
-        Intake.setPower(2);
-        sleep(1000);
-        Intake.setPower(0);
-        sleep(200);
     }
 
     private void initVisionPipelines() {
@@ -295,4 +229,3 @@ public class PixelBlue extends LinearOpMode {
     }
 
 }
-

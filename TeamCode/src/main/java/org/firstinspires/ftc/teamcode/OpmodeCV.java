@@ -7,18 +7,18 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.ColorSensor;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.hardware.ServoImplEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.teamcode.Subsystems.ArmSystem;
+import org.firstinspires.ftc.teamcode.Subsystems.ElevationSystem;
+import org.firstinspires.ftc.teamcode.Subsystems.IntakeSystem;
 import org.firstinspires.ftc.teamcode.vision.AprilTagCustomDatabase;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
@@ -35,19 +35,13 @@ public class OpmodeCV extends LinearOpMode {
     private DcMotorEx motorBackLeft = null;
     private DcMotorEx motorFrontRight = null;
     private DcMotorEx motorBackRight = null;
-    private DcMotorEx Intake = null;
-    private DcMotorEx Lift = null;
-    private DcMotorEx motorElevacaoL = null;
-    private DcMotorEx motorElevacaoR = null;
-    private Servo garra = null;
     private Servo launcher = null;
-    private ServoImplEx cotovelo = null;
-    private ServoImplEx ombroR = null;
-    private ServoImplEx ombroL = null;
-    private ServoImplEx servoElevacaoL = null;
-    private ServoImplEx servoElevacaoR = null;
     private DistanceSensor distanceSensor = null;
     private ColorSensor colorSensor = null;
+
+    private ArmSystem arm;
+    private ElevationSystem elevation;
+    private IntakeSystem intake;
 
     private int LB_presses = 0;
     private int PixelsnaGarra = 0;
@@ -61,8 +55,6 @@ public class OpmodeCV extends LinearOpMode {
     VisionPortal visionPortal1;
     VisionPortal visionPortal2;
 
-    private static final boolean USE_WEBCAM = true;  // Set true to use a webcam, or false for a phone camera
-    private static final boolean GO_TO_ANY_TAG = true;
     boolean targetFound = false;
     AprilTagDetection desiredTag = null;
     int desiredBlueTagID = -1;
@@ -88,39 +80,22 @@ public class OpmodeCV extends LinearOpMode {
         telemetry.update();
 
         //HardwareMap Config
-        //Motors
+        arm = new ArmSystem(hardwareMap);
+        elevation = new ElevationSystem(hardwareMap);
+        intake = new IntakeSystem(hardwareMap);
+
         motorFrontLeft = hardwareMap.get(DcMotorEx.class,"motorFrontLeft"); //0
         motorBackLeft = hardwareMap.get(DcMotorEx.class,"motorBackLeft"); //1
         motorFrontRight = hardwareMap.get(DcMotorEx.class,"motorFrontRight"); //2
         motorBackRight = hardwareMap.get(DcMotorEx.class,"motorBackRight"); //3
-        Intake = hardwareMap.get(DcMotorEx.class,"Intake"); //Ex0
-        Lift = hardwareMap.get(DcMotorEx.class, "Lift"); //Ex1
-        motorElevacaoL = hardwareMap.get(DcMotorEx.class, "motorElevacaoL"); //Ex2
-        motorElevacaoR = hardwareMap.get(DcMotorEx.class, "motorElevacaoR"); //Ex3
-
+        launcher = hardwareMap.get(Servo.class, "launcher");
         colorSensor = hardwareMap.get(ColorSensor.class, "ColorSensor"); //2
         distanceSensor = hardwareMap.get(DistanceSensor.class, "DistanceSensor");
 
-        //Servos
-        garra = hardwareMap.get(Servo.class, "garra"); //Ex0
-        cotovelo = hardwareMap.get(ServoImplEx.class, "cotovelo"); //4
-        ombroR = hardwareMap.get(ServoImplEx.class, "ombroR"); //2
-        ombroL = hardwareMap.get(ServoImplEx.class, "ombroL"); //0
-        servoElevacaoL = hardwareMap.get(ServoImplEx.class, "servoElevacaoL"); //Ex2
-        servoElevacaoR = hardwareMap.get(ServoImplEx.class, "servoElevacaoR"); //Ex4
-        launcher = hardwareMap.get(Servo.class, "launcher");
 
         //Configure Motors
-        //motorBackLeft.setDirection(DcMotorEx.Direction.REVERSE);
         motorBackRight.setDirection(DcMotorEx.Direction.REVERSE);
         motorFrontRight.setDirection(DcMotorEx.Direction.REVERSE);
-        
-
-        Lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        Lift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        Lift.setDirection(DcMotorSimple.Direction.REVERSE);
-        motorElevacaoL.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
-        motorElevacaoR.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
 
         distanciaAnterior = distanceSensor.getDistance(DistanceUnit.CM);
 
@@ -128,19 +103,8 @@ public class OpmodeCV extends LinearOpMode {
 
         initTags();
 
-
-        garra.setPosition(1);
-        cotovelo.setPosition(1);
-        sleep(500);
-        ombroL.setPosition(0.15);
-        ombroR.setPosition(0.85);
-        sleep(500);
-        ombroL.setPosition(0.09);
-        ombroR.setPosition(0.91);
-        sleep(500);
-        cotovelo.setPosition(0.724);
-        sleep(500);
-        DisableServos();
+        arm.DownArm();
+        arm.openGarra();
 
         waitForStart();
         resetRuntime();
@@ -168,59 +132,10 @@ public class OpmodeCV extends LinearOpMode {
                 @Override
                 public void run() {
                     if (gamepad2.a == true) {
-                        EnableServos();
-                        cotovelo.setPosition(1);
-                        sleep(1000);
-                        ombroL.setPosition(1);
-                        ombroR.setPosition(0);
-                        sleep(500);
-                        cotovelo.setPosition(0.35);
+                        arm.UpArm();
                     }
-
                     if (gamepad2.b == true) {
-                        EnableServos();
-                        cotovelo.setPosition(1);
-                        sleep(500);
-                        ombroL.setPosition(0.15);
-                        ombroR.setPosition(0.85);
-                        sleep(500);
-                        ombroL.setPosition(0.09);
-                        ombroR.setPosition(0.91);
-                        sleep(1000);
-                        cotovelo.setPosition(0.724);
-                        sleep(1000);
-                    }
-                    if (gamepad2.y){
-                        EnableServos();
-                        cotovelo.setPosition(1);
-                        sleep(1000);
-                        Lift.setVelocity(700);
-                        Lift.setVelocityPIDFCoefficients(6,0,0,45);
-                        Lift.setTargetPosition(2400);
-                        Lift.setTargetPositionTolerance(10);
-                        Lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                        ombroL.setPosition(1);
-                        ombroR.setPosition(0);
-                        sleep(500);
-                        cotovelo.setPosition(0.35);
-                    }
-                    if (gamepad2.x){
-                        Lift.setVelocity(700);
-                        Lift.setVelocityPIDFCoefficients(6,0,0,45);
-                        Lift.setTargetPosition(0);
-                        Lift.setTargetPositionTolerance(10);
-                        Lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                        EnableServos();
-                        cotovelo.setPosition(1);
-                        sleep(500);
-                        ombroL.setPosition(0.15);
-                        ombroR.setPosition(0.85);
-                        sleep(500);
-                        ombroL.setPosition(0.09);
-                        ombroR.setPosition(0.91);
-                        sleep(1000);
-                        cotovelo.setPosition(0.724);
-                        sleep(1000);
+                        arm.DownArm();
                     }
                 }
             }).start();
@@ -235,11 +150,10 @@ public class OpmodeCV extends LinearOpMode {
 
                     //Fazer a garra soltar os pixels
                     if (LB_presses == 1) {
-                        garra.setPosition(0.7);
+                        arm.midlleGarra();
                         PixelsnaGarra = 1;
                     } else if (LB_presses == 2) {
-                        garra.setPosition(0.07
-                        );
+                        arm.openGarra();
                         PixelsnaGarra = 0;
                     }
                 }
@@ -250,26 +164,26 @@ public class OpmodeCV extends LinearOpMode {
 
             //Fecha
             if (gamepad2.right_bumper) {
-                garra.setPosition(1);
+                arm.closeGarra();
             }
 
             if (gamepad2.start) {
-                Intake.setPower(0.65);
+                intake.startIntake();
                 PixelsnaGarra = 0;
             }
 
             if (gamepad2.back) {
-                Intake.setPower(0);
+                intake.stopIntake();
             }
             if (gamepad2.left_stick_button) {
-                Intake.setPower(-1);
+                intake.reverseIntake();
             }
 
             if (distanceSensor.getDistance(DistanceUnit.CM) < 5.5 && distanciaAnterior > 5.5) {
                 PixelsnaGarra += 1;
                 if (PixelsnaGarra == 2) {
                     sleep(700);
-                    Intake.setPower(0);
+                    intake.stopIntake();
                 }
             }
 
@@ -289,42 +203,34 @@ public class OpmodeCV extends LinearOpMode {
                 AlignToBackdropTag();
             }
 
-
             //Subir
             if (gamepad2.dpad_up) {
-                servoElevacaoL.setPosition(1);
-                servoElevacaoR.setPosition(0);
+                elevation.UpGanchos();
             }
             //Descer
             if (gamepad2.dpad_down) {
-                servoElevacaoL.setPosition(0);
-                servoElevacaoR.setPosition(1);
+                elevation.DownGanchos();
             }
-            motorElevacaoR.setPower(gamepad2.right_trigger);
-            motorElevacaoL.setPower(gamepad2.left_trigger);
-
+            elevation.setMotorsPower(gamepad2.right_stick_y, gamepad2.left_stick_y);
 
             if (gamepad1.right_bumper){
                 launcher.setPosition(1);
             }
-
 
             distanciaAnterior = distanceSensor.getDistance(DistanceUnit.CM);
 
             telemetry.addLine("Opmode");
             telemetry.addData("Status", "Run Time: " + runtime.toString());
             telemetry.addLine("============= Sistema SERVOS =============");
-            telemetry.addData("OmbroR: ", ombroR.getPosition());
-            telemetry.addData("OmbroL: ", ombroL.getPosition());
-            telemetry.addData("Cotovelo: ", cotovelo.getPosition());
-            telemetry.addData("Garra: ", garra.getPosition());
+            telemetry.addData("OmbroR: ", arm.getOmbroRPos());
+            telemetry.addData("OmbroL: ", arm.getOmbroLPos());
+            telemetry.addData("Cotovelo: ", arm.getCotoveloPos());
+            telemetry.addData("Garra: ", arm.getGarraPos());
             telemetry.addLine("============= Sistema MOTORES ============");
-            telemetry.addData("Intake: ", Intake.getPower());
-            telemetry.addData("IntakeCurrent", Intake.getCurrent(CurrentUnit.AMPS));
-            telemetry.addData("LiftCurrentPos:", Lift.getCurrentPosition());
-            telemetry.addData("LiftTargetPos:", Lift.getTargetPosition());
-            telemetry.addData("MotorElevacaoL:",motorElevacaoL.getCurrent(CurrentUnit.AMPS));
-            telemetry.addData("MotorElevacaoR:",motorElevacaoR.getCurrent(CurrentUnit.AMPS));
+            telemetry.addData("Intake: ", intake.getIntakePower());
+            telemetry.addData("IntakeCurrent", intake.getIntakeCurrent());
+            telemetry.addData("MotorElevacaoR:",elevation.getMotorsCurrent().get(0));
+            telemetry.addData("MotorElevacaoL:",elevation.getMotorsCurrent().get(1));
             telemetry.addLine("============= Sistema MOTORES movimentação ============");
             telemetry.addData("MotorLeftBack:",motorBackLeft.getCurrent(CurrentUnit.AMPS));
             telemetry.addData("MotorLeftFront:",motorFrontLeft.getCurrent(CurrentUnit.AMPS));
@@ -342,18 +248,6 @@ public class OpmodeCV extends LinearOpMode {
         visionPortal2.stopStreaming();
         visionPortal2.stopLiveView();
         visionPortal2.close();
-    }
-
-    public void DisableServos(){
-        cotovelo.setPwmDisable();
-        ombroR.setPwmDisable();
-        ombroL.setPwmDisable();
-    }
-
-    public void EnableServos(){
-        cotovelo.setPwmEnable();
-        ombroR.setPwmEnable();
-        ombroL.setPwmEnable();
     }
 
     public void initTags(){

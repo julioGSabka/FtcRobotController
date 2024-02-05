@@ -7,12 +7,12 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.teamcode.RoadRunnerScripts.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.RoadRunnerScripts.trajectorysequence.TrajectorySequence;
+import org.firstinspires.ftc.teamcode.Subsystems.IntakeSystem;
 import org.firstinspires.ftc.teamcode.vision.AprilTagCustomDatabase;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
@@ -23,7 +23,7 @@ import java.util.List;
 @Autonomous
 public class BackdropBlueSemBackdrop extends LinearOpMode {
 
-    private DcMotorEx Intake = null;
+    IntakeSystem intake;
 
     AprilTagProcessor tagProcessor1;
     AprilTagProcessor tagProcessor2;
@@ -43,8 +43,7 @@ public class BackdropBlueSemBackdrop extends LinearOpMode {
         telemetry.update();
 
         //HardwareMap Config
-        //Motors
-        Intake = hardwareMap.get(DcMotorEx.class,"Intake"); //Ex0
+        intake = new IntakeSystem(hardwareMap);
 
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
@@ -83,31 +82,24 @@ public class BackdropBlueSemBackdrop extends LinearOpMode {
         if (analysis == 1) {
             drive.turn(Math.toRadians(90));
             sleep(200);
-            CuspirPixel();
+            intake.cuspirPixel();
             sleep(750);
             drive.followTrajectorySequence(parkANALISE1);
 
         } else if (analysis == 2) {
-            CuspirPixel();
+            intake.cuspirPixel();
             sleep(1500);
             drive.followTrajectorySequence(parkANALISE2);
 
         } else {
             drive.turn(Math.toRadians(-90));
             sleep(200);
-            CuspirPixel();
+            intake.cuspirPixel();
             sleep(750);
             drive.followTrajectorySequence(parkANALISE3);
 
         }
 
-    }
-
-    public void CuspirPixel(){
-        Intake.setPower(-0.6);
-        sleep(1000);
-        Intake.setPower(0);
-        sleep(200);
     }
 
     private void initVisionPipelines() {
