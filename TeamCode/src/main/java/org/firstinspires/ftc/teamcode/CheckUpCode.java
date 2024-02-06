@@ -7,7 +7,13 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.ServoImplEx;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
+
+import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
+
+import java.util.Arrays;
+import java.util.List;
 
 @TeleOp
 public class CheckUpCode extends LinearOpMode {
@@ -27,6 +33,13 @@ public class CheckUpCode extends LinearOpMode {
     private ServoImplEx ombroL = null;
     private ServoImplEx servoElevacaoL = null;
     private ServoImplEx servoElevacaoR = null;
+
+    public static double RUNTIME = 2.0;
+
+    private ElapsedTime timer;
+    private double current = 0.0;
+
+    private VoltageSensor batteryVoltageSensor;
 
     @Override
     public void runOpMode() {
@@ -54,30 +67,90 @@ public class CheckUpCode extends LinearOpMode {
         servoElevacaoR = hardwareMap.get(ServoImplEx.class, "servoElevacaoR"); //Ex4
         launcher = hardwareMap.get(Servo.class, "launcher");
 
+        batteryVoltageSensor = hardwareMap.voltageSensor.iterator().next();
+
         //Configure Motors
         motorBackRight.setDirection(DcMotorEx.Direction.REVERSE);
         motorFrontRight.setDirection(DcMotorEx.Direction.REVERSE);
         motorElevacaoL.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
         motorElevacaoR.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
 
+        List<DcMotorEx> motors = Arrays.asList(motorFrontLeft, motorBackLeft, motorFrontRight, motorBackRight,
+                Intake);
+        List<String> motoresString = Arrays.asList("motorFrontLeft", "motorBackLeft", "motorFrontRight", "motorBackRight", "Intake");
+
         waitForStart();
         resetRuntime();
 
-        while (opModeIsActive()) {
+        telemetry.addLine("Você deseja iniciar o código de checkup do robo?");
+        telemetry.addLine(" - Pressione A para seguir em frente - ");
+        telemetry.addLine("Deixe o robo suspenso do chão");
+        telemetry.update();
 
-            telemetry.addLine("Você deseja iniciar o código de checkup do robo?");
-            telemetry.addLine(" - Pressione A para seguir em frente - ");
-            telemetry.update();
+        telemetry.clear();
+        telemetry.addLine("Iniciando o checkup");
 
-            while (gamepad1.a != true){
-                
+        telemetry.addLine("VERIFICAÇÃO DA BATERIA");
+        if (batteryVoltageSensor.getVoltage() < 11.7){
+            telemetry.addData("Bateria Baixa", batteryVoltageSensor.getVoltage());
+        } else {
+            telemetry.addData("Bateria Utilizavel", batteryVoltageSensor.getVoltage());
+        }
+        telemetry.update();
+        sleep(2000);
+
+        telemetry.addLine("VERIFICAÇÃO DOS CABOS");
+        int i = 0;
+        for (DcMotorEx motor : motors){
+
+            motor.setPower(0.2);
+            sleep(200);
+            if (motor.getCurrent(CurrentUnit.AMPS) == 0){
+                telemetry.addData("Motor", motoresString.get(i));
+                telemetry.addData("está desconectado", motor.getCurrent(CurrentUnit.AMPS));
+            } else if (motor.getCurrent(CurrentUnit.AMPS) > 2){
+                telemetry.addData("Motor", motoresString.get(i));
+                telemetry.addData("está consumindo além do esperado", motor.getCurrent(CurrentUnit.AMPS));
+            } else {
+                telemetry.addData("Motor", motoresString.get(i));
+                telemetry.addData("está funcionando", motor.getCurrent(CurrentUnit.AMPS));
             }
+            sleep(200);
+            motor.setPower(0);
 
-            telemetry.clear();
-            telemetry.addLine("Iniciando o checkup");
+            i += 1;
+        }
+        telemetry.update();
 
+        i = 0;
+        telemetry.addLine("VERIFICAÇÃO DO CONSUMO");
+        for (DcMotorEx motor : motors){
+            motor.setPower(1);
+
+            timer = new ElapsedTime();
+            while (!isStopRequested() && timer.seconds() < RUNTIME) {
+                current = Math.max(motor.getCurrent(CurrentUnit.AMPS), current);
+            }
+            if (current == 0){
+                telemetry.addData("Motor", motoresString.get(i));
+                telemetry.addData("está desconectado", current);
+            } else if (current > 4){
+                telemetry.addData("Motor", motoresString.get(i));
+                telemetry.addData("está consumindo além do esperado", current);
+            } else {
+                telemetry.addData("Motor", motoresString.get(i));
+                telemetry.addData("está funcionando", current);
+            }
+            sleep(2000);
+            motor.setPower(0);
+
+            i += 1;
+        }
+        telemetry.update();
+        while (!isStopRequested()){
 
         }
+
     }
 
 }
