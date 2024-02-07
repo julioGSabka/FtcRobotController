@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.vision.mapper;
 
-import android.util.Size;
-
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.arcrobotics.ftclib.geometry.Pose2d;
@@ -14,12 +12,9 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.IMU;
 
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AngularVelocity;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
-import org.firstinspires.ftc.teamcode.RoadRunnerScripts.drive.SampleMecanumDrive;
-import org.firstinspires.ftc.teamcode.vision.AprilTagCustomDatabase;
 import org.firstinspires.ftc.teamcode.vision.InitPipes;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
@@ -135,7 +130,7 @@ public class KalmanTestOpmode extends LinearOpMode {
                         .strokeLine(rpose.getX(), rpose.getY(), rpose.getX() + 10*rpose.getRotation().getCos(), rpose.getY()+ 10*rpose.getRotation().getSin());
             }
         }
-        /*
+
         if (tagProcessor2.getDetections().size() > 0){
 
             ArrayList<AprilTagDetection> tags = tagProcessor2.getDetections();
@@ -152,7 +147,7 @@ public class KalmanTestOpmode extends LinearOpMode {
 
             }
         }
-         */
+
 
         //obtençao do ângulo
         YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
@@ -191,7 +186,7 @@ public class KalmanTestOpmode extends LinearOpMode {
             //wheelToVel: FL, FR, BL, BR
             //packet.put("mecanumVel", vel);
             kalmanPose.updateFilter(delPose, measurePoses, orientation.getYaw(AngleUnit.RADIANS));
-        }else{
+        } else {
             /*
             Pose2d delPose = mecdrive.mecanumDeltaPose(
                     encoderTicksToInches(leftFront.getCurrentPosition()),

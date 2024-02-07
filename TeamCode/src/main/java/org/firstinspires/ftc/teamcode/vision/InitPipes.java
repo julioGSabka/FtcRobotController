@@ -6,8 +6,11 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.vision.VisionPortal;
+import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import org.firstinspires.ftc.vision.tfod.TfodProcessor;
+
+import java.util.ArrayList;
 
 public class InitPipes {
 
@@ -77,7 +80,7 @@ public class InitPipes {
                 .setAutoStopLiveView(true)
                 .build();
 
-        /*
+
         visionPortal2 = new VisionPortal.Builder()
                 .setCamera(hardwareMap.get(WebcamName.class, "Webcam 2"))
                 .addProcessors(tagProcessor2, teamPropTFOD)
@@ -88,25 +91,32 @@ public class InitPipes {
                 .setAutoStopLiveView(true)
                 .build();
 
-         */
+
 
         visionPortal1.setProcessorEnabled(tagProcessor1, true);
-        //visionPortal2.setProcessorEnabled(tagProcessor2, true);
+        visionPortal2.setProcessorEnabled(tagProcessor2, true);
         visionPortal2.setProcessorEnabled(teamPropTFOD, true);
 
         tagProcessor1.setPoseSolver(AprilTagProcessor.PoseSolver.OPENCV_SOLVEPNP_EPNP);
         tagProcessor2.setPoseSolver(AprilTagProcessor.PoseSolver.OPENCV_SOLVEPNP_EPNP);
     }
 
+    public ArrayList<AprilTagDetection> updateTagProcessor1(){
+        return tagProcessor1.getDetections();
+    }
+    public ArrayList<AprilTagDetection> updateTagProcessor2(){
+        return tagProcessor2.getDetections();
+    }
+
     public void closeCams(){
         visionPortal1.stopLiveView();
         visionPortal1.stopStreaming();
         visionPortal1.close();
-        /*
+
         visionPortal2.stopLiveView();
         visionPortal2.stopStreaming();
         visionPortal2.close();
-         */
+
     }
     
     public AprilTagProcessor returnTagProcessor1(){
@@ -123,5 +133,9 @@ public class InitPipes {
     }
     public TfodProcessor returnTFOD(){
         return teamPropTFOD;
+    }
+
+    public void activateTFODProcessor(boolean state){
+        visionPortal2.setProcessorEnabled(teamPropTFOD, state);
     }
 }
