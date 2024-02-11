@@ -87,6 +87,10 @@ public class CheckUpCode extends LinearOpMode {
         telemetry.addLine("Deixe o robo suspenso do chão");
         telemetry.update();
 
+        while (gamepad1.a != true){
+
+        }
+
         telemetry.clear();
         telemetry.addLine("Iniciando o checkup");
 
@@ -105,12 +109,12 @@ public class CheckUpCode extends LinearOpMode {
 
             motor.setPower(0.2);
             sleep(200);
-            if (motor.getCurrent(CurrentUnit.AMPS) == 0){
+            if (motor.getVelocity() < 0.01){
                 telemetry.addData("Motor", motoresString.get(i));
-                telemetry.addData("está desconectado", motor.getCurrent(CurrentUnit.AMPS));
+                telemetry.addData("** está desconectado", motor.getCurrent(CurrentUnit.AMPS));
             } else if (motor.getCurrent(CurrentUnit.AMPS) > 2){
                 telemetry.addData("Motor", motoresString.get(i));
-                telemetry.addData("está consumindo além do esperado", motor.getCurrent(CurrentUnit.AMPS));
+                telemetry.addData("** está consumindo além do esperado", motor.getCurrent(CurrentUnit.AMPS));
             } else {
                 telemetry.addData("Motor", motoresString.get(i));
                 telemetry.addData("está funcionando", motor.getCurrent(CurrentUnit.AMPS));
@@ -131,12 +135,12 @@ public class CheckUpCode extends LinearOpMode {
             while (!isStopRequested() && timer.seconds() < RUNTIME) {
                 current = Math.max(motor.getCurrent(CurrentUnit.AMPS), current);
             }
-            if (current == 0){
+            if (current < 0.01){
                 telemetry.addData("Motor", motoresString.get(i));
-                telemetry.addData("está desconectado", current);
+                telemetry.addData("** está desconectado", current);
             } else if (current > 4){
                 telemetry.addData("Motor", motoresString.get(i));
-                telemetry.addData("está consumindo além do esperado", current);
+                telemetry.addData("** está consumindo além do esperado", current);
             } else {
                 telemetry.addData("Motor", motoresString.get(i));
                 telemetry.addData("está funcionando", current);

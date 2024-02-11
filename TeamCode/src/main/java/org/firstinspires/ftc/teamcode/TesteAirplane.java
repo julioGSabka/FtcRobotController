@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Servo;
 
 @TeleOp
-public class AirplaneTest extends LinearOpMode {
+public class TesteAirplane extends LinearOpMode {
 
     Servo launcher = null;
     @Override
