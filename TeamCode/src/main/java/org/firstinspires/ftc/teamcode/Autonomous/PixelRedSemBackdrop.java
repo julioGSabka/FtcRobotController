@@ -6,13 +6,10 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.teamcode.RoadRunnerScripts.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.RoadRunnerScripts.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.Subsystems.IntakeSystem;
 import org.firstinspires.ftc.teamcode.vision.InitPipes;
-
-import java.util.List;
 
 @Autonomous
 public class PixelRedSemBackdrop extends LinearOpMode {
@@ -59,7 +56,7 @@ public class PixelRedSemBackdrop extends LinearOpMode {
                 .build();
 
         while(analysis == 0 && !isStarted()){
-            analysis = detectTfod();
+            analysis = instancia.identifyTeamPropPose();
         }
 
         telemetry.addData("Status", "Initialized");
@@ -69,7 +66,7 @@ public class PixelRedSemBackdrop extends LinearOpMode {
         resetRuntime();
 
         while(analysis == 0 && isStarted() && getRuntime() < 3.5){
-            analysis = detectTfod();
+            analysis = instancia.identifyTeamPropPose();
         }
 
         telemetry.addData("Analise: ", analysis);
@@ -77,6 +74,7 @@ public class PixelRedSemBackdrop extends LinearOpMode {
 
         instancia.activateTFODProcessor(false);
 
+        //Start Movement
         drive.followTrajectorySequence(toSpikeMarks);
         sleep(500);
 
@@ -99,34 +97,6 @@ public class PixelRedSemBackdrop extends LinearOpMode {
             drive.followTrajectorySequence(parkANALISE1);
 
         }
-
-    }
-
-    private int detectTfod() {
-        int detection = 0;
-
-        List<Recognition> currentRecognitions = instancia.returnTFOD().getRecognitions();
-        telemetry.addData("Objects Detected", currentRecognitions.size());
-        telemetry.update();
-
-        // Step through the list of recognitions and display info for each one.
-        for (Recognition recognition : currentRecognitions) {
-            double x = (recognition.getLeft() + recognition.getRight()) / 2 ;
-            double y = (recognition.getTop()  + recognition.getBottom()) / 2 ;
-
-            if (recognition.getLabel() == "Red Cube") {
-                if (x <= 440) {
-                    detection = 1;
-                } else if (x > 440 && x < 1280) {
-                    detection = 2;
-                } else if (x >= 1280) {
-                    detection = 3;
-                }
-            }
-
-        }   // end for() loop
-
-        return detection;
 
     }
 

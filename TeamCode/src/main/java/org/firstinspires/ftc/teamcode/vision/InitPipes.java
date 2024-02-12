@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
@@ -157,6 +158,32 @@ public class InitPipes {
     public void activateTFODProcessor(boolean state){
         visionPortal2.setProcessorEnabled(teamPropTFOD, state);
     }
+
+    public int identifyTeamPropPose(){
+        int detection = 0;
+
+        List<Recognition> currentRecognitions = teamPropTFOD.getRecognitions();
+
+        // Step through the list of recognitions and display info for each one.
+        for (Recognition recognition : currentRecognitions) {
+            double x = (recognition.getLeft() + recognition.getRight()) / 2 ;
+            double y = (recognition.getTop()  + recognition.getBottom()) / 2 ;
+
+            if (recognition.getLabel() == "Blue Cube") {
+                if (x <= 440) {
+                    detection = 1;
+                } else if (x > 440 && x < 1280) {
+                    detection = 2;
+                } else if (x >= 1280) {
+                    detection = 3;
+                }
+            }
+        }
+
+        return detection;
+
+    }
+
 
     public List<Double> AlignToBackdropTag(int desiredBlueTagID, int desiredRedTagID){
 
