@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.Subsystems;
 
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.ServoImplEx;
 
@@ -15,6 +17,12 @@ public class ElevationSystem {
     private ServoImplEx servoElevacaoL = null;
     private ServoImplEx servoElevacaoR = null;
 
+    private int maxSpeed = 2400;
+    private double tresholdCurrent = 1.5;
+    private int liftTarget = 1000;
+
+    private boolean isLifting = false;
+
     public ElevationSystem(HardwareMap hardwareMap) {
         new ElevationSystem(hardwareMap, true);
     }
@@ -26,8 +34,10 @@ public class ElevationSystem {
         servoElevacaoL = hardwareMap.get(ServoImplEx.class, "servoElevacaoL"); //Ex2
         servoElevacaoR = hardwareMap.get(ServoImplEx.class, "servoElevacaoR"); //Ex4
 
-        motorElevacaoL.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
-        motorElevacaoR.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+        motorElevacaoL.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        motorElevacaoR.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+
+        motorElevacaoL.setDirection(DcMotorSimple.Direction.REVERSE);
 
     }
 
@@ -40,11 +50,60 @@ public class ElevationSystem {
         servoElevacaoL.setPosition(0);
         servoElevacaoR.setPosition(1);
     }
+    public void joystickControl(double MtrRight, double MtrLeft) {
+        if(!isLifting){
+            motorElevacaoR.setPower(MtrRight);
+            motorElevacaoL.setPower(MtrLeft);
+        }else{
+            motorElevacaoR.setVelocity((MtrRight*0.3)+0.7 * maxSpeed);
+            motorElevacaoL.setVelocity((MtrLeft*0.3)+0.7 * maxSpeed);
+        }
 
-    public void setMotorsPower(double MtrRight, double MtrLeft) {
-        motorElevacaoR.setPower(MtrRight);
-        motorElevacaoL.setPower(MtrLeft);
     }
+
+    public void StopMotors(){
+        motorElevacaoL.setPower(0);
+        motorElevacaoR.setPower(0);
+    }
+
+    public void ReverseMotors(){
+        motorElevacaoL.setPower(-0.5);
+        motorElevacaoR.setPower(-0.5);
+    }
+
+    public void UpRobot(){
+        motorElevacaoL.setPower(0.5);
+        motorElevacaoR.setPower(0.5);
+        boolean aligned = false;
+        boolean Laligned = false;
+        boolean Raligned = false;
+        while(!aligned){
+            if(motorElevacaoL.getCurrent(CurrentUnit.AMPS)>tresholdCurrent && !Laligned){
+                Laligned = true;
+                motorElevacaoL.setTargetPosition(motorElevacaoL.getCurrentPosition());
+                motorElevacaoL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+            }
+            if(motorElevacaoR.getCurrent(CurrentUnit.AMPS)>tresholdCurrent && !Raligned){
+                Raligned = true;
+                motorElevacaoR.setTargetPosition(motorElevacaoR.getCurrentPosition());
+                motorElevacaoR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+            }
+            if(Laligned && Raligned){
+                aligned = true;
+            }
+        }
+    }
+
+    public void liftUpRobot(){
+        if(!isLifting) {
+            isLifting = true;
+            motorElevacaoL.setTargetPosition(motorElevacaoL.getCurrentPosition() + liftTarget);
+            motorElevacaoR.setTargetPosition(motorElevacaoR.getCurrentPosition() + liftTarget);
+        }
+    }
+
 
     public ArrayList<Double> getMotorsCurrent() {
         ArrayList<Double> current = new ArrayList<>();
@@ -52,6 +111,22 @@ public class ElevationSystem {
         current.add(motorElevacaoL.getCurrent(CurrentUnit.AMPS));
 
         return current;
+    }
+
+    public ArrayList<Integer> getMotorsCurrentPosition() {
+        ArrayList<Integer> position = new ArrayList<>();
+        position.add(motorElevacaoR.getCurrentPosition());
+        position.add(motorElevacaoL.getCurrentPosition());
+
+        return position;
+    }
+
+    public ArrayList<Integer> getMotorsTargetPosition() {
+        ArrayList<Integer> position = new ArrayList<>();
+        position.add(motorElevacaoR.getTargetPosition());
+        position.add(motorElevacaoL.getTargetPosition());
+
+        return position;
     }
 
 }

@@ -44,13 +44,13 @@ public class ArmSystem {
     }
 
     public void closeGarra() {
-        garra.setPosition(1);
+        garra.setPosition(0);
     }
     public void midlleGarra() {
-        garra.setPosition(0.7);
+        garra.setPosition(0.5);
     }
     public void openGarra() {
-        garra.setPosition(0);
+        garra.setPosition(1);
     }
 
     public void setGarra(double pos) {

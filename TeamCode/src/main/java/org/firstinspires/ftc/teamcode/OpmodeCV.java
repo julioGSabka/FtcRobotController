@@ -155,7 +155,7 @@ public class OpmodeCV extends LinearOpMode {
             if (gamepad2.dpad_down) {
                 elevation.DownGanchos();
             }
-            elevation.setMotorsPower(gamepad2.right_stick_y, gamepad2.left_stick_y);
+            elevation.joystickControl(gamepad2.right_stick_y, gamepad2.left_stick_y);
 
             //Drone Launcher
             if (gamepad1.right_bumper){
