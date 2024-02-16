@@ -53,7 +53,7 @@ public class InitPipes {
                 .setDrawTagOutline(true)
                 .setDrawAxes(true)
                 .setDrawCubeProjection(true)
-                .setLensIntrinsics(854.2712445, 875.96651965, 613.29710682, 537.91085293)
+                .setLensIntrinsics(1416.97, 1416.97, 912.464, 532.303)
                 .setTagFamily(AprilTagProcessor.TagFamily.TAG_36h11)
                 .setTagLibrary(AprilTagCustomDatabase.getCenterStageLibrary())
                 .build();
@@ -77,7 +77,6 @@ public class InitPipes {
                 .setAutoStopLiveView(true)
                 .build();
 
-        /*
         visionPortal2 = new VisionPortal.Builder()
                 .setCamera(hardwareMap.get(WebcamName.class, "Webcam 2"))
                 .addProcessors(tagProcessor2, teamPropTFOD)
@@ -87,8 +86,6 @@ public class InitPipes {
                 .setLiveViewContainerId(portalsList[1])
                 .setAutoStopLiveView(true)
                 .build();
-
-         */
 
         visionPortal1.setProcessorEnabled(tagProcessor1, true);
         //visionPortal2.setProcessorEnabled(tagProcessor2, true);
@@ -102,11 +99,10 @@ public class InitPipes {
         visionPortal1.stopLiveView();
         visionPortal1.stopStreaming();
         visionPortal1.close();
-        /*
         visionPortal2.stopLiveView();
         visionPortal2.stopStreaming();
         visionPortal2.close();
-         */
+
     }
     
     public AprilTagProcessor returnTagProcessor1(){

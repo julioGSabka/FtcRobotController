@@ -21,7 +21,9 @@ import org.firstinspires.ftc.teamcode.vision.InitPipes;
 import org.firstinspires.ftc.teamcode.vision.mapper.KalmanPose;
 import org.firstinspires.ftc.teamcode.vision.mapper.MecanumKinematics;
 import org.firstinspires.ftc.teamcode.vision.mapper.Positioner;
+import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
+import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,10 +31,16 @@ import java.util.List;
 
 public class ApriltagLocalizer implements Localizer {
 
+    AprilTagProcessor tagProcessor1;
+    AprilTagProcessor tagProcessor2;
+
     List<com.arcrobotics.ftclib.geometry.Pose2d> measurePoses = new ArrayList<>();;
     List<Double> wheelsVels = new ArrayList<>();;
 
     InitPipes instancia = InitPipes.getInstancia();
+
+    double lateralWheelDistance = 14.996;
+    double verticalWheelDistance = 13.228;
 
     KalmanPose kalmanPose;
 
@@ -47,7 +55,9 @@ public class ApriltagLocalizer implements Localizer {
 
     private List<Integer> lastEncVels = new ArrayList<>();
 
-    Pose2d filterPose;
+    Pose2d poseEstimate;
+
+    MecanumKinematics mecdrive = new MecanumKinematics();
 
     public ApriltagLocalizer(HardwareMap hardwareMap) {
         new ApriltagLocalizer(hardwareMap, true);
@@ -76,6 +86,10 @@ public class ApriltagLocalizer implements Localizer {
         instancia.initVision(hardwareMap);
 
         imu.resetYaw();
+
+        tagProcessor1 = instancia.returnTagProcessor1();
+        tagProcessor2 = instancia.returnTagProcessor2();
+
     }
 
     @NonNull
@@ -83,44 +97,86 @@ public class ApriltagLocalizer implements Localizer {
     public Pose2d getPoseEstimate() {
 
 
-        if (instancia.returnTagProcessor1().getDetections().size() > 0){
-            ArrayList<AprilTagDetection> tags = instancia.returnTagProcessor1().getDetections();
-            for(AprilTagDetection tag : tags){
-                com.arcrobotics.ftclib.geometry.Pose2d rpose = Positioner.getRobotPose(tag, new Transform2d(new Translation2d(-6.5, 0), new Rotation2d(Math.toRadians(180))));
-                measurePoses.add(rpose);
+        if (tagProcessor2.getDetections().size() > 0) {
+            ArrayList<AprilTagDetection> tags = tagProcessor2.getDetections();
+            for (AprilTagDetection tag : tags) {
+                if (tag.decisionMargin > 120) {
+                    com.arcrobotics.ftclib.geometry.Pose2d rpose = Positioner.getRobotPose(tag, new Transform2d(new Translation2d(8, 0), new Rotation2d(Math.toRadians(0))));
+                    measurePoses.add(rpose);
+                }
             }
         }
 
-        if (instancia.returnTagProcessor2().getDetections().size() > 0){
-            ArrayList<AprilTagDetection> tags = instancia.returnTagProcessor2().getDetections();
-            for (AprilTagDetection tag : tags){
-                com.arcrobotics.ftclib.geometry.Pose2d rpose = Positioner.getRobotPose(tag, new Transform2d(new Translation2d(-6.5, 0), new Rotation2d(Math.toRadians(0))));
-                measurePoses.add(rpose);
+        if (tagProcessor2.getDetections().size() > 0) {
+            ArrayList<AprilTagDetection> tags = tagProcessor2.getDetections();
+            for (AprilTagDetection tag : tags) {
+                if (tag.decisionMargin > 120) {
+                    com.arcrobotics.ftclib.geometry.Pose2d rpose = Positioner.getRobotPose(tag, new Transform2d(new Translation2d(8, 0), new Rotation2d(Math.toRadians(0))));
+                    measurePoses.add(rpose);
+                }
             }
         }
 
-        //Obtenção da velocidade do robo(vel)
-        List<Double> TickVels = getWheelVelocities();
-        for (double vels : TickVels){
-            wheelsVels.add(encoderTicksToInches(vels));
-        }
-        com.arcrobotics.ftclib.geometry.Pose2d vel = MecanumKinematics.wheelToVel(wheelsVels.get(0), wheelsVels.get(3), wheelsVels.get(1), wheelsVels.get(2), 15.15749, 13.3859);
-        //Drive: FL, Bl, BR, FR
-        //wheelToVel: FL, FR, BL, BR
+        //obtençao do ângulo
         YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
-        //AngularVelocity angularVelocity = imu.getRobotAngularVelocity(AngleUnit.RADIANS);
+        AngularVelocity angularVelocity = imu.getRobotAngularVelocity(AngleUnit.RADIANS);
 
         //Chama o fitro e passa os valores (vel, statePose, measurePoses)
-        kalmanPose.updateFilter(vel, measurePoses, orientation.getYaw(AngleUnit.RADIANS));
-        com.arcrobotics.ftclib.geometry.Pose2d filteredPose = kalmanPose.getPose();
-        filterPose = new Pose2d(filteredPose.getX(), filteredPose.getY(), filteredPose.getHeading());
 
-        return filterPose;
+        com.arcrobotics.ftclib.geometry.Pose2d delPose = mecdrive.mecanumDeltaPose(
+                encoderTicksToInches(leftFront.getCurrentPosition()),
+                encoderTicksToInches(rightFront.getCurrentPosition()),
+                encoderTicksToInches(leftRear.getCurrentPosition()),
+                encoderTicksToInches(rightRear.getCurrentPosition()),
+                verticalWheelDistance,
+                lateralWheelDistance
+        );
+
+        if(measurePoses.size() > 0){
+            //Obtenção da velocidade do robo(vel)
+            /*
+            List<Double> TickVels = getWheelVelocities();
+            for (double vels : TickVels){
+                wheelsVels.add(encoderTicksToInches(vels));
+            }
+             */
+            /*
+            Pose2d vel = MecanumKinematics.wheelToVel(
+                    encoderTicksToInches(leftFront.getVelocity()),
+                    encoderTicksToInches(rightFront.getVelocity()),
+                    encoderTicksToInches(leftRear.getVelocity()),
+                    encoderTicksToInches(rightRear.getVelocity()),
+                    15.15749,
+                    13.3859);
+             */
+            //Drive: FL, Bl, BR, FR
+            //wheelToVel: FL, FR, BL, BR
+            //packet.put("mecanumVel", vel);
+            kalmanPose.updateFilter(delPose, measurePoses, orientation.getYaw(AngleUnit.RADIANS));
+        }else{
+            /*
+            Pose2d delPose = mecdrive.mecanumDeltaPose(
+                    encoderTicksToInches(leftFront.getCurrentPosition()),
+                    encoderTicksToInches(rightFront.getCurrentPosition()),
+                    encoderTicksToInches(leftRear.getCurrentPosition()),
+                    encoderTicksToInches(rightRear.getCurrentPosition()),
+                    15.15749,
+                    13.3859
+                    );
+
+             */
+            double orient = orientation.getYaw(AngleUnit.RADIANS);
+            kalmanPose.addDelta(delPose.getTranslation().rotateBy(new Rotation2d(orient)), orient);
+        }
+        com.arcrobotics.ftclib.geometry.Pose2d filteredPose = kalmanPose.getPose();
+        poseEstimate = new Pose2d(filteredPose.getX(), filteredPose.getY(), filteredPose.getHeading());
+
+        return poseEstimate;
     }
 
     @Override
     public void setPoseEstimate(@NonNull Pose2d pose2d) {
-        filterPose = pose2d;
+        kalmanPose.setPose(new com.arcrobotics.ftclib.geometry.Pose2d(pose2d.getX(), pose2d.getY(), new Rotation2d(pose2d.getHeading())));
     }
 
     @Nullable
@@ -131,7 +187,7 @@ public class ApriltagLocalizer implements Localizer {
 
     @Override
     public void update() {
-
+        getPoseEstimate();
     }
 
     public double encoderTicksToInches(double ticks) {

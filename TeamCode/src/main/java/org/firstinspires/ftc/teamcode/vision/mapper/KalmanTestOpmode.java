@@ -126,33 +126,36 @@ public class KalmanTestOpmode extends LinearOpMode {
             ArrayList<AprilTagDetection> tags = tagProcessor1.getDetections();
             for(AprilTagDetection tag : tags){
 
-                Pose2d rpose = Positioner.getRobotPose(tag, new Transform2d(new Translation2d(-6.5, 0), new Rotation2d(Math.toRadians(180))));
-                measurePoses.add(rpose);
+                if (tag.decisionMargin > 120){
+                    Pose2d rpose = Positioner.getRobotPose(tag, new Transform2d(new Translation2d(-8, 0), new Rotation2d(Math.toRadians(180))));
+                    measurePoses.add(rpose);
 
-                packet.fieldOverlay()
-                        .setStroke(colors[tag.id])
-                        .strokeCircle(rpose.getX(), rpose.getY(), 10)
-                        .strokeLine(rpose.getX(), rpose.getY(), rpose.getX() + 10*rpose.getRotation().getCos(), rpose.getY()+ 10*rpose.getRotation().getSin());
+                    packet.fieldOverlay()
+                            .setStroke(colors[tag.id])
+                            .strokeCircle(rpose.getX(), rpose.getY(), 10)
+                            .strokeLine(rpose.getX(), rpose.getY(), rpose.getX() + 10*rpose.getRotation().getCos(), rpose.getY()+ 10*rpose.getRotation().getSin());
+                }
+
             }
         }
-        /*
+
         if (tagProcessor2.getDetections().size() > 0){
 
             ArrayList<AprilTagDetection> tags = tagProcessor2.getDetections();
 
             for (AprilTagDetection tag : tags){
+                if (tag.decisionMargin > 120){
+                    Pose2d rpose = Positioner.getRobotPose(tag, new Transform2d(new Translation2d(8, 0), new Rotation2d(Math.toRadians(0))));
+                    measurePoses.add(rpose);
 
-                Pose2d rpose = Positioner.getRobotPose(tag, new Transform2d(new Translation2d(-6.5, 0), new Rotation2d(Math.toRadians(0))));
-                measurePoses.add(rpose);
+                    packet.fieldOverlay()
+                            .setStroke(colors[tag.id])
+                            .strokeCircle(rpose.getX(), rpose.getY(), 10)
+                            .strokeLine(rpose.getX(), rpose.getY(), rpose.getX() + 10*rpose.getRotation().getCos(), rpose.getY()+ 10*rpose.getRotation().getSin());
 
-                packet.fieldOverlay()
-                        .setStroke(colors[tag.id])
-                        .strokeCircle(rpose.getX(), rpose.getY(), 10)
-                        .strokeLine(rpose.getX(), rpose.getY(), rpose.getX() + 10*rpose.getRotation().getCos(), rpose.getY()+ 10*rpose.getRotation().getSin());
-
+                }
             }
         }
-         */
 
         //obtençao do ângulo
         YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();

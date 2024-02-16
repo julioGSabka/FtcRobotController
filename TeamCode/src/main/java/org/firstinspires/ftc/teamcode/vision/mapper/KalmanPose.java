@@ -16,6 +16,8 @@ public class KalmanPose {
     double x = 0;
     double y = 0;
 
+    double headingAdd = 0;
+
     Rotation2d finalHeading;
 
     Pose2d correctPose;
@@ -25,6 +27,7 @@ public class KalmanPose {
         yFilter = new KalmanFilter(0.1, 0.4);
     }
     public void updateFilter(Pose2d vel, List<Pose2d> measurePoses, double heading) {
+        heading = headingAdd + heading;
 
         for (Pose2d pose : measurePoses) {
             x = xFilter.updateFilter(vel.getX()*Math.cos(heading) + vel.getY()*Math.sin(heading), correctPose.getX(), pose.getX());
@@ -40,11 +43,16 @@ public class KalmanPose {
         this.correctPose = new Pose2d(
                 this.correctPose.getX() + deltaPose.getX(),
                 this.correctPose.getY() + deltaPose.getY(),
-                new Rotation2d(yaw));
+                new Rotation2d(yaw + headingAdd));
     }
 
     public Pose2d getPose(){
         return this.correctPose;
+    }
+
+    public void setPose(Pose2d pose){
+        this.correctPose = pose;
+        this.headingAdd = pose.getHeading();
     }
 
 }
