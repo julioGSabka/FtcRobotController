@@ -187,7 +187,7 @@ public class ApriltagLocalizer implements Localizer {
 
     @Override
     public void update() {
-        getPoseEstimate();
+        calculatePos();
     }
 
     public double encoderTicksToInches(double ticks) {
@@ -204,5 +204,50 @@ public class ApriltagLocalizer implements Localizer {
             wheelVelocities.add(encoderTicksToInches(vel));
         }
         return wheelVelocities;
+    }
+
+    public void calculatePos(){
+        measurePoses.clear();
+        if (instancia.returnTagProcessor1().getDetections().size() > 0){
+            ArrayList<AprilTagDetection> tags = instancia.returnTagProcessor1().getDetections();
+            for(AprilTagDetection tag : tags){
+
+                com.arcrobotics.ftclib.geometry.Pose2d rpose = Positioner.getRobotPose(tag, new Transform2d(new Translation2d(-6.5, 0), new Rotation2d(Math.toRadians(180))));
+                measurePoses.add(rpose);
+            }
+        }
+
+        if (instancia.returnTagProcessor2().getDetections().size() > 0){
+
+            ArrayList<AprilTagDetection> tags = instancia.returnTagProcessor2().getDetections();
+
+            for (AprilTagDetection tag : tags){
+
+                com.arcrobotics.ftclib.geometry.Pose2d rpose = Positioner.getRobotPose(tag, new Transform2d(new Translation2d(-6.5, 0), new Rotation2d(Math.toRadians(0))));
+                measurePoses.add(rpose);
+            }
+        }
+
+        //obtençao do ângulo
+        YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
+        AngularVelocity angularVelocity = imu.getRobotAngularVelocity(AngleUnit.RADIANS);
+
+        //Chama o fitro e passa os valores (vel, statePose, measurePoses)
+        com.arcrobotics.ftclib.geometry.Pose2d delPose = mecdrive.mecanumDeltaPose(
+                encoderTicksToInches(leftFront.getCurrentPosition()),
+                encoderTicksToInches(rightFront.getCurrentPosition()),
+                encoderTicksToInches(leftRear.getCurrentPosition()),
+                encoderTicksToInches(rightRear.getCurrentPosition()),
+                verticalWheelDistance,
+                lateralWheelDistance
+        );
+
+        if(measurePoses.size() > 0){
+            kalmanPose.updateFilter(delPose, measurePoses, orientation.getYaw(AngleUnit.RADIANS));
+        } else {
+            double orient = orientation.getYaw(AngleUnit.RADIANS);
+            kalmanPose.addDelta(delPose.getTranslation().rotateBy(new Rotation2d(orient)), orient);
+        }
+        filteredPose = kalmanPose.getPose();
     }
 }

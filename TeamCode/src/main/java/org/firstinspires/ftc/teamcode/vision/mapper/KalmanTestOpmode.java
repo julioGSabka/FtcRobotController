@@ -14,12 +14,9 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.IMU;
 
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AngularVelocity;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
-import org.firstinspires.ftc.teamcode.RoadRunnerScripts.drive.SampleMecanumDrive;
-import org.firstinspires.ftc.teamcode.vision.AprilTagCustomDatabase;
 import org.firstinspires.ftc.teamcode.vision.InitPipes;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
@@ -194,7 +191,7 @@ public class KalmanTestOpmode extends LinearOpMode {
             //wheelToVel: FL, FR, BL, BR
             //packet.put("mecanumVel", vel);
             kalmanPose.updateFilter(delPose, measurePoses, orientation.getYaw(AngleUnit.RADIANS));
-        }else{
+        } else {
             /*
             Pose2d delPose = mecdrive.mecanumDeltaPose(
                     encoderTicksToInches(leftFront.getCurrentPosition()),
