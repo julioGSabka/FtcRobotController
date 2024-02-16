@@ -8,6 +8,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 public class IntakeSystem {
 
     private DcMotorEx intake = null;
+    private DcMotorEx esteira = null;
 
     public IntakeSystem(HardwareMap hardwareMap) {
         new IntakeSystem(hardwareMap, true);
@@ -15,33 +16,54 @@ public class IntakeSystem {
 
     public IntakeSystem(HardwareMap hardwareMap, boolean using){
         intake = hardwareMap.get(DcMotorEx.class,"Intake"); //Ex0
+        esteira = hardwareMap.get(DcMotorEx.class, "Esteira"); //
     }
 
     public void cuspirPixel(){
         intake.setPower(-0.7);
+        esteira.setPower(-0.7);
         sleep(500);
         intake.setPower(0);
+        esteira.setPower(0);
         sleep(200);
     }
 
     public void stopIntake(){
         intake.setPower(0);
+        esteira.setPower(0);
     }
 
     public void startIntake(){
-        intake.setPower(0.65);
+        intakeSetPower();
+        esteiraSetPower();
+    }
+
+    public void intakeSetPower(){
+       intake.setPower(-0.8);
+    }
+
+    public void esteiraSetPower(){
+        esteira.setPower(0.9);
     }
 
     public void reverseIntake(){
-        intake.setPower(-1);
+        intake.setPower(1);
+        esteira.setPower(-0.9);
     }
 
     public double getIntakePower(){
         return intake.getPower();
     }
+    public double getEsteiraPower(){
+        return esteira.getPower();
+    }
 
     public double getIntakeCurrent(){
         return intake.getCurrent(CurrentUnit.AMPS);
+    }
+
+    public double getEsteiraCurrent(){
+        return esteira.getCurrent(CurrentUnit.AMPS);
     }
 
     private void sleep(long milliseconds) {

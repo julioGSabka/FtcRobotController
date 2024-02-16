@@ -1,22 +1,22 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.ServoImplEx;
+
+import org.firstinspires.ftc.teamcode.Subsystems.IntakeSystem;
 
 @TeleOp
 public class TesteIntake extends LinearOpMode {
 
+    private IntakeSystem intake;
     private DcMotorEx motorFrontLeft = null;
     private DcMotorEx motorBackLeft = null;
     private DcMotorEx motorFrontRight = null;
     private DcMotorEx motorBackRight = null;
-    private DcMotorEx Intake = null;
-    private double power;
-
-    boolean one_press = false;
+    private ServoImplEx cotovelo = null;
+    private ServoImplEx ombroR = null;
 
     @Override
     public void runOpMode() {
@@ -24,11 +24,18 @@ public class TesteIntake extends LinearOpMode {
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
+        intake = new IntakeSystem(hardwareMap, true);
+        cotovelo = hardwareMap.get(ServoImplEx.class, "cotovelo"); //4
+        ombroR = hardwareMap.get(ServoImplEx.class, "ombroR"); //2
         motorFrontLeft = hardwareMap.get(DcMotorEx.class,"motorFrontLeft"); //0
         motorBackLeft = hardwareMap.get(DcMotorEx.class,"motorBackLeft"); //1
         motorFrontRight = hardwareMap.get(DcMotorEx.class,"motorFrontRight"); //2
         motorBackRight = hardwareMap.get(DcMotorEx.class,"motorBackRight"); //3
-        Intake = hardwareMap.get(DcMotorEx.class,"Intake"); //Ex0
+
+        motorBackRight.setDirection(DcMotorEx.Direction.REVERSE);
+        motorFrontRight.setDirection(DcMotorEx.Direction.REVERSE);
+        //motorBackRight.setDirection(DcMotorEx.Direction.REVERSE);
+        //motorFrontRight.setDirection(DcMotorEx.Direction.REVERSE);
 
         waitForStart();
         resetRuntime();
@@ -37,7 +44,7 @@ public class TesteIntake extends LinearOpMode {
             telemetry.addData("Status", "Running");
 
             double velocity = (gamepad1.right_trigger * 0.70) + 0.20;
-            double y = gamepad1.left_stick_y * velocity;
+            double y = -gamepad1.left_stick_y * velocity;
             double x = gamepad1.left_stick_x * -1.1 * velocity;
             double rx = gamepad1.right_stick_x * velocity;
 
@@ -52,30 +59,35 @@ public class TesteIntake extends LinearOpMode {
             motorFrontRight.setPower(frontRightPower);
             motorBackRight.setPower(backRightPower);
 
-
-            if (gamepad2.b){
-                power = 0;
+            if (gamepad1.x){
+                intake.intakeSetPower();
             }
 
-            if (gamepad2.dpad_up & one_press == false){
-                power += 0.05;
-                one_press = true;
+            if (gamepad1.b){
+                intake.esteiraSetPower();
             }
 
-
-            if (gamepad2.dpad_up & one_press == false){
-                power += 0.05;
-                one_press = true;
+            if (gamepad1.a){
+                intake.stopIntake();
             }
-            one_press = false;
 
-            Intake.setPower(Math.min(power, 1));
+            if (gamepad1.y){
+                intake.startIntake();
+            }
 
-            telemetry.addData("Power", power);
-            telemetry.addData("MotorPower", Intake.getPower());
+            if(gamepad1.dpad_down){
+                intake.cuspirPixel();
+            }
+
+            if (gamepad1.dpad_up) {
+                ombroR.setPosition(0.87);
+                cotovelo.setPosition(0.69);
+            }
+
+            telemetry.addData("MotorPower", intake.getIntakePower());
             telemetry.update();
-        }
 
+        }
 
     }
 }

@@ -192,8 +192,7 @@ public class OpmodeCV extends LinearOpMode {
             telemetry.addLine("Opmode");
             telemetry.addData("Status", "Run Time: " + runtime.toString());
             telemetry.addLine("============= Sistema SERVOS =============");
-            telemetry.addData("OmbroR: ", arm.getOmbroRPos());
-            telemetry.addData("OmbroL: ", arm.getOmbroLPos());
+            telemetry.addData("Ombro: ", arm.getOmbroPos());
             telemetry.addData("Cotovelo: ", arm.getCotoveloPos());
             telemetry.addData("Garra: ", arm.getGarraPos());
             telemetry.addLine("============= Sistema MOTORES ============");

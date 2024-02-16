@@ -8,8 +8,7 @@ public class ArmSystem {
 
     private Servo garra = null;
     private ServoImplEx cotovelo = null;
-    private ServoImplEx ombroR = null;
-    private ServoImplEx ombroL = null;
+    private ServoImplEx ombro = null;
 
     public ArmSystem(HardwareMap hardwareMap) {
         new ArmSystem(hardwareMap, true);
@@ -19,16 +18,16 @@ public class ArmSystem {
 
         garra = hardwareMap.get(Servo.class, "garra"); //Ex0
         cotovelo = hardwareMap.get(ServoImplEx.class, "cotovelo"); //4
-        ombroR = hardwareMap.get(ServoImplEx.class, "ombroR"); //2
-        ombroL = hardwareMap.get(ServoImplEx.class, "ombroL"); //0
+        ombro = hardwareMap.get(ServoImplEx.class, "ombroR"); //2
 
     }
 
     public void UpArm() {
+        ombro.setPosition(0.75);
+        sleep(500);
         cotovelo.setPosition(1);
         sleep(1000);
-        ombroL.setPosition(1);
-        ombroR.setPosition(0);
+        ombro.setPosition(0.5);
         sleep(500);
         cotovelo.setPosition(0.35);
     }
@@ -36,14 +35,12 @@ public class ArmSystem {
     public void DownArm() {
         cotovelo.setPosition(1);
         sleep(500);
-        ombroL.setPosition(0.15);
-        ombroR.setPosition(0.85);
+        ombro.setPosition(0.75);
         sleep(500);
-        ombroL.setPosition(0.09);
-        ombroR.setPosition(0.91);
-        sleep(1000);
-        cotovelo.setPosition(0.724);
-        sleep(1000);
+        cotovelo.setPosition(0.69);
+        sleep(500);
+        ombro.setPosition(0.87);
+
     }
 
     public void closeGarra() {
@@ -60,12 +57,8 @@ public class ArmSystem {
         garra.setPosition(pos);
     }
 
-    public double getOmbroRPos() {
-        return ombroR.getPosition();
-    }
-
-    public double getOmbroLPos() {
-        return ombroL.getPosition();
+    public double getOmbroPos() {
+        return ombro.getPosition();
     }
 
     public double getCotoveloPos() {
