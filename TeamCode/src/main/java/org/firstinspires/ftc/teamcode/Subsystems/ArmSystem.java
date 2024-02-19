@@ -23,23 +23,27 @@ public class ArmSystem {
     }
 
     public void UpArm() {
-        ombro.setPosition(0.75);
+        cotovelo.setPosition(0.8);
+        ombro.setPosition(0.95);
         sleep(500);
-        cotovelo.setPosition(1);
-        sleep(1000);
-        ombro.setPosition(0.5);
+        cotovelo.setPosition(0.97);
+        sleep(500);
+        ombro.setPosition(0);
         sleep(500);
         cotovelo.setPosition(0.35);
     }
+    //Cotovelo: 1 - Recolhido
+    //Ombro: 1 - Abaixado
 
     public void DownArm() {
-        cotovelo.setPosition(1);
+        cotovelo.setPosition(0.97);
         sleep(500);
-        ombro.setPosition(0.75);
-        sleep(500);
-        cotovelo.setPosition(0.69);
+        ombro.setPosition(0.95);
+        sleep(750);
+        cotovelo.setPosition(0.8);
         sleep(500);
         ombro.setPosition(0.87);
+        cotovelo.setPosition(0.69);
 
     }
 
@@ -55,6 +59,12 @@ public class ArmSystem {
 
     public void setGarra(double pos) {
         garra.setPosition(pos);
+    }
+    public void setCotovelo(double pos) {
+        cotovelo.setPosition(pos);
+    }
+    public void setOmbro(double pos) {
+        ombro.setPosition(pos);
     }
 
     public double getOmbroPos() {
