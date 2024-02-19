@@ -19,7 +19,7 @@ public class ElevationSystem {
 
     private int maxSpeed = 2400;
     private double tresholdCurrent = 1.5;
-    private int liftTarget = 1000;
+    private int liftTarget = 500;
 
     private boolean isLifting = false;
 
@@ -42,13 +42,13 @@ public class ElevationSystem {
     }
 
     public void UpGanchos() {
-        servoElevacaoL.setPosition(1);
-        servoElevacaoR.setPosition(0);
+        servoElevacaoL.setPosition(0);
+        servoElevacaoR.setPosition(1);
     }
 
     public void DownGanchos() {
-        servoElevacaoL.setPosition(0);
-        servoElevacaoR.setPosition(1);
+        servoElevacaoL.setPosition(1);
+        servoElevacaoR.setPosition(0);
     }
     public void joystickControl(double MtrRight, double MtrLeft) {
         if(!isLifting){
@@ -71,12 +71,17 @@ public class ElevationSystem {
         motorElevacaoR.setPower(-0.5);
     }
 
-    public void UpRobot(){
-        motorElevacaoL.setPower(0.5);
-        motorElevacaoR.setPower(0.5);
+    public void TensionCord(){
+        motorElevacaoL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        motorElevacaoR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        motorElevacaoL.setPower(0.3);
+        motorElevacaoR.setPower(0.3);
         boolean aligned = false;
         boolean Laligned = false;
         boolean Raligned = false;
+        /*
+        TODO: colocar checagem de SE OPMODE ATIVO!!!
+         */
         while(!aligned){
             if(motorElevacaoL.getCurrent(CurrentUnit.AMPS)>tresholdCurrent && !Laligned){
                 Laligned = true;
@@ -127,6 +132,15 @@ public class ElevationSystem {
         position.add(motorElevacaoL.getTargetPosition());
 
         return position;
+    }
+
+    public void onStopBehavoiur(){
+        motorElevacaoL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        motorElevacaoL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        motorElevacaoL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        motorElevacaoR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        motorElevacaoL.setPower(0);
+        motorElevacaoR.setPower(0);
     }
 
 }

@@ -4,6 +4,8 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.ServoImplEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Subsystems.ElevationSystem;
@@ -13,6 +15,11 @@ public class TesteElevacao extends LinearOpMode {
 
     private ElapsedTime runtime = new ElapsedTime();
 
+    private DcMotorEx motorFrontLeft = null;
+    private DcMotorEx motorBackLeft = null;
+    private DcMotorEx motorFrontRight = null;
+    private DcMotorEx motorBackRight = null;
+
     private ElevationSystem elevation;
 
     @Override
@@ -20,6 +27,14 @@ public class TesteElevacao extends LinearOpMode {
 
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         elevation = new ElevationSystem(hardwareMap, true);
+
+        motorFrontLeft = hardwareMap.get(DcMotorEx.class,"motorFrontLeft"); //0
+        motorBackLeft = hardwareMap.get(DcMotorEx.class,"motorBackLeft"); //1
+        motorFrontRight = hardwareMap.get(DcMotorEx.class,"motorFrontRight"); //2
+        motorBackRight = hardwareMap.get(DcMotorEx.class,"motorBackRight"); //3
+
+        motorBackRight.setDirection(DcMotorEx.Direction.REVERSE);
+        motorFrontRight.setDirection(DcMotorEx.Direction.REVERSE);
 
         waitForStart();
         resetRuntime();
@@ -35,7 +50,7 @@ public class TesteElevacao extends LinearOpMode {
             }
 
             if (gamepad1.y) {
-                elevation.UpRobot();
+                elevation.TensionCord();
             }
 
             if(gamepad1.x){
@@ -50,7 +65,21 @@ public class TesteElevacao extends LinearOpMode {
                 elevation.ReverseMotors();
             }
 
-            elevation.joystickControl(gamepad1.left_stick_y, gamepad1.right_stick_y);
+            double velocity = (gamepad1.right_trigger * 0.70) + 0.20;
+            double y = gamepad1.left_stick_y * velocity;
+            double x = gamepad1.left_stick_x * -1.1 * velocity;
+            double rx = gamepad1.right_stick_x * velocity;
+
+            double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
+            double frontLeftPower = (y + x + rx) / denominator;
+            double backLeftPower = (y - x + rx) / denominator;
+            double frontRightPower = (y - x - rx) / denominator;
+            double backRightPower = (y + x - rx) / denominator;
+
+            motorFrontLeft.setPower(frontLeftPower);
+            motorBackLeft.setPower(backLeftPower);
+            motorFrontRight.setPower(frontRightPower);
+            motorBackRight.setPower(backRightPower);
 
             telemetry.addLine("Opmode");
             telemetry.addData("Status", "Run Time: " + runtime.toString());
