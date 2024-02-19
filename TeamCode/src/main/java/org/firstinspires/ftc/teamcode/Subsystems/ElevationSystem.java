@@ -83,13 +83,12 @@ public class ElevationSystem {
         TODO: colocar checagem de SE OPMODE ATIVO!!!
          */
         while(!aligned){
-            if(motorElevacaoL.getCurrent(CurrentUnit.AMPS)>tresholdCurrent && !Laligned){
+            if(motorElevacaoL.getCurrent(CurrentUnit.AMPS)>tresholdCurrent && Laligned == false){
                 Laligned = true;
                 motorElevacaoL.setTargetPosition(motorElevacaoL.getCurrentPosition());
                 motorElevacaoL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
             }
-            if(motorElevacaoR.getCurrent(CurrentUnit.AMPS)>tresholdCurrent && !Raligned){
+            if(motorElevacaoR.getCurrent(CurrentUnit.AMPS)>tresholdCurrent && Raligned == false){
                 Raligned = true;
                 motorElevacaoR.setTargetPosition(motorElevacaoR.getCurrentPosition());
                 motorElevacaoR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -102,6 +101,7 @@ public class ElevationSystem {
     }
 
     public void liftUpRobot(){
+
         if(!isLifting) {
             isLifting = true;
             motorElevacaoL.setTargetPosition(motorElevacaoL.getCurrentPosition() + liftTarget);

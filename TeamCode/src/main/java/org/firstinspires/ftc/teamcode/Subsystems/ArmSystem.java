@@ -7,8 +7,8 @@ import com.qualcomm.robotcore.hardware.ServoImplEx;
 public class ArmSystem {
 
     private Servo garra = null;
-    private ServoImplEx cotovelo = null;
-    private ServoImplEx ombro = null;
+    private Servo cotovelo = null;
+    private Servo ombro = null;
 
     public ArmSystem(HardwareMap hardwareMap) {
         new ArmSystem(hardwareMap, true);
@@ -17,8 +17,8 @@ public class ArmSystem {
     public ArmSystem(HardwareMap hardwareMap, boolean using){
 
         garra = hardwareMap.get(Servo.class, "garra"); //Ex0
-        cotovelo = hardwareMap.get(ServoImplEx.class, "cotovelo"); //4
-        ombro = hardwareMap.get(ServoImplEx.class, "ombroR"); //2
+        cotovelo = hardwareMap.get(Servo.class, "cotovelo"); //4
+        ombro = hardwareMap.get(Servo.class, "ombro"); //2
 
     }
 

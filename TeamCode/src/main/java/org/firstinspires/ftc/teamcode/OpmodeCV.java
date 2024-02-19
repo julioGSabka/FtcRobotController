@@ -35,7 +35,7 @@ public class OpmodeCV extends LinearOpMode {
     private IntakeSystem intake;
     InitPipes instancia = InitPipes.getInstancia();
 
-    private int LB_presses = 0;
+    private int posGarra = 0;
     private int PixelsnaGarra = 0;
 
     //Distance-Color Sensor Variables
@@ -48,9 +48,9 @@ public class OpmodeCV extends LinearOpMode {
         telemetry.update();
 
         //HardwareMap Config
-        arm = new ArmSystem(hardwareMap);
-        elevation = new ElevationSystem(hardwareMap);
-        intake = new IntakeSystem(hardwareMap);
+        arm = new ArmSystem(hardwareMap, true);
+        elevation = new ElevationSystem(hardwareMap, true);
+        intake = new IntakeSystem(hardwareMap, true);
         instancia.initVision(hardwareMap);
         instancia.activateTFODProcessor(false);
 
@@ -68,6 +68,7 @@ public class OpmodeCV extends LinearOpMode {
         distanciaAnterior = distanceSensor.getDistance(DistanceUnit.CM);
 
         boolean lastPress = false;
+        boolean startElevation = false;
 
         arm.DownArm();
         arm.openGarra();
@@ -108,18 +109,19 @@ public class OpmodeCV extends LinearOpMode {
             }).start();
 
             //Operação da Garra
-            if (gamepad2.left_bumper) {
+            if (gamepad2.left_bumper) { //abre a garra
                 if(!lastPress) {
-                    LB_presses += 1;
-                    if (LB_presses == 3) { //Se apertar 3 vezes, faz a mesma coisa que 1 vez
-                        LB_presses = 1;
+                    //se RISING EDGE (ou seja false -> true)
+
+                    if (posGarra < 2) { //Se apertar 2 vezes, pare de mudar
+                        posGarra ++;
                     }
 
                     //Fazer a garra soltar os pixels
-                    if (LB_presses == 1) {
+                    if (posGarra == 1) {
                         arm.midlleGarra();
                         PixelsnaGarra = 1;
-                    } else if (LB_presses == 2) {
+                    } else if (posGarra == 2) {
                         arm.openGarra();
                         PixelsnaGarra = 0;
                     }
@@ -132,6 +134,7 @@ public class OpmodeCV extends LinearOpMode {
             //Fecha
             if (gamepad2.right_bumper) {
                 arm.closeGarra();
+                posGarra = 0;
             }
 
             //Intake Commands
@@ -154,8 +157,16 @@ public class OpmodeCV extends LinearOpMode {
             //Descer ganchos
             if (gamepad2.dpad_down) {
                 elevation.DownGanchos();
+                startElevation = true;
             }
-            elevation.joystickControl(gamepad2.right_stick_y, gamepad2.left_stick_y);
+            if (startElevation){
+                if (gamepad2.x){
+                    elevation.TensionCord();
+                }
+                if (gamepad2.y){
+                    elevation.liftUpRobot();
+                }
+            }
 
             //Drone Launcher
             if (gamepad1.right_bumper){
