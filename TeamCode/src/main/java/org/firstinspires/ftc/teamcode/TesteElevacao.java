@@ -54,12 +54,14 @@ public class TesteElevacao extends LinearOpMode {
 
             telemetry.addLine("Opmode");
             telemetry.addData("Status", "Run Time: " + runtime.toString());
-            telemetry.addData("MotorElevacaoR CurrentPos:", elevation.getMotorsCurrentPosition().get(0));
-            telemetry.addData("MotorElevacaoL CurrentPos:", elevation.getMotorsCurrentPosition().get(1));
-            telemetry.addData("MotorElevacaoR TargetPos:", elevation.getMotorsTargetPosition().get(0));
-            telemetry.addData("MotorElevacaoL TargetPos:", elevation.getMotorsTargetPosition().get(1));
-            telemetry.addData("MotorRCurrent", elevation.getMotorsCurrent().get(0));
-            telemetry.addData("MotorLCurrent", elevation.getMotorsCurrent().get(1));
+            telemetry.addData("MotorR CurrentPos:", elevation.getMotorsCurrentPosition().get(0));
+            telemetry.addData("MotorL CurrentPos:", elevation.getMotorsCurrentPosition().get(1));
+            telemetry.addData("MotorR TargetPos:", elevation.getMotorsTargetPosition().get(0));
+            telemetry.addData("MotorL TargetPos:", elevation.getMotorsTargetPosition().get(1));
+            telemetry.addData("MotorR Mode:", elevation.getMotorsMode().get(0));
+            telemetry.addData("MotorL Mode:", elevation.getMotorsMode().get(1));
+            telemetry.addData("MotorR Current", elevation.getMotorsCurrent().get(0));
+            telemetry.addData("MotorL Current", elevation.getMotorsCurrent().get(1));
             telemetry.update();
         }
     }

@@ -72,6 +72,8 @@ public class ElevationSystem {
     }
 
     public void UpRobot(){
+        motorElevacaoL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        motorElevacaoR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         motorElevacaoL.setPower(0.5);
         motorElevacaoR.setPower(0.5);
         boolean aligned = false;
@@ -127,6 +129,14 @@ public class ElevationSystem {
         position.add(motorElevacaoL.getTargetPosition());
 
         return position;
+    }
+
+    public ArrayList<DcMotor.RunMode> getMotorsMode() {
+        ArrayList<DcMotor.RunMode> mode = new ArrayList<>();
+        mode.add(motorElevacaoR.getMode());
+        mode.add(motorElevacaoL.getMode());
+
+        return mode;
     }
 
 }
