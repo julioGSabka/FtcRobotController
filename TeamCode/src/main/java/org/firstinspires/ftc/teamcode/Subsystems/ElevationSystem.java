@@ -134,6 +134,14 @@ public class ElevationSystem {
         return position;
     }
 
+    public ArrayList<DcMotor.RunMode> getMotorsMode() {
+        ArrayList<DcMotor.RunMode> mode = new ArrayList<>();
+        mode.add(motorElevacaoR.getMode());
+        mode.add(motorElevacaoL.getMode());
+
+        return mode;
+    }
+
     public void onStopBehavoiur(){
         motorElevacaoL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         motorElevacaoL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
