@@ -52,8 +52,8 @@ public class FieldOrientedDriveTest extends LinearOpMode {
 
             double velocity = (gamepad1.right_trigger * 0.70) + 0.20;
             double y = -gamepad1.left_stick_y * velocity;
-            double x = gamepad1.left_stick_x * velocity;
-            double rx = gamepad1.right_stick_x * velocity;
+            double x = gamepad1.left_stick_x * 1.1 * velocity;
+            double rx = -gamepad1.right_stick_x * velocity;
 
             if (gamepad1.start) {
                 imu.resetYaw();

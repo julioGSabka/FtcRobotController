@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.vision.mapper;
 
-import android.util.Size;
-
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.arcrobotics.ftclib.geometry.Pose2d;
@@ -53,14 +51,14 @@ public class KalmanTestOpmode extends LinearOpMode {
             "black"
     };
 
-    double lateralWheelDistance = 14.996;
-    double verticalWheelDistance = 13.228;
+    double lateralWheelDistance = 13.18898;
+    double verticalWheelDistance = 13.97;
 
     KalmanPose kalmanPose;
 
     IMU imu;
 
-    double WHEEL_RADIUS = 1.889;
+    double WHEEL_RADIUS = 1.88976;
     double GEAR_RATIO = 1.0;
     double TICKS_PER_REV = 537.7;
 
@@ -87,7 +85,7 @@ public class KalmanTestOpmode extends LinearOpMode {
         imu = hardwareMap.get(IMU.class, "imu");
 
         RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.UP;
-        RevHubOrientationOnRobot.UsbFacingDirection  usbDirection  = RevHubOrientationOnRobot.UsbFacingDirection.RIGHT;
+        RevHubOrientationOnRobot.UsbFacingDirection  usbDirection  = RevHubOrientationOnRobot.UsbFacingDirection.LEFT;
 
         RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logoDirection, usbDirection);
 
@@ -124,7 +122,7 @@ public class KalmanTestOpmode extends LinearOpMode {
             for(AprilTagDetection tag : tags){
 
                 if (tag.decisionMargin > 120){
-                    Pose2d rpose = Positioner.getRobotPose(tag, new Transform2d(new Translation2d(-8, 0), new Rotation2d(Math.toRadians(180))));
+                    Pose2d rpose = Positioner.getRobotPose(tag, new Transform2d(new Translation2d(-8.4252, 0), new Rotation2d(Math.toRadians(180))));
                     measurePoses.add(rpose);
 
                     packet.fieldOverlay()
@@ -142,7 +140,7 @@ public class KalmanTestOpmode extends LinearOpMode {
 
             for (AprilTagDetection tag : tags){
                 if (tag.decisionMargin > 120){
-                    Pose2d rpose = Positioner.getRobotPose(tag, new Transform2d(new Translation2d(8, 0), new Rotation2d(Math.toRadians(0))));
+                    Pose2d rpose = Positioner.getRobotPose(tag, new Transform2d(new Translation2d(8.4252, -1.220), new Rotation2d(Math.toRadians(0))));
                     measurePoses.add(rpose);
 
                     packet.fieldOverlay()

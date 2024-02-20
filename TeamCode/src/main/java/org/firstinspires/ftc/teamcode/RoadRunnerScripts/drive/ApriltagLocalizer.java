@@ -12,7 +12,6 @@ import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
-import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AngularVelocity;
@@ -21,7 +20,6 @@ import org.firstinspires.ftc.teamcode.vision.InitPipes;
 import org.firstinspires.ftc.teamcode.vision.mapper.KalmanPose;
 import org.firstinspires.ftc.teamcode.vision.mapper.MecanumKinematics;
 import org.firstinspires.ftc.teamcode.vision.mapper.Positioner;
-import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
@@ -38,9 +36,9 @@ public class ApriltagLocalizer implements Localizer {
 
     InitPipes instancia = InitPipes.getInstancia();
 
-    double lateralWheelDistance = 14.996;
-    double verticalWheelDistance = 13.228;
-    double WHEEL_RADIUS = 1.47;
+    double lateralWheelDistance = 13.18898;
+    double verticalWheelDistance = 13.97;
+    double WHEEL_RADIUS = 1.88976;
     double GEAR_RATIO = 1.0;
     double TICKS_PER_REV = 537.6;
 
@@ -68,6 +66,9 @@ public class ApriltagLocalizer implements Localizer {
         leftRear = hardwareMap.get(DcMotorEx.class, "motorBackLeft");
         rightRear = hardwareMap.get(DcMotorEx.class, "motorBackRight");
         rightFront = hardwareMap.get(DcMotorEx.class, "motorFrontRight");
+
+        rightFront.setDirection(DcMotorEx.Direction.REVERSE);
+        rightRear.setDirection(DcMotorEx.Direction.REVERSE);
         motors = Arrays.asList(leftFront, leftRear, rightRear, rightFront);
 
         //IMU Config
@@ -135,7 +136,7 @@ public class ApriltagLocalizer implements Localizer {
             ArrayList<AprilTagDetection> tags = instancia.returnTagProcessor1().getDetections();
             for(AprilTagDetection tag : tags){
                 if (tag.decisionMargin > 120) {
-                    com.arcrobotics.ftclib.geometry.Pose2d rpose = Positioner.getRobotPose(tag, new Transform2d(new Translation2d(-6.5, 0), new Rotation2d(Math.toRadians(180))));
+                    com.arcrobotics.ftclib.geometry.Pose2d rpose = Positioner.getRobotPose(tag, new Transform2d(new Translation2d(-8.4252, 0), new Rotation2d(Math.toRadians(180))));
                     measurePoses.add(rpose);
                 }
             }
@@ -147,7 +148,7 @@ public class ApriltagLocalizer implements Localizer {
 
             for (AprilTagDetection tag : tags){
                 if (tag.decisionMargin > 120) {
-                    com.arcrobotics.ftclib.geometry.Pose2d rpose = Positioner.getRobotPose(tag, new Transform2d(new Translation2d(-6.5, 0), new Rotation2d(Math.toRadians(0))));
+                    com.arcrobotics.ftclib.geometry.Pose2d rpose = Positioner.getRobotPose(tag, new Transform2d(new Translation2d(8.4252, -1.220), new Rotation2d(Math.toRadians(0))));
                     measurePoses.add(rpose);
                 }
             }

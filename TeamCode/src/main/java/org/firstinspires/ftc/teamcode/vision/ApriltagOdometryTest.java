@@ -28,8 +28,6 @@ public class ApriltagOdometryTest extends LinearOpMode {
     VisionPortal visionPortal1;
     VisionPortal visionPortal2;
 
-
-
     FtcDashboard dashboard;
     String[] colors = {
             "red",
@@ -117,8 +115,6 @@ public class ApriltagOdometryTest extends LinearOpMode {
                 packet.put("tag Y", tag.ftcPose.y);
                 packet.put("tag rot DEGREES:", tag.ftcPose.yaw);
                 packet.put("tag teoreticalpose", Positioner.tagTheoreticalPose(tag));
-
-
 
                 packet.put("pose ", rpose);
 
