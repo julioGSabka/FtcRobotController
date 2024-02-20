@@ -28,6 +28,8 @@ public class ApriltagOdometryTest extends LinearOpMode {
     VisionPortal visionPortal1;
     VisionPortal visionPortal2;
 
+
+
     FtcDashboard dashboard;
     String[] colors = {
             "red",
@@ -51,7 +53,7 @@ public class ApriltagOdometryTest extends LinearOpMode {
                 .setDrawTagOutline(true)
                 .setDrawAxes(true)
                 .setDrawCubeProjection(true)
-                .setLensIntrinsics(822.317, 822.317, 319.495, 242.502)
+                .setLensIntrinsics(1219.057, 1220.919, 617.782, 339.444)
                 .setTagFamily(AprilTagProcessor.TagFamily.TAG_36h11)
                 .setTagLibrary(AprilTagCustomDatabase.getCenterStageLibrary())
                 .build();
@@ -61,7 +63,7 @@ public class ApriltagOdometryTest extends LinearOpMode {
                 .setDrawTagOutline(true)
                 .setDrawAxes(true)
                 .setDrawCubeProjection(true)
-                .setLensIntrinsics(854.2712445, 875.96651965, 613.29710682, 537.91085293)
+                .setLensIntrinsics(1494.943, 1490.958, 934.017, 549.413)
                 .setTagFamily(AprilTagProcessor.TagFamily.TAG_36h11)
                 .setTagLibrary(AprilTagCustomDatabase.getCenterStageLibrary())
                 .build();
@@ -69,7 +71,7 @@ public class ApriltagOdometryTest extends LinearOpMode {
         visionPortal1 = new VisionPortal.Builder()
                 .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
                 .addProcessor(tagProcessor1)
-                .setCameraResolution(new Size(640, 480))
+                .setCameraResolution(new Size(1280, 720))
                 .setStreamFormat(VisionPortal.StreamFormat.MJPEG)
                 .enableLiveView(true)
                 .setLiveViewContainerId(portalsList[0])
@@ -79,7 +81,7 @@ public class ApriltagOdometryTest extends LinearOpMode {
         visionPortal2 = new VisionPortal.Builder()
                 .setCamera(hardwareMap.get(WebcamName.class, "Webcam 2"))
                 .addProcessor(tagProcessor2)
-                .setCameraResolution(new Size(640, 480))
+                .setCameraResolution(new Size(1920, 1080))
                 .setStreamFormat(VisionPortal.StreamFormat.MJPEG)
                 .enableLiveView(true)
                 .setLiveViewContainerId(portalsList[1])
@@ -110,7 +112,7 @@ public class ApriltagOdometryTest extends LinearOpMode {
             for(AprilTagDetection tag : tags){
 
                 Pose2d rpose = Positioner.getRobotPose(tag, new Transform2d(new Translation2d(-6.5, 0), new Rotation2d(Math.toRadians(180))));
-                //Positioner.tagToCamPose(tag);
+                        //Positioner.tagToCamPose(tag);
                 packet.put("tag X", tag.ftcPose.x);
                 packet.put("tag Y", tag.ftcPose.y);
                 packet.put("tag rot DEGREES:", tag.ftcPose.yaw);

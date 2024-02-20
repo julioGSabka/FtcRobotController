@@ -29,7 +29,7 @@ public class Positioner {
     public static Pose2d tagToCamPose(AprilTagDetection tag){
         double x, y, Orientation;
 
-        // daq em diante é tudo cordenada do roadrunner
+        // daq em diante é tudo coordenada do roadrunner
 
         x = tag.metadata.fieldPosition.get(0) + (tag.ftcPose.y *  Math.cos(Math.toRadians(tag.metadata.fieldPosition.get(3)))) +
                 (tag.ftcPose.x * Math.sin(Math.toRadians(tag.metadata.fieldPosition.get(3))));
