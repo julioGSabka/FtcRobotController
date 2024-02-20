@@ -80,9 +80,9 @@ public class OpmodeCV extends LinearOpMode {
             telemetry.addData("Status", "Running");
 
             double velocity = (gamepad1.right_trigger * 0.70) + 0.20;
-            double y = gamepad1.left_stick_y * velocity;
-            double x = gamepad1.left_stick_x * -1.1 * velocity;
-            double rx = gamepad1.right_stick_x * velocity;
+            double y = -gamepad1.left_stick_y * velocity;
+            double x = gamepad1.left_stick_x * 1.1 * velocity;
+            double rx = -gamepad1.right_stick_x * velocity;
 
             double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
             double frontLeftPower = (y + x + rx) / denominator;
@@ -140,7 +140,7 @@ public class OpmodeCV extends LinearOpMode {
             //Intake Commands
             if (gamepad2.start) {
                 intake.startIntake();
-                PixelsnaGarra = 0;
+                //PixelsnaGarra = 0;
             }
             if (gamepad2.back) {
                 intake.stopIntake();
@@ -174,7 +174,7 @@ public class OpmodeCV extends LinearOpMode {
             }
 
             //Automatic Intake
-            if (distanceSensor.getDistance(DistanceUnit.CM) < 5.5 && distanciaAnterior > 5.5) {
+            if (distanceSensor.getDistance(DistanceUnit.CM) < 10 && distanciaAnterior > 10) {
                 PixelsnaGarra += 1;
                 if (PixelsnaGarra == 2) {
                     sleep(700);

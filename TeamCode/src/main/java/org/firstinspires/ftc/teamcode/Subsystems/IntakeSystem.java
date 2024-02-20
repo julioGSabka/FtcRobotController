@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.Subsystems;
 
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -18,6 +19,7 @@ public class IntakeSystem {
     public IntakeSystem(HardwareMap hardwareMap, boolean using){
         intake = hardwareMap.get(DcMotorEx.class,"Intake"); //Ex0
         intake.setDirection(DcMotorEx.Direction.REVERSE);
+        intake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         esteira = hardwareMap.get(DcMotorEx.class, "Esteira"); //
     }
 
