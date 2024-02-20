@@ -4,6 +4,7 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -58,6 +59,13 @@ public class OpmodeCV extends LinearOpMode {
         motorBackLeft = hardwareMap.get(DcMotorEx.class,"motorBackLeft"); //1
         motorFrontRight = hardwareMap.get(DcMotorEx.class,"motorFrontRight"); //2
         motorBackRight = hardwareMap.get(DcMotorEx.class,"motorBackRight"); //3
+
+        motorFrontLeft .setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorBackLeft  .setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorFrontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorBackRight .setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+
         launcher = hardwareMap.get(Servo.class, "launcher");
         distanceSensor = hardwareMap.get(DistanceSensor.class, "DistanceSensor");//2
 
@@ -78,22 +86,6 @@ public class OpmodeCV extends LinearOpMode {
 
         while (opModeIsActive()) {
             telemetry.addData("Status", "Running");
-
-            double velocity = (gamepad1.right_trigger * 0.70) + 0.20;
-            double y = -gamepad1.left_stick_y * velocity;
-            double x = gamepad1.left_stick_x * 1.1 * velocity;
-            double rx = -gamepad1.right_stick_x * velocity;
-
-            double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
-            double frontLeftPower = (y + x + rx) / denominator;
-            double backLeftPower = (y - x + rx) / denominator;
-            double frontRightPower = (y - x - rx) / denominator;
-            double backRightPower = (y + x - rx) / denominator;
-
-            motorFrontLeft.setPower(frontLeftPower);
-            motorBackLeft.setPower(backLeftPower);
-            motorFrontRight.setPower(frontRightPower);
-            motorBackRight.setPower(backRightPower);
 
             new Thread(new Runnable() {
                 @Override
@@ -183,22 +175,30 @@ public class OpmodeCV extends LinearOpMode {
             }
             distanciaAnterior = distanceSensor.getDistance(DistanceUnit.CM);
 
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
                     //Alinhamento Automatico com as AprilTags
-                    if (gamepad1.dpad_left) {
-                        moveRobot(instancia.AlignToBackdropTag(1, 4));
-                    }
-                    if (gamepad1.dpad_down) {
-                        moveRobot(instancia.AlignToBackdropTag(2, 5));
-                    }
-                    if (gamepad1.dpad_right) {
-                        moveRobot(instancia.AlignToBackdropTag(3, 6));
-                    }
-                }
-            }).start();
+            if (gamepad1.dpad_left) {
+                moveRobot(instancia.AlignToBackdropTag(1, 4));
+            }else if (gamepad1.dpad_down) {
+                moveRobot(instancia.AlignToBackdropTag(2, 5));
+            } else if (gamepad1.dpad_right) {
+                moveRobot(instancia.AlignToBackdropTag(3, 6));
+            }else{
+                double velocity = (gamepad1.right_trigger * 0.70) + 0.20;
+                double y = -gamepad1.left_stick_y * velocity;
+                double x = gamepad1.left_stick_x * 1.1 * velocity;
+                double rx = -gamepad1.right_stick_x * velocity;
 
+                double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
+                double frontLeftPower = (y + x + rx) / denominator;
+                double backLeftPower = (y - x + rx) / denominator;
+                double frontRightPower = (y - x - rx) / denominator;
+                double backRightPower = (y + x - rx) / denominator;
+
+                motorFrontLeft.setPower(frontLeftPower);
+                motorBackLeft.setPower(backLeftPower);
+                motorFrontRight.setPower(frontRightPower);
+                motorBackRight.setPower(backRightPower);
+            }
 
             telemetry.addLine("Opmode");
             telemetry.addData("Status", "Run Time: " + runtime.toString());

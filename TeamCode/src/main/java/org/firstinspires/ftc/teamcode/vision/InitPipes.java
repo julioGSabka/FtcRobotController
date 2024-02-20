@@ -22,10 +22,10 @@ public class InitPipes {
     int desiredBlueTagID = -1;
     int desiredRedTagID = -1;
 
-    final double DESIRED_DISTANCE = 12.0;
-    final double SPEED_GAIN  =  0.02  ;   //  Forward Speed Control "Gain". eg: Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
-    final double STRAFE_GAIN =  0.015 ;   //  Strafe Speed Control "Gain".  eg: Ramp up to 25% power at a 25 degree Yaw error.   (0.25 / 25.0)
-    final double TURN_GAIN   =  0.01  ;   //  Turn Control "Gain".  eg: Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
+    final double DESIRED_DISTANCE = 10.0;
+    final double SPEED_GAIN  =  -0.02  ;   //  Forward Speed Control "Gain". eg: Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
+    final double STRAFE_GAIN =  0.03 ;   //  Strafe Speed Control "Gain".  eg: Ramp up to 25% power at a 25 degree Yaw error.   (0.25 / 25.0)
+    final double TURN_GAIN   =  -0.01  ;   //  Turn Control "Gain".  eg: Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
 
     final double MAX_AUTO_SPEED  = 0.5;   //  Clip the approach speed to this max value (adjust for your robot)
     final double MAX_AUTO_STRAFE = 0.5;   //  Clip the approach speed to this max value (adjust for your robot)
@@ -202,9 +202,9 @@ public class InitPipes {
         if (targetFound) {
 
             // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
-            double  rangeError      = (desiredTag.ftcPose.range - DESIRED_DISTANCE);
-            double  headingError    = desiredTag.ftcPose.bearing;
-            double  yawError        = desiredTag.ftcPose.yaw;
+            double  rangeError      = (desiredTag.ftcPose.y - DESIRED_DISTANCE);
+            double  headingError    = desiredTag.ftcPose.yaw;
+            double  yawError        = desiredTag.ftcPose.x;
 
             // Use the speed and turn "gains" to calculate how we want the robot to move.
             drive  = -Range.clip(rangeError * SPEED_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
@@ -216,7 +216,6 @@ public class InitPipes {
 
         // Apply desired axes motions to the drivetrain.
         List<Double> motorVels = moveRobot(drive, strafe, turn);
-        sleep(10);
         return motorVels;
 
     }
