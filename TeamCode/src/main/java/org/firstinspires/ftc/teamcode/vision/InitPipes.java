@@ -2,10 +2,13 @@ package org.firstinspires.ftc.teamcode.vision;
 
 import android.util.Size;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.ExposureControl;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.FocusControl;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
@@ -14,7 +17,8 @@ import org.firstinspires.ftc.vision.tfod.TfodProcessor;
 
 import java.util.ArrayList;
 import java.util.List;
-
+import java.util.concurrent.TimeUnit;
+@Config
 public class InitPipes {
 
     boolean targetFound = false;
@@ -22,18 +26,21 @@ public class InitPipes {
     int desiredBlueTagID = -1;
     int desiredRedTagID = -1;
 
-    final double DESIRED_DISTANCE = 10.0;
-    final double SPEED_GAIN  =  -0.02  ;   //  Forward Speed Control "Gain". eg: Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
-    final double STRAFE_GAIN =  0.03 ;   //  Strafe Speed Control "Gain".  eg: Ramp up to 25% power at a 25 degree Yaw error.   (0.25 / 25.0)
-    final double TURN_GAIN   =  -0.01  ;   //  Turn Control "Gain".  eg: Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
+    static double DESIRED_DISTANCE = 10.0;
+    static double SPEED_GAIN  =  -0.02  ;   //  Forward Speed Control "Gain". eg: Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
+    static double STRAFE_GAIN =  0.03 ;   //  Strafe Speed Control "Gain".  eg: Ramp up to 25% power at a 25 degree Yaw error.   (0.25 / 25.0)
+    static double TURN_GAIN   =  -0.01  ;   //  Turn Control "Gain".  eg: Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
 
-    final double MAX_AUTO_SPEED  = 0.5;   //  Clip the approach speed to this max value (adjust for your robot)
-    final double MAX_AUTO_STRAFE = 0.5;   //  Clip the approach speed to this max value (adjust for your robot)
-    final double MAX_AUTO_TURN   = 0.3;   //  Clip the turn speed to this max value (adjust for your robot)
+    static double MAX_AUTO_SPEED  = 0.5;   //  Clip the approach speed to this max value (adjust for your robot)
+    static double MAX_AUTO_STRAFE = 0.5;   //  Clip the approach speed to this max value (adjust for your robot)
+    static double MAX_AUTO_TURN   = 0.3;   //  Clip the turn speed to this max value (adjust for your robot)
 
     double drive = 0;    // Desired forward power/speed (-1 to +1)
     double strafe = 0;   // Desired strafe power/speed (-1 to +1)
     double turn = 0;     // Desired turning power/speed (-1 to +1)
+
+    static double exposureMS = 5;
+    static double focusLength = 0;
 
 
     AprilTagProcessor tagProcessor1;
@@ -102,7 +109,6 @@ public class InitPipes {
                 .setAutoStopLiveView(true)
                 .build();
 
-
         visionPortal2 = new VisionPortal.Builder()
                 .setCamera(hardwareMap.get(WebcamName.class, "Webcam 2"))
                 .addProcessors(tagProcessor2, teamPropTFOD)
@@ -113,12 +119,18 @@ public class InitPipes {
                 .setAutoStopLiveView(true)
                 .build();
 
+
         visionPortal1.setProcessorEnabled(tagProcessor1, true);
         visionPortal2.setProcessorEnabled(tagProcessor2, true);
         visionPortal2.setProcessorEnabled(teamPropTFOD, true);
 
         tagProcessor1.setPoseSolver(AprilTagProcessor.PoseSolver.OPENCV_SOLVEPNP_EPNP);
         tagProcessor2.setPoseSolver(AprilTagProcessor.PoseSolver.OPENCV_SOLVEPNP_EPNP);
+
+        while(visionPortal1.getCameraState() != VisionPortal.CameraState.STREAMING);
+        while(visionPortal2.getCameraState() != VisionPortal.CameraState.STREAMING);
+
+        setCamSettings();
     }
 
     public ArrayList<AprilTagDetection> updateTagProcessor1(){
@@ -137,6 +149,36 @@ public class InitPipes {
         visionPortal2.stopStreaming();
         visionPortal2.close();
 
+    }
+
+    public boolean setCamSettings(){
+        if(visionPortal1.getCameraState() == VisionPortal.CameraState.STREAMING){
+            ExposureControl exposureControl1 = visionPortal2.getCameraControl(ExposureControl.class);
+            if (exposureControl1.getMode() != ExposureControl.Mode.Manual) {
+                exposureControl1.setMode(ExposureControl.Mode.Manual);
+                sleep(50);
+            }
+            exposureControl1.setExposure((long)exposureMS, TimeUnit.MILLISECONDS);
+        }else{
+            return false;
+        }
+
+        if(visionPortal2.getCameraState() == VisionPortal.CameraState.STREAMING){
+            ExposureControl exposureControl2 = visionPortal2.getCameraControl(ExposureControl.class);
+            if (exposureControl2.getMode() != ExposureControl.Mode.Manual) {
+                exposureControl2.setMode(ExposureControl.Mode.Manual);
+                sleep(50);
+            }
+            exposureControl2.setExposure((long)exposureMS, TimeUnit.MILLISECONDS);
+
+            FocusControl focusControl2 = visionPortal2.getCameraControl(FocusControl.class);
+            if(focusControl2.getMode() == FocusControl.Mode.Fixed){
+                focusControl2.setFocusLength(focusLength);
+            }
+        }else{
+            return false;
+        }
+        return true;
     }
     
     public AprilTagProcessor returnTagProcessor1(){

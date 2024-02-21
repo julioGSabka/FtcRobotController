@@ -65,7 +65,6 @@ public class OpmodeCV extends LinearOpMode {
         motorFrontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorBackRight .setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-
         launcher = hardwareMap.get(Servo.class, "launcher");
         distanceSensor = hardwareMap.get(DistanceSensor.class, "DistanceSensor");//2
 
@@ -175,7 +174,7 @@ public class OpmodeCV extends LinearOpMode {
             }
             distanciaAnterior = distanceSensor.getDistance(DistanceUnit.CM);
 
-                    //Alinhamento Automatico com as AprilTags
+            //Alinhamento Automatico com as AprilTags
             if (gamepad1.dpad_left) {
                 moveRobot(instancia.AlignToBackdropTag(1, 4));
             }else if (gamepad1.dpad_down) {
