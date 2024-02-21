@@ -34,7 +34,7 @@ public class CheckUpCode extends LinearOpMode {
     private ServoImplEx servoElevacaoL = null;
     private ServoImplEx servoElevacaoR = null;
 
-    public static double RUNTIME = 2.0;
+    public static double RUNTIME = 1.0;
 
     private ElapsedTime timer;
     private double current = 0.0;
@@ -106,52 +106,73 @@ public class CheckUpCode extends LinearOpMode {
         telemetry.addLine("VERIFICAÇÃO DOS CABOS");
         int i = 0;
         for (DcMotorEx motor : motors){
-
             motor.setPower(0.2);
             sleep(200);
-            if (motor.getVelocity() < 0.01){
+            if (motor.getCurrent(CurrentUnit.AMPS) < 0.2) {
                 telemetry.addData("Motor", motoresString.get(i));
-                telemetry.addData("** está desconectado", motor.getCurrent(CurrentUnit.AMPS));
+                telemetry.addData("** CABO DE ENERGIA está desconectado", motor.getCurrent(CurrentUnit.AMPS));
+            }else if (motor.getVelocity() < 1){
+                telemetry.addData("Motor", motoresString.get(i));
+                telemetry.addData("** CABO DO ENCODER está desconectado", motor.getCurrent(CurrentUnit.AMPS));
             } else if (motor.getCurrent(CurrentUnit.AMPS) > 2){
                 telemetry.addData("Motor", motoresString.get(i));
                 telemetry.addData("** está consumindo além do esperado", motor.getCurrent(CurrentUnit.AMPS));
             } else {
                 telemetry.addData("Motor", motoresString.get(i));
-                telemetry.addData("está funcionando", motor.getCurrent(CurrentUnit.AMPS));
+                telemetry.addData("OK -- Corrente", motor.getCurrent(CurrentUnit.AMPS));
             }
             sleep(200);
             motor.setPower(0);
 
             i += 1;
         }
+
+        telemetry.addLine("pressione A para continuar");
+        telemetry.update();
+        while (gamepad1.a != true){
+
+        }
+        telemetry.addLine("VERIFICAÇÃO DO CONSUMO");
+        telemetry.addLine("Coloque o robô do chão");
+        telemetry.addLine("O ROBÔ VAI SE MOVIMENAR!!");
+        telemetry.addLine(" - Pressione A para seguir em frente - ");
         telemetry.update();
 
-        i = 0;
-        telemetry.addLine("VERIFICAÇÃO DO CONSUMO");
+        while (gamepad1.a != true){
+
+        }
+
         for (DcMotorEx motor : motors){
             motor.setPower(1);
-
-            timer = new ElapsedTime();
-            while (!isStopRequested() && timer.seconds() < RUNTIME) {
+        }
+        timer = new ElapsedTime();
+        while (!isStopRequested() && timer.seconds() < RUNTIME) {
+            for (DcMotorEx motor : motors) {
                 current = Math.max(motor.getCurrent(CurrentUnit.AMPS), current);
             }
-            if (current < 0.01){
+        }
+        for (DcMotorEx motor : motors){
+            motor.setPower(0);
+        }
+
+        i=0;
+        for (DcMotorEx motor : motors) {
+            if (current < 0.01) {
                 telemetry.addData("Motor", motoresString.get(i));
                 telemetry.addData("** está desconectado", current);
-            } else if (current > 4){
+            } else if (current > 4) {
                 telemetry.addData("Motor", motoresString.get(i));
                 telemetry.addData("** está consumindo além do esperado", current);
             } else {
                 telemetry.addData("Motor", motoresString.get(i));
                 telemetry.addData("está funcionando", current);
             }
-            sleep(2000);
-            motor.setPower(0);
-
-            i += 1;
+            i++;
         }
+
+        telemetry.addLine(" - Pressione A para finalizar - ");
         telemetry.update();
-        while (!isStopRequested()){
+        while (gamepad1.a != true){
 
         }
 
