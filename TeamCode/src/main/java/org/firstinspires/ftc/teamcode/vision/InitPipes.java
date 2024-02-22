@@ -18,6 +18,7 @@ import org.firstinspires.ftc.vision.tfod.TfodProcessor;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+
 @Config
 public class InitPipes {
 
@@ -26,7 +27,7 @@ public class InitPipes {
     int desiredBlueTagID = -1;
     int desiredRedTagID = -1;
 
-    static double DESIRED_DISTANCE = 10.0;
+    public static double DESIRED_DISTANCE = 10.0;
     static double SPEED_GAIN  =  -0.02  ;   //  Forward Speed Control "Gain". eg: Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
     static double STRAFE_GAIN =  0.03 ;   //  Strafe Speed Control "Gain".  eg: Ramp up to 25% power at a 25 degree Yaw error.   (0.25 / 25.0)
     static double TURN_GAIN   =  -0.01  ;   //  Turn Control "Gain".  eg: Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
@@ -39,8 +40,8 @@ public class InitPipes {
     double strafe = 0;   // Desired strafe power/speed (-1 to +1)
     double turn = 0;     // Desired turning power/speed (-1 to +1)
 
-    static double exposureMS = 5;
-    static double focusLength = 0;
+    public static double exposureMS = 5;
+    public static double focusLength = 0;
 
 
     AprilTagProcessor tagProcessor1;

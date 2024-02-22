@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.Subsystems;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
@@ -43,17 +42,18 @@ public class IntakeSystem {
     }
 
     public void intakeSetPower(){
-       intake.setPower(0.7);
+       intake.setPower(0.25);
     }
 
     public void esteiraSetPower(){
-        esteira.setPower(1);
+        esteira.setPower(0.25);
     }
 
     public void reverseIntake(){
         intake.setPower(-1);
         esteira.setPower(-1);
     }
+
 
     public double getIntakePower(){
         return intake.getPower();

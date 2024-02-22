@@ -181,7 +181,26 @@ public class OpmodeCV extends LinearOpMode {
                 moveRobot(instancia.AlignToBackdropTag(2, 5));
             } else if (gamepad1.dpad_right) {
                 moveRobot(instancia.AlignToBackdropTag(3, 6));
-            }else{
+            } else if (gamepad2.right_stick_button){
+                intake.startIntake();
+                while(intake.getIntakeCurrent() < 3){
+                    motorFrontLeft.setPower(-0.2);
+                    motorBackLeft.setPower(-0.2);
+                    motorFrontRight.setPower(-0.2);
+                    motorBackRight.setPower(-0.2);
+                }
+                sleep(250);
+                //intake.stopIntake();
+                motorFrontLeft.setPower(0.3);
+                motorBackLeft.setPower(0.3);
+                motorFrontRight.setPower(0.3);
+                motorBackRight.setPower(0.3);
+                sleep(1000);
+                motorFrontLeft.setPower(0);
+                motorBackLeft.setPower(0);
+                motorFrontRight.setPower(0);
+                motorBackRight.setPower(0);
+            } else{
                 double velocity = (gamepad1.right_trigger * 0.70) + 0.20;
                 double y = -gamepad1.left_stick_y * velocity;
                 double x = gamepad1.left_stick_x * 1.1 * velocity;
