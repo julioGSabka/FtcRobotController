@@ -27,8 +27,8 @@ public class BackdropRed extends LinearOpMode {
     public void runOpMode()  {
 
         //HardwareMap Config
-        arm = new ArmSystem(hardwareMap);
-        intake = new IntakeSystem(hardwareMap);
+        arm = new ArmSystem(hardwareMap, true);
+        intake = new IntakeSystem(hardwareMap, true);
 
         instancia.initVision(hardwareMap);
 

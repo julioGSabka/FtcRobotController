@@ -40,8 +40,9 @@ public class PictureOpMode extends LinearOpMode {
             }
             lastA = a;
 
-            if(b && !lastB){
+            if(b){
                 portal2.saveNextFrameRaw(String.format(Locale.US, "LogiCapture-%06d", frameCount2++));
+                sleep(300);
             }
             lastB = b;
 

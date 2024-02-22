@@ -42,11 +42,11 @@ public class IntakeSystem {
     }
 
     public void intakeSetPower(){
-       intake.setPower(0.25);
+       intake.setPower(0.6);
     }
 
     public void esteiraSetPower(){
-        esteira.setPower(0.25);
+        esteira.setPower(1);
     }
 
     public void reverseIntake(){

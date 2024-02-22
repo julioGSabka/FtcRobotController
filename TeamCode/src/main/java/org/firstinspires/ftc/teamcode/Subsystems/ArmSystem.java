@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.Subsystems;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.hardware.ServoImplEx;
 
 public class ArmSystem {
 
@@ -25,11 +24,11 @@ public class ArmSystem {
     public void UpArm() {
         cotovelo.setPosition(0.8);
         ombro.setPosition(0.95);
-        sleep(500);
+        sleep(350);
         cotovelo.setPosition(0.97);
-        sleep(500);
+        sleep(350);
         ombro.setPosition(0);
-        sleep(500);
+        sleep(350);
         cotovelo.setPosition(0.35);
     }
     //Cotovelo: 1 - Recolhido

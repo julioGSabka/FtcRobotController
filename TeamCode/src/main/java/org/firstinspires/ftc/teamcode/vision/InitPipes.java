@@ -3,8 +3,6 @@ package org.firstinspires.ftc.teamcode.vision;
 import android.util.Size;
 
 import com.acmerobotics.dashboard.config.Config;
-import com.google.gson.internal.bind.util.ISO8601Utils;
-import com.qualcomm.hardware.ams.AMSColorSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.Range;
 
@@ -55,9 +53,9 @@ public class InitPipes {
     VisionPortal visionPortal2;
     TfodProcessor teamPropTFOD;
 
-    private static final String TFOD_MODEL_ASSET = "model_20240115_155137.tflite";
+    private static final String TFOD_MODEL_ASSET = "redHorseTFOD.tflite";
     private static final String[] LABELS = {
-            "Blue Cube", "Red Cube"
+            "Red Horse"
     };
 
     private static InitPipes instancia;
@@ -242,7 +240,7 @@ public class InitPipes {
             double x = (recognition.getLeft() + recognition.getRight()) / 2 ;
             double y = (recognition.getTop()  + recognition.getBottom()) / 2 ;
 
-            if (recognition.getLabel() == "Blue Cube") {
+            if (recognition.getLabel() == "Red Horse") {
                 if (x <= 440) {
                     detection = 1;
                 } else if (x > 440 && x < 1280) {
