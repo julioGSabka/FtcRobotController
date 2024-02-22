@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -19,6 +21,7 @@ public class PictureOpMode extends LinearOpMode {
     boolean lastB = false;
     @Override
     public void runOpMode() {
+        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         instancia.initVision(hardwareMap);
         portal1 = instancia.returnVisionPortal1();
         portal2 = instancia.returnVisionPortal2();
@@ -28,17 +31,17 @@ public class PictureOpMode extends LinearOpMode {
         telemetry.addLine("waiting for image");
         telemetry.update();
 
-        while(!isStopRequested()){
+        while(opModeIsActive()){
             boolean a = gamepad1.a;
             boolean b = gamepad1.b;
 
             if(a && !lastA){
-                portal2.saveNextFrameRaw(String.format(Locale.US, "RedragonCapture-%06d", frameCount1++));
+                portal1.saveNextFrameRaw(String.format(Locale.US, "RedragonCapture-%06d", frameCount1++));
             }
             lastA = a;
 
             if(b && !lastB){
-                portal1.saveNextFrameRaw(String.format(Locale.US, "LogiCapture-%06d", frameCount2++));
+                portal2.saveNextFrameRaw(String.format(Locale.US, "LogiCapture-%06d", frameCount2++));
             }
             lastB = b;
 
@@ -46,5 +49,6 @@ public class PictureOpMode extends LinearOpMode {
             telemetry.addData("contagem Logi", frameCount2);
             telemetry.update();
         }
+        instancia.closeCams();
     }
 }

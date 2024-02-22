@@ -3,12 +3,15 @@ package org.firstinspires.ftc.teamcode.vision;
 import android.util.Size;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.google.gson.internal.bind.util.ISO8601Utils;
+import com.qualcomm.hardware.ams.AMSColorSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.ExposureControl;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.FocusControl;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.GainControl;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
@@ -43,6 +46,8 @@ public class InitPipes {
     public static double exposureMS = 5;
     public static double focusLength = 0;
 
+    public static int gain = 255;
+
 
     AprilTagProcessor tagProcessor1;
     AprilTagProcessor tagProcessor2;
@@ -69,6 +74,25 @@ public class InitPipes {
     }
 
     public void initVision(HardwareMap hardwareMap){
+        /**
+         * C920 camera 2
+         * Focals (pixels) - Fx: 615.421 Fy: 615.421
+         * Optical center - Cx: 645.509 Cy: 353.159
+         *
+         * C270 camera 1
+         * Focals (pixels) - Fx: 959.175 Fy: 959.175
+         * Optical center - Cx: 406.893 Cy: 234.326
+         *
+         *
+         * ================ OLD NAO USAR! ==================
+         * C920
+         * Focals (pixels) - Fx: 968.405 Fy: 968.405
+         * Optical center - Cx: 604.808 Cy: 364.632
+         *
+         * C270
+         * Focals (pixels) - Fx: 920.729 Fy: 920.729
+         * Optical center - Cx: 511.404 Cy: 152.429
+         */
         int[] portalsList = VisionPortal.makeMultiPortalView(2, VisionPortal.MultiPortalLayout.HORIZONTAL);
 
         tagProcessor1 = new AprilTagProcessor.Builder()
@@ -76,7 +100,7 @@ public class InitPipes {
                 .setDrawTagOutline(true)
                 .setDrawAxes(true)
                 .setDrawCubeProjection(true)
-                .setLensIntrinsics(822.317, 822.317, 319.495, 242.502)
+                .setLensIntrinsics(959.175, 959.175, 406.893, 234.326)
                 .setTagFamily(AprilTagProcessor.TagFamily.TAG_36h11)
                 .setTagLibrary(AprilTagCustomDatabase.getCenterStageLibrary())
                 .build();
@@ -86,7 +110,7 @@ public class InitPipes {
                 .setDrawTagOutline(true)
                 .setDrawAxes(true)
                 .setDrawCubeProjection(true)
-                .setLensIntrinsics(854.2712445, 875.96651965, 613.29710682, 537.91085293)
+                .setLensIntrinsics(615.421, 615.421, 645.509, 353.159)
                 .setTagFamily(AprilTagProcessor.TagFamily.TAG_36h11)
                 .setTagLibrary(AprilTagCustomDatabase.getCenterStageLibrary())
                 .build();
@@ -103,7 +127,12 @@ public class InitPipes {
         visionPortal1 = new VisionPortal.Builder()
                 .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
                 .addProcessor(tagProcessor1)
-                .setCameraResolution(new Size(640, 480))
+                //Supported resolutions are
+                // [640x480], [160x120], [176x144], [320x176], [320x240],
+                // [352x288], [432x240], [544x288], [640x360], [752x416],
+                // [800x448], [800x600], [864x480], [960x544], [960x720],
+                // [1024x576], [1184x656], [1280x720], [1280x960],
+                .setCameraResolution(new Size(800, 448))
                 .setStreamFormat(VisionPortal.StreamFormat.MJPEG)
                 .enableLiveView(true)
                 .setLiveViewContainerId(portalsList[0])
@@ -113,7 +142,7 @@ public class InitPipes {
         visionPortal2 = new VisionPortal.Builder()
                 .setCamera(hardwareMap.get(WebcamName.class, "Webcam 2"))
                 .addProcessors(tagProcessor2, teamPropTFOD)
-                .setCameraResolution(new Size(1920, 1080))
+                .setCameraResolution(new Size(1280, 720))
                 .setStreamFormat(VisionPortal.StreamFormat.MJPEG)
                 .enableLiveView(true)
                 .setLiveViewContainerId(portalsList[1])
@@ -142,24 +171,22 @@ public class InitPipes {
     }
 
     public void closeCams(){
-        visionPortal1.stopLiveView();
-        visionPortal1.stopStreaming();
         visionPortal1.close();
-
-        visionPortal2.stopLiveView();
-        visionPortal2.stopStreaming();
         visionPortal2.close();
 
     }
 
     public boolean setCamSettings(){
         if(visionPortal1.getCameraState() == VisionPortal.CameraState.STREAMING){
-            ExposureControl exposureControl1 = visionPortal2.getCameraControl(ExposureControl.class);
+            ExposureControl exposureControl1 = visionPortal1.getCameraControl(ExposureControl.class);
             if (exposureControl1.getMode() != ExposureControl.Mode.Manual) {
                 exposureControl1.setMode(ExposureControl.Mode.Manual);
                 sleep(50);
             }
             exposureControl1.setExposure((long)exposureMS, TimeUnit.MILLISECONDS);
+
+            GainControl gaincontrol1  = visionPortal1.getCameraControl(GainControl.class);
+            gaincontrol1.setGain(gain);
         }else{
             return false;
         }
@@ -176,6 +203,9 @@ public class InitPipes {
             if(focusControl2.getMode() == FocusControl.Mode.Fixed){
                 focusControl2.setFocusLength(focusLength);
             }
+
+            GainControl gaincontrol2  = visionPortal2.getCameraControl(GainControl.class);
+            gaincontrol2.setGain(gain);
         }else{
             return false;
         }
