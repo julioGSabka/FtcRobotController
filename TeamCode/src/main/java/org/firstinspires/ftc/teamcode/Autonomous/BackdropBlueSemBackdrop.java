@@ -34,6 +34,7 @@ public class BackdropBlueSemBackdrop extends LinearOpMode {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         Pose2d startPose = new Pose2d(12,63.55, Math.toRadians(270));
+        drive.setPoseEstimate(startPose);
 
         ///Trajectory Construct
         TrajectorySequence toSpikeMarks = drive.trajectorySequenceBuilder(startPose)
@@ -41,13 +42,13 @@ public class BackdropBlueSemBackdrop extends LinearOpMode {
                 .build();
         TrajectorySequence parkANALISE1 = drive.trajectorySequenceBuilder( new Pose2d(12,36, Math.toRadians(0)))
                 .lineToLinearHeading(new Pose2d(12, 60, Math.toRadians(0)))
-                .lineToLinearHeading(new Pose2d(52, 60, Math.toRadians(0)))
+                .lineToLinearHeading(new Pose2d(60, 60, Math.toRadians(0)))
                 .build();
         TrajectorySequence parkANALISE2 = drive.trajectorySequenceBuilder(new Pose2d(12,36, Math.toRadians(270)))
                 .lineToLinearHeading(new Pose2d(60, 36, Math.toRadians(270)))
                 .build();
         TrajectorySequence parkANALISE3 = drive.trajectorySequenceBuilder(new Pose2d(12, 36, Math.toRadians(180)))
-                .lineToLinearHeading(new Pose2d(50, 36, Math.toRadians(180)))
+                .lineToLinearHeading(new Pose2d(60, 36, Math.toRadians(180)))
                 .build();
 
         while(analysis == 0 && !isStarted()){

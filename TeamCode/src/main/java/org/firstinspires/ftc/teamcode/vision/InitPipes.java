@@ -46,6 +46,10 @@ public class InitPipes {
 
     public static int gain = 255;
 
+    double  rangeError;
+    double  headingError;
+    double  yawError;
+
 
     AprilTagProcessor tagProcessor1;
     AprilTagProcessor tagProcessor2;
@@ -53,7 +57,7 @@ public class InitPipes {
     VisionPortal visionPortal2;
     TfodProcessor teamPropTFOD;
 
-    private static final String TFOD_MODEL_ASSET = "redHorseTFOD.tflite";
+    private static final String TFOD_MODEL_ASSET = "model_20240115_155137.tflite";
     private static final String[] LABELS = {
             "Red Horse"
     };
@@ -98,7 +102,7 @@ public class InitPipes {
                 .setDrawTagOutline(true)
                 .setDrawAxes(true)
                 .setDrawCubeProjection(true)
-                .setLensIntrinsics(959.175, 959.175, 406.893, 234.326)
+                .setLensIntrinsics(1308.0568774459832, 1309.0599918491519, 465.6182547784557, 129.1917324755751)
                 .setTagFamily(AprilTagProcessor.TagFamily.TAG_36h11)
                 .setTagLibrary(AprilTagCustomDatabase.getCenterStageLibrary())
                 .build();
@@ -108,7 +112,7 @@ public class InitPipes {
                 .setDrawTagOutline(true)
                 .setDrawAxes(true)
                 .setDrawCubeProjection(true)
-                .setLensIntrinsics(615.421, 615.421, 645.509, 353.159)
+                .setLensIntrinsics(1028.4636677848612, 1024.960787540627, 574.8966906772454, 382.2051828835763)
                 .setTagFamily(AprilTagProcessor.TagFamily.TAG_36h11)
                 .setTagLibrary(AprilTagCustomDatabase.getCenterStageLibrary())
                 .build();
@@ -150,7 +154,7 @@ public class InitPipes {
 
         visionPortal1.setProcessorEnabled(tagProcessor1, true);
         visionPortal2.setProcessorEnabled(tagProcessor2, true);
-        visionPortal2.setProcessorEnabled(teamPropTFOD, true);
+        visionPortal2.setProcessorEnabled(teamPropTFOD, false);
 
         tagProcessor1.setPoseSolver(AprilTagProcessor.PoseSolver.OPENCV_SOLVEPNP_EPNP);
         tagProcessor2.setPoseSolver(AprilTagProcessor.PoseSolver.OPENCV_SOLVEPNP_EPNP);
@@ -273,9 +277,9 @@ public class InitPipes {
         if (targetFound) {
 
             // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
-            double  rangeError      = (desiredTag.ftcPose.y - DESIRED_DISTANCE);
-            double  headingError    = desiredTag.ftcPose.yaw;
-            double  yawError        = desiredTag.ftcPose.x;
+            rangeError      = (desiredTag.ftcPose.y - DESIRED_DISTANCE);
+            headingError    = desiredTag.ftcPose.yaw;
+            yawError        = desiredTag.ftcPose.x;
 
             // Use the speed and turn "gains" to calculate how we want the robot to move.
             drive  = -Range.clip(rangeError * SPEED_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
@@ -289,6 +293,10 @@ public class InitPipes {
         List<Double> motorVels = moveRobot(drive, strafe, turn);
         return motorVels;
 
+    }
+
+    public double returnRangeError(){
+        return rangeError;
     }
 
     private List<Double> moveRobot(double x, double y, double yaw) {

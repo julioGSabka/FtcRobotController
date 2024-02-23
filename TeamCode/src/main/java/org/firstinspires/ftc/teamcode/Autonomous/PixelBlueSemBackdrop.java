@@ -32,6 +32,7 @@ public class PixelBlueSemBackdrop extends LinearOpMode {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         Pose2d startPose = new Pose2d(-36,63.55, Math.toRadians(270));
+        drive.setPoseEstimate(startPose);
 
         //start trajectory
         TrajectorySequence toSpikeMarks = drive.trajectorySequenceBuilder(startPose)
@@ -40,18 +41,18 @@ public class PixelBlueSemBackdrop extends LinearOpMode {
         TrajectorySequence parkANALISE1 = drive.trajectorySequenceBuilder(new Pose2d(-36,36, Math.toRadians(0)))
                 .back(5)
                 .turn(Math.toRadians(-90))
-                .lineToLinearHeading(new Pose2d(-36, 10, Math.toRadians(270)))
-                .lineToLinearHeading(new Pose2d(80, 10, Math.toRadians(270)))
+                .lineToLinearHeading(new Pose2d(-36, 12, Math.toRadians(270)))
+                .lineToLinearHeading(new Pose2d(60, 12, Math.toRadians(270)))
                 .build();
         TrajectorySequence parkANALISE2 = drive.trajectorySequenceBuilder(toSpikeMarks.end())
-                .lineToLinearHeading(new Pose2d(-65, 36, Math.toRadians(270)))
-                .lineToLinearHeading(new Pose2d(-65, 8, Math.toRadians(270)))
-                .lineToLinearHeading(new Pose2d(75, 8, Math.toRadians(270)))
+                .lineToLinearHeading(new Pose2d(-60, 36, Math.toRadians(270)))
+                .lineToLinearHeading(new Pose2d(-60, 12, Math.toRadians(270)))
+                .lineToLinearHeading(new Pose2d(60, 12, Math.toRadians(270)))
                 .build();
         TrajectorySequence parkANALISE3 = drive.trajectorySequenceBuilder(new Pose2d(-36,36, Math.toRadians(180)))
-                .lineToLinearHeading(new Pose2d(-36, 2, Math.toRadians(180)))
-                .lineToLinearHeading(new Pose2d(55, 2, Math.toRadians(180)))
-                .lineToLinearHeading(new Pose2d(55, 36, Math.toRadians(180)))
+                .lineToLinearHeading(new Pose2d(-36, 12, Math.toRadians(180)))
+                .lineToLinearHeading(new Pose2d(48, 12, Math.toRadians(180)))
+                .lineToLinearHeading(new Pose2d(48, 36, Math.toRadians(180)))
                 .build();
 
         while(analysis == 0 && !isStarted()){

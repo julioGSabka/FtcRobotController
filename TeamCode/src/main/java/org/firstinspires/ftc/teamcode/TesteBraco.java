@@ -19,7 +19,7 @@ public class TesteBraco extends LinearOpMode {
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
-        arm = new ArmSystem(hardwareMap, true);
+        arm = new ArmSystem(hardwareMap);
 
         waitForStart();
         resetRuntime();

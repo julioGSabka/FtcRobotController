@@ -26,7 +26,7 @@ public class TesteElevacao extends LinearOpMode {
     public void runOpMode() {
 
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
-        elevation = new ElevationSystem(hardwareMap, true);
+        elevation = new ElevationSystem(hardwareMap);
 
         motorFrontLeft = hardwareMap.get(DcMotorEx.class,"motorFrontLeft"); //0
         motorBackLeft = hardwareMap.get(DcMotorEx.class,"motorBackLeft"); //1

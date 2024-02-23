@@ -9,11 +9,7 @@ public class ArmSystem {
     private Servo cotovelo = null;
     private Servo ombro = null;
 
-    public ArmSystem(HardwareMap hardwareMap) {
-        new ArmSystem(hardwareMap, true);
-    }
-
-    public ArmSystem(HardwareMap hardwareMap, boolean using){
+    public ArmSystem(HardwareMap hardwareMap){
 
         garra = hardwareMap.get(Servo.class, "garra"); //Ex0
         cotovelo = hardwareMap.get(Servo.class, "cotovelo"); //4

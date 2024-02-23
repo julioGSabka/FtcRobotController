@@ -61,8 +61,7 @@ public class CheckUpCode extends LinearOpMode {
         //Servos
         garra = hardwareMap.get(Servo.class, "garra"); //Ex0
         cotovelo = hardwareMap.get(ServoImplEx.class, "cotovelo"); //4
-        ombroR = hardwareMap.get(ServoImplEx.class, "ombroR"); //2
-        ombroL = hardwareMap.get(ServoImplEx.class, "ombroL"); //0
+        ombroR = hardwareMap.get(ServoImplEx.class, "ombro"); //2
         servoElevacaoL = hardwareMap.get(ServoImplEx.class, "servoElevacaoL"); //Ex2
         servoElevacaoR = hardwareMap.get(ServoImplEx.class, "servoElevacaoR"); //Ex4
         launcher = hardwareMap.get(Servo.class, "launcher");

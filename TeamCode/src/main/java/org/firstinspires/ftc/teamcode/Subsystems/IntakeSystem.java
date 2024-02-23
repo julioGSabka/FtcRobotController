@@ -11,11 +11,7 @@ public class IntakeSystem {
     private DcMotorEx intake = null;
     private DcMotorEx esteira = null;
 
-    public IntakeSystem(HardwareMap hardwareMap) {
-        new IntakeSystem(hardwareMap, true);
-    }
-
-    public IntakeSystem(HardwareMap hardwareMap, boolean using){
+    public IntakeSystem(HardwareMap hardwareMap){
         intake = hardwareMap.get(DcMotorEx.class,"Intake"); //Ex0
         intake.setDirection(DcMotorEx.Direction.REVERSE);
         intake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);

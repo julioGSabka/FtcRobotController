@@ -40,6 +40,7 @@ public class PixelRed extends LinearOpMode {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         Pose2d startPose = new Pose2d(-36,-63.55, Math.toRadians(90));
+        drive.setPoseEstimate(startPose);
 
         //start trajectory
         TrajectorySequence toSpikeMarks = drive.trajectorySequenceBuilder(startPose)
@@ -73,13 +74,13 @@ public class PixelRed extends LinearOpMode {
         TrajectorySequence toRightAprilTag = drive.trajectorySequenceBuilder(toBackdropANALISE1.end())
                 .lineToLinearHeading(new Pose2d(40, -42, Math.toRadians(180)))
                 .build();
-        TrajectorySequence forward = drive.trajectorySequenceBuilder(new Pose2d())
+        TrajectorySequence forward = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                 .forward(4.5)
                 .build();
-        TrajectorySequence backward = drive.trajectorySequenceBuilder(new Pose2d())
+        TrajectorySequence backward = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                 .back(4.5)
                 .build();
-        TrajectorySequence park = drive.trajectorySequenceBuilder(new Pose2d())
+        TrajectorySequence park = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                 .lineToLinearHeading(new Pose2d(36, -60, Math.toRadians(180)))
                 .lineToLinearHeading(new Pose2d(60, -60, Math.toRadians(180)))
                 .build();

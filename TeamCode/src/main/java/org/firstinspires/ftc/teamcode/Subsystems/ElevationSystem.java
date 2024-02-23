@@ -22,12 +22,7 @@ public class ElevationSystem {
     private int liftTarget = 500;
 
     private boolean isLifting = false;
-
-    public ElevationSystem(HardwareMap hardwareMap) {
-        new ElevationSystem(hardwareMap, true);
-    }
-
-    public ElevationSystem(HardwareMap hardwareMap, boolean using){
+    public ElevationSystem(HardwareMap hardwareMap){
 
         motorElevacaoL = hardwareMap.get(DcMotorEx.class, "motorElevacaoL"); //Ex2
         motorElevacaoR = hardwareMap.get(DcMotorEx.class, "motorElevacaoR"); //Ex3

@@ -24,7 +24,7 @@ public class TesteIntake extends LinearOpMode {
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
-        intake = new IntakeSystem(hardwareMap, true);
+        intake = new IntakeSystem(hardwareMap);
         cotovelo = hardwareMap.get(ServoImplEx.class, "cotovelo"); //4
         ombroR = hardwareMap.get(ServoImplEx.class, "ombro"); //2
         motorFrontLeft = hardwareMap.get(DcMotorEx.class,"motorFrontLeft"); //0

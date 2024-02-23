@@ -49,9 +49,9 @@ public class OpmodeCV extends LinearOpMode {
         telemetry.update();
 
         //HardwareMap Config
-        arm = new ArmSystem(hardwareMap, true);
-        elevation = new ElevationSystem(hardwareMap, true);
-        intake = new IntakeSystem(hardwareMap, true);
+        arm = new ArmSystem(hardwareMap);
+        elevation = new ElevationSystem(hardwareMap);
+        intake = new IntakeSystem(hardwareMap);
         instancia.initVision(hardwareMap);
         instancia.activateTFODProcessor(false);
 

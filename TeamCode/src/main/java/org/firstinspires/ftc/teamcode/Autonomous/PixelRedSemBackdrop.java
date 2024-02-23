@@ -11,6 +11,8 @@ import org.firstinspires.ftc.teamcode.RoadRunnerScripts.trajectorysequence.Traje
 import org.firstinspires.ftc.teamcode.Subsystems.IntakeSystem;
 import org.firstinspires.ftc.teamcode.vision.InitPipes;
 
+import java.util.List;
+
 @Autonomous
 public class PixelRedSemBackdrop extends LinearOpMode {
 
@@ -33,26 +35,27 @@ public class PixelRedSemBackdrop extends LinearOpMode {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         Pose2d startPose = new Pose2d(-36,-63.55, Math.toRadians(90));
+        drive.setPoseEstimate(startPose);
 
         //start trajectory
         TrajectorySequence toSpikeMarks = drive.trajectorySequenceBuilder(startPose)
-                .lineToLinearHeading(new Pose2d(-36,-36, Math.toRadians(90)))
+                .lineToLinearHeading(new Pose2d(-36,-31, Math.toRadians(90)))
                 .build();
         TrajectorySequence parkANALISE1 = drive.trajectorySequenceBuilder(new Pose2d(-36,-36, Math.toRadians(180)))
-                .lineToLinearHeading(new Pose2d(-36, -2, Math.toRadians(180)))
-                .lineToLinearHeading(new Pose2d(55, -2, Math.toRadians(180)))
-                .lineToLinearHeading(new Pose2d(55, -36, Math.toRadians(180)))
+                .lineToLinearHeading(new Pose2d(-36, -12, Math.toRadians(180)))
+                .lineToLinearHeading(new Pose2d(36, -12, Math.toRadians(180)))
+                .lineToLinearHeading(new Pose2d(36, -36, Math.toRadians(180)))
                 .build();
         TrajectorySequence parkANALISE2 = drive.trajectorySequenceBuilder(toSpikeMarks.end())
                 .lineToLinearHeading(new Pose2d(-60, -36, Math.toRadians(90)))
                 .lineToLinearHeading(new Pose2d(-60, -12, Math.toRadians(90)))
-                .lineToLinearHeading(new Pose2d(75, -12, Math.toRadians(90)))
+                .lineToLinearHeading(new Pose2d(60, -12, Math.toRadians(90)))
                 .build();
         TrajectorySequence parkANALISE3 = drive.trajectorySequenceBuilder(new Pose2d(-36,-36, Math.toRadians(0)))
                 .back(5)
                 .turn(Math.toRadians(90))
                 .lineToLinearHeading(new Pose2d(-36, -12, Math.toRadians(90)))
-                .lineToLinearHeading(new Pose2d(75, -12, Math.toRadians(90)))
+                .lineToLinearHeading(new Pose2d(60, -12, Math.toRadians(90)))
                 .build();
 
         while(analysis == 0 && !isStarted()){
@@ -97,6 +100,25 @@ public class PixelRedSemBackdrop extends LinearOpMode {
             drive.followTrajectorySequence(parkANALISE1);
 
         }
+
+
+        if (analysis == 1) {
+            while (instancia.returnRangeError() > 10 && !isStopRequested()){
+                List<Double> motorVels = instancia.AlignToBackdropTag(1, 4);
+                drive.setMotorPowers(motorVels.get(0), motorVels.get(1), motorVels.get(2), motorVels.get(3));
+            }
+        }else if (analysis == 2) {
+            while (instancia.returnRangeError() > 10 && !isStopRequested()){
+                List<Double> motorVels = instancia.AlignToBackdropTag(2, 5);
+                drive.setMotorPowers(motorVels.get(0), motorVels.get(1), motorVels.get(2), motorVels.get(3));
+            }
+        } else if (analysis == 3) {
+            while (instancia.returnRangeError() > 10 && !isStopRequested()){
+                List<Double> motorVels = instancia.AlignToBackdropTag(3, 6);
+                drive.setMotorPowers(motorVels.get(0), motorVels.get(1), motorVels.get(2), motorVels.get(3));
+            }
+        }
+
 
     }
 
