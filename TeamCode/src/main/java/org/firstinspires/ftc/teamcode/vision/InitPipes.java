@@ -57,9 +57,9 @@ public class InitPipes {
     VisionPortal visionPortal2;
     TfodProcessor teamPropTFOD;
 
-    private static final String TFOD_MODEL_ASSET = "model_20240115_155137.tflite";
+    private static final String TFOD_MODEL_ASSET = "HorseTFOD25-02-2024.tflite";
     private static final String[] LABELS = {
-            "Red Horse"
+            "Blue Horse", "Red Horse"
     };
 
     private static InitPipes instancia;
@@ -162,7 +162,7 @@ public class InitPipes {
         while(visionPortal1.getCameraState() != VisionPortal.CameraState.STREAMING);
         while(visionPortal2.getCameraState() != VisionPortal.CameraState.STREAMING);
 
-        setCamSettings();
+        //setCamSettings();
     }
 
     public ArrayList<AprilTagDetection> updateTagProcessor1(){
@@ -248,22 +248,22 @@ public class InitPipes {
 
             if(type == 0){
                 if (recognition.getLabel() == "Red Horse") {
-                    if (x <= 440) {
+                    if (x <= 350) {
                         detection = 1;
-                    } else if (x > 440 && x < 1280) {
+                    } else if (x > 350 && x < 880) {
                         detection = 2;
-                    } else if (x >= 1280) {
+                    } else if (x >= 880) {
                         detection = 3;
                     }
                 }
             }
             if (type == 1){
                 if (recognition.getLabel() == "Blue Horse") {
-                    if (x <= 440) {
+                    if (x <= 350) {
                         detection = 1;
-                    } else if (x > 440 && x < 1280) {
+                    } else if (x > 350 && x < 880) {
                         detection = 2;
-                    } else if (x >= 1280) {
+                    } else if (x >= 880) {
                         detection = 3;
                     }
                 }

@@ -101,6 +101,8 @@ public class PixelBlueSemBackdrop extends LinearOpMode {
                 .lineToLinearHeading(new Pose2d(60, 12, Math.toRadians(180)))
                 .build();
 
+        instancia.activateTFODProcessor(true);
+
         while(analysis == 0 && !isStarted()){
             analysis = instancia.identifyTeamPropPose(1);
         }
@@ -119,16 +121,14 @@ public class PixelBlueSemBackdrop extends LinearOpMode {
         drive.followTrajectorySequence(toSpikeMarks);
         sleep(500);
 
-        //if (analysis == 2) {
+        if (analysis == 2) {
             intake.cuspirPixel();
             sleep(100);
             drive.followTrajectorySequence(parkANALISE2);
             sleep(200);
             drive.followTrajectorySequence(toMiddleAprilTag);
 
-        //}
-        /*
-        else {
+        } else if (analysis == 3){
             drive.turn(Math.toRadians(-90));
             sleep(100);
             intake.cuspirPixel();
@@ -146,7 +146,6 @@ public class PixelBlueSemBackdrop extends LinearOpMode {
             sleep(200);
             drive.followTrajectorySequence(toLeftAprilTag);
         }
-        */
         drive.followTrajectorySequence(park);
 
     }

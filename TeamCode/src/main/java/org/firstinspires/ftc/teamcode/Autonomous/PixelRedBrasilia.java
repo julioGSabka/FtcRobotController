@@ -101,6 +101,7 @@ public class PixelRedBrasilia extends LinearOpMode {
                 .lineToLinearHeading(new Pose2d(60, -12, Math.toRadians(180)))
                 .build();
 
+        instancia.activateTFODProcessor(true);
 
         while(analysis == 0 && !isStarted()){
             analysis = instancia.identifyTeamPropPose(0);

@@ -15,7 +15,7 @@ public class IntakeSystem {
         intake = hardwareMap.get(DcMotorEx.class,"Intake"); //Ex0
         intake.setDirection(DcMotorEx.Direction.REVERSE);
         intake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        esteira = hardwareMap.get(DcMotorEx.class, "Esteira"); //
+        esteira = hardwareMap.get(DcMotorEx.class, "Esteira"); //Ex1
     }
 
     public void cuspirPixel(){

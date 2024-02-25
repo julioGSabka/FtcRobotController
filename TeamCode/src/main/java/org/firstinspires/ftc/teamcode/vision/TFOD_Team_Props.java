@@ -56,13 +56,13 @@ public class TFOD_Team_Props extends LinearOpMode {
 
     // TFOD_MODEL_ASSET points to a model file stored in the project Asset location,
     // this is only used for Android Studio when using models in Assets.
-    private static final String TFOD_MODEL_ASSET = "newHorseTFOD.tflite";
+    private static final String TFOD_MODEL_ASSET = "HorseTFOD25-02-2024.tflite";
     // TFOD_MODEL_FILE points to a model file stored onboard the Robot Controller's storage,
     // this is used when uploading models directly to the RC using the model upload interface.
     //private static final String TFOD_MODEL_FILE = "/sdcard/FIRST/tflitemodels/myCustomModel.tflite";
     // Define the labels recognized in the model for TFOD (must be in training order!)
     private static final String[] LABELS = {
-       "Red Horse", "Blue Horse"
+       "Blue Horse", "Red Horse"
     };
 
     /**
@@ -148,7 +148,7 @@ public class TFOD_Team_Props extends LinearOpMode {
         }
 
         // Choose a camera resolution. Not all cameras support all resolutions.
-        builder.setCameraResolution(new Size(1920, 1080));
+        builder.setCameraResolution(new Size(1280, 720));
         builder.setStreamFormat(VisionPortal.StreamFormat.MJPEG);
         builder.enableLiveView(true);
         builder.setAutoStopLiveView(true);

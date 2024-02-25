@@ -48,9 +48,9 @@ public class BackdropBlueBrasilia extends LinearOpMode {
                 .build();
         TrajectorySequence parkANALISE1 = drive.trajectorySequenceBuilder( new Pose2d(12,33.5, Math.toRadians(0)))
                 .lineToLinearHeading(new Pose2d(12, 12, Math.toRadians(0)))
-                .lineToLinearHeading(new Pose2d(36, 12, Math.toRadians(180)))
-                .addSpatialMarker(new Vector2d(36, 24), () -> {arm.UpArm();})
-                .lineToLinearHeading(new Pose2d(36, 36, Math.toRadians(180)))
+                .lineToLinearHeading(new Pose2d(40, 12, Math.toRadians(180)))
+                .addSpatialMarker(new Vector2d(40, 24), () -> {arm.UpArm();})
+                .lineToLinearHeading(new Pose2d(40, 36, Math.toRadians(180)))
                 .build();
         TrajectorySequence parkANALISE2 = drive.trajectorySequenceBuilder(new Pose2d(12,33.5, Math.toRadians(270)))
                 .lineToLinearHeading(new Pose2d(36, 36, Math.toRadians(180)))
@@ -105,6 +105,8 @@ public class BackdropBlueBrasilia extends LinearOpMode {
                 .lineToLinearHeading(new Pose2d(36, 60, Math.toRadians(180)))
                 .lineToLinearHeading(new Pose2d(60, 60, Math.toRadians(180)))
                 .build();
+
+        instancia.activateTFODProcessor(true);
 
         while(analysis == 0 && !isStarted()){
             analysis = instancia.identifyTeamPropPose(1);
