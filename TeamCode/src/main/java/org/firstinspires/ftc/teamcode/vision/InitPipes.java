@@ -234,7 +234,9 @@ public class InitPipes {
         visionPortal2.setProcessorEnabled(teamPropTFOD, state);
     }
 
-    public int identifyTeamPropPose(){
+    // 0 = red
+    // 1 = blue
+    public int identifyTeamPropPose(int type){
         int detection = 0;
 
         List<Recognition> currentRecognitions = teamPropTFOD.getRecognitions();
@@ -244,15 +246,29 @@ public class InitPipes {
             double x = (recognition.getLeft() + recognition.getRight()) / 2 ;
             double y = (recognition.getTop()  + recognition.getBottom()) / 2 ;
 
-            if (recognition.getLabel() == "Red Horse") {
-                if (x <= 440) {
-                    detection = 1;
-                } else if (x > 440 && x < 1280) {
-                    detection = 2;
-                } else if (x >= 1280) {
-                    detection = 3;
+            if(type == 0){
+                if (recognition.getLabel() == "Red Horse") {
+                    if (x <= 440) {
+                        detection = 1;
+                    } else if (x > 440 && x < 1280) {
+                        detection = 2;
+                    } else if (x >= 1280) {
+                        detection = 3;
+                    }
                 }
             }
+            if (type == 1){
+                if (recognition.getLabel() == "Blue Horse") {
+                    if (x <= 440) {
+                        detection = 1;
+                    } else if (x > 440 && x < 1280) {
+                        detection = 2;
+                    } else if (x >= 1280) {
+                        detection = 3;
+                    }
+                }
+            }
+
         }
 
         return detection;
@@ -282,9 +298,9 @@ public class InitPipes {
             yawError        = desiredTag.ftcPose.x;
 
             // Use the speed and turn "gains" to calculate how we want the robot to move.
-            drive  = -Range.clip(rangeError * SPEED_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
-            turn   = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN) ;
-            strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
+            drive  = Range.clip(rangeError * SPEED_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
+            turn   = 0;//-Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN) ;
+            strafe = -Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
 
         }
 
@@ -297,6 +313,12 @@ public class InitPipes {
 
     public double returnRangeError(){
         return rangeError;
+    }
+    public double returnHeadingError(){
+        return headingError;
+    }
+    public double returnYawError(){
+        return yawError;
     }
 
     private List<Double> moveRobot(double x, double y, double yaw) {

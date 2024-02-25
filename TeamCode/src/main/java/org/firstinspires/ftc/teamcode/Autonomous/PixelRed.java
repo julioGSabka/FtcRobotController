@@ -86,7 +86,7 @@ public class PixelRed extends LinearOpMode {
                 .build();
 
         while(analysis == 0 && !isStarted()){
-            analysis = instancia.identifyTeamPropPose();
+            analysis = instancia.identifyTeamPropPose(0);
         }
 
         telemetry.addData("Status", "Initialized");
@@ -96,7 +96,7 @@ public class PixelRed extends LinearOpMode {
         resetRuntime();
 
         while(analysis == 0 && isStarted() && getRuntime() < 3.5){
-            analysis = instancia.identifyTeamPropPose();
+            analysis = instancia.identifyTeamPropPose(0);
         }
 
         telemetry.addData("Analise: ", analysis);

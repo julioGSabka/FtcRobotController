@@ -19,8 +19,8 @@ public class IntakeSystem {
     }
 
     public void cuspirPixel(){
-        intake.setPower(-0.7);
-        esteira.setPower(-0.7);
+        intake.setPower(-0.8);
+        esteira.setPower(-0.8);
         sleep(500);
         intake.setPower(0);
         esteira.setPower(0);
@@ -38,7 +38,7 @@ public class IntakeSystem {
     }
 
     public void intakeSetPower(){
-       intake.setPower(0.6);
+       intake.setPower(0.9);
     }
 
     public void esteiraSetPower(){

@@ -80,7 +80,7 @@ public class BackdropBlue extends LinearOpMode {
                 .build();
 
         while(analysis == 0 && !isStarted()){
-            analysis = instancia.identifyTeamPropPose();
+            analysis = instancia.identifyTeamPropPose(1);
         }
 
         telemetry.addData("Status", "Initialized");
@@ -90,7 +90,7 @@ public class BackdropBlue extends LinearOpMode {
         resetRuntime();
 
         while(analysis == 0 && isStarted() && getRuntime() < 3.5){
-            analysis = instancia.identifyTeamPropPose();
+            analysis = instancia.identifyTeamPropPose(1);
         }
 
         telemetry.addData("Analise: ", analysis);

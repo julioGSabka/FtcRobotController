@@ -18,38 +18,48 @@ public class ArmSystem {
     }
 
     public void UpArm() {
-        cotovelo.setPosition(0.8);
-        ombro.setPosition(0.95);
-        sleep(350);
-        cotovelo.setPosition(0.97);
-        sleep(350);
-        ombro.setPosition(0);
-        sleep(350);
-        cotovelo.setPosition(0.35);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                cotovelo.setPosition(0.8);
+                ombro.setPosition(0.95);
+                sleep(350);
+                cotovelo.setPosition(0.97);
+                sleep(350);
+                ombro.setPosition(0);
+                sleep(350);
+                cotovelo.setPosition(0.35);
+            }
+        }).start();
     }
     //Cotovelo: 1 - Recolhido
     //Ombro: 1 - Abaixado
 
     public void DownArm() {
-        cotovelo.setPosition(0.97);
-        sleep(500);
-        ombro.setPosition(0.95);
-        sleep(750);
-        cotovelo.setPosition(0.8);
-        sleep(500);
-        ombro.setPosition(0.87);
-        cotovelo.setPosition(0.69);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                cotovelo.setPosition(0.97);
+                sleep(500);
+                ombro.setPosition(0.95);
+                sleep(750);
+                cotovelo.setPosition(0.8);
+                sleep(500);
+                ombro.setPosition(0.87);
+                cotovelo.setPosition(0.69);
+            }
+        }).start();
 
     }
 
     public void closeGarra() {
-        garra.setPosition(0);
+        garra.setPosition(1);
     }
     public void midlleGarra() {
         garra.setPosition(0.5);
     }
     public void openGarra() {
-        garra.setPosition(1);
+        garra.setPosition(0);
     }
 
     public void setGarra(double pos) {

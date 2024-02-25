@@ -60,10 +60,10 @@ public class OpmodeCV extends LinearOpMode {
         motorFrontRight = hardwareMap.get(DcMotorEx.class,"motorFrontRight"); //2
         motorBackRight = hardwareMap.get(DcMotorEx.class,"motorBackRight"); //3
 
-        motorFrontLeft .setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        motorBackLeft  .setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorFrontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorBackLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorFrontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        motorBackRight .setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorBackRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         launcher = hardwareMap.get(Servo.class, "launcher");
         distanceSensor = hardwareMap.get(DistanceSensor.class, "DistanceSensor");//2
@@ -86,18 +86,12 @@ public class OpmodeCV extends LinearOpMode {
         while (opModeIsActive()) {
             telemetry.addData("Status", "Running");
 
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    //Arm Operation
-                    if (gamepad2.a) {
-                        arm.UpArm();
-                    }
-                    if (gamepad2.b) {
-                        arm.DownArm();
-                    }
-                }
-            }).start();
+            if (gamepad2.a) {
+                arm.UpArm();
+            }
+            if (gamepad2.b) {
+                arm.DownArm();
+            }
 
             //Operação da Garra
             if (gamepad2.left_bumper) { //abre a garra
@@ -162,6 +156,9 @@ public class OpmodeCV extends LinearOpMode {
             //Drone Launcher
             if (gamepad1.right_bumper){
                 launcher.setPosition(1);
+            }
+            if (gamepad1.left_bumper){
+                launcher.setPosition(0);
             }
 
             //Automatic Intake
