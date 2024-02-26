@@ -14,7 +14,7 @@ import org.firstinspires.ftc.teamcode.Subsystems.IntakeSystem;
 import org.firstinspires.ftc.teamcode.vision.InitPipes;
 
 @Autonomous
-public class PixelBlueSemBackdrop extends LinearOpMode {
+public class PixelBlueParkMeio extends LinearOpMode {
 
     IntakeSystem intake;
     ArmSystem arm;

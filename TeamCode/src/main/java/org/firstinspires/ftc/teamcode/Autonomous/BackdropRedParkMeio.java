@@ -15,7 +15,7 @@ import org.firstinspires.ftc.teamcode.Subsystems.IntakeSystem;
 import org.firstinspires.ftc.teamcode.vision.InitPipes;
 
 @Autonomous
-public class BackdropBlueBrasilia extends LinearOpMode {
+public class BackdropRedParkMeio extends LinearOpMode {
 
     IntakeSystem intake;
     ArmSystem arm;
@@ -39,77 +39,78 @@ public class BackdropBlueBrasilia extends LinearOpMode {
         instancia.initVision(hardwareMap);
 
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
-        Pose2d startPose = new Pose2d(12,63.55, Math.toRadians(270));
+        Pose2d startPose = new Pose2d(12,-63.55, Math.toRadians(90));
         drive.setPoseEstimate(startPose);
 
-        ///Trajectory Construct
+        //Trajectory Construct
         TrajectorySequence toSpikeMarks = drive.trajectorySequenceBuilder(startPose)
-                .lineToLinearHeading(new Pose2d(12,33.5, Math.toRadians(270)))
+                .lineToLinearHeading(new Pose2d(12,-33.5, Math.toRadians(90)))
                 .build();
-        TrajectorySequence parkANALISE1 = drive.trajectorySequenceBuilder( new Pose2d(12,33.5, Math.toRadians(0)))
-                .lineToLinearHeading(new Pose2d(12, 12, Math.toRadians(0)))
-                .lineToLinearHeading(new Pose2d(40, 12, Math.toRadians(180)))
-                .addSpatialMarker(new Vector2d(40, 24), () -> {arm.UpArm();})
-                .lineToLinearHeading(new Pose2d(40, 36, Math.toRadians(180)))
+
+        TrajectorySequence parkANALISE1 = drive.trajectorySequenceBuilder( new Pose2d(12,-33.5, Math.toRadians(180)))
+                .lineToLinearHeading(new Pose2d(36, -36, Math.toRadians(180)))
+                .addSpatialMarker(new Vector2d(24, -34.7), () -> {arm.UpArm();})
                 .build();
-        TrajectorySequence parkANALISE2 = drive.trajectorySequenceBuilder(new Pose2d(12,33.5, Math.toRadians(270)))
-                .lineToLinearHeading(new Pose2d(36, 36, Math.toRadians(180)))
-                .addSpatialMarker(new Vector2d(24, 34.7), () -> {arm.UpArm();})
+        TrajectorySequence parkANALISE2 = drive.trajectorySequenceBuilder(new Pose2d(12,-33.5, Math.toRadians(90)))
+                .lineToLinearHeading(new Pose2d(36, -36, Math.toRadians(180)))
+                .addSpatialMarker(new Vector2d(24, -34.7), () -> {arm.UpArm();})
                 .build();
-        TrajectorySequence parkANALISE3 = drive.trajectorySequenceBuilder(new Pose2d(12, 33.5, Math.toRadians(180)))
-                .lineToLinearHeading(new Pose2d(36, 36, Math.toRadians(180)))
-                .addSpatialMarker(new Vector2d(24, 34.7), () -> {arm.UpArm();})
+        TrajectorySequence parkANALISE3 = drive.trajectorySequenceBuilder(new Pose2d(12, -33.5, Math.toRadians(0)))
+                .lineToLinearHeading(new Pose2d(12, -12, Math.toRadians(0)))
+                .lineToLinearHeading(new Pose2d(36, -12, Math.toRadians(180)))
+                .addSpatialMarker(new Vector2d(36, -24), () -> {arm.UpArm();})
+                .lineToLinearHeading(new Pose2d(36, -36, Math.toRadians(180)))
                 .build();
 
         TrajectorySequence toLeftAprilTag = drive.trajectorySequenceBuilder(parkANALISE1.end())
-                .lineToLinearHeading(new Pose2d(40, 42, Math.toRadians(180)))
+                .lineToLinearHeading(new Pose2d(40, -30, Math.toRadians(180)))
                 .back(9)
                 .addTemporalMarker(() -> {arm.openGarra();})
                 .waitSeconds(0.25)
                 .forward(9,
-                        SampleMecanumDrive.getVelocityConstraint(5, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                        SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
-                .lineToLinearHeading(new Pose2d(36, 36, Math.toRadians(180)))
+                .lineToLinearHeading(new Pose2d(36, -36, Math.toRadians(180)))
                 .addTemporalMarker(() -> {arm.DownArm();})
-                .waitSeconds(0.1)
+                .waitSeconds(0.25)
                 .build();
         TrajectorySequence toMiddleAprilTag = drive.trajectorySequenceBuilder(parkANALISE2.end())
-                .lineToLinearHeading(new Pose2d(40, 38, Math.toRadians(180)))
+                .lineToLinearHeading(new Pose2d(40, -38, Math.toRadians(180)))
                 .back(10)
                 .addTemporalMarker(() -> {arm.openGarra();})
                 .waitSeconds(0.25)
                 .forward(10,
-                        SampleMecanumDrive.getVelocityConstraint(5, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                        SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
-                .lineToLinearHeading(new Pose2d(36, 36, Math.toRadians(180)))
+                .lineToLinearHeading(new Pose2d(36, -36, Math.toRadians(180)))
                 .addTemporalMarker(() -> {arm.DownArm();})
                 .waitSeconds(0.25)
                 .build();
         TrajectorySequence toRightAprilTag = drive.trajectorySequenceBuilder(parkANALISE3.end())
-                .lineToLinearHeading(new Pose2d(40, 30, Math.toRadians(180)))
-                .back(9)
+                .lineToLinearHeading(new Pose2d(40, -42, Math.toRadians(180)))
+                .back(10)
                 .addTemporalMarker(() -> {arm.openGarra();})
                 .waitSeconds(0.25)
-                .forward(9,
-                        SampleMecanumDrive.getVelocityConstraint(5, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                .forward(10,
+                        SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
-                .lineToLinearHeading(new Pose2d(36, 36, Math.toRadians(180)))
+                .lineToLinearHeading(new Pose2d(36, -36, Math.toRadians(180)))
                 .addTemporalMarker(() -> {arm.DownArm();})
-                .waitSeconds(0.25)
+                .waitSeconds(0.1)
                 .build();
 
-        TrajectorySequence park = drive.trajectorySequenceBuilder(new Pose2d(36,36, Math.toRadians(180)))
-                .lineToLinearHeading(new Pose2d(36, 60, Math.toRadians(180)))
-                .lineToLinearHeading(new Pose2d(60, 60, Math.toRadians(180)))
+        TrajectorySequence park = drive.trajectorySequenceBuilder(new Pose2d(36,-36, Math.toRadians(180)))
+                .lineToLinearHeading(new Pose2d(36, -12, Math.toRadians(180)))
+                .lineToLinearHeading(new Pose2d(60, -12, Math.toRadians(180)))
                 .build();
 
         instancia.activateTFODProcessor(true);
 
         while(analysis == 0 && !isStarted()){
-            analysis = instancia.identifyTeamPropPose(1);
+            analysis = instancia.identifyTeamPropPose(0);
         }
 
         waitForStart();
@@ -145,7 +146,6 @@ public class BackdropBlueBrasilia extends LinearOpMode {
             drive.followTrajectorySequence(parkANALISE2);
             sleep(200);
             drive.followTrajectorySequence(toMiddleAprilTag);
-
         }
 
         drive.followTrajectorySequence(park);
@@ -153,4 +153,3 @@ public class BackdropBlueBrasilia extends LinearOpMode {
     }
 
 }
-
