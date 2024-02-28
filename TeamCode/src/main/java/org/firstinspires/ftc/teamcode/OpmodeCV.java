@@ -186,7 +186,7 @@ public class OpmodeCV extends LinearOpMode {
                     motorFrontRight.setPower(-0.2);
                     motorBackRight.setPower(-0.2);
                 }
-                sleep(250);
+                sleep(0);
                 //intake.stopIntake();
                 motorFrontLeft.setPower(0.3);
                 motorBackLeft.setPower(0.3);

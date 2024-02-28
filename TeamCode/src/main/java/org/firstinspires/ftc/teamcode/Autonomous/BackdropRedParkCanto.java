@@ -43,19 +43,25 @@ public class BackdropRedParkCanto extends LinearOpMode {
         drive.setPoseEstimate(startPose);
 
         //Trajectory Construct
-        TrajectorySequence toSpikeMarks = drive.trajectorySequenceBuilder(startPose)
-                .lineToLinearHeading(new Pose2d(12,-33.5, Math.toRadians(90)))
+        TrajectorySequence toSpikeMarks1 = drive.trajectorySequenceBuilder(startPose)
+                .lineToLinearHeading(new Pose2d(8,-33.5, Math.toRadians(90)))
+                .build();
+        TrajectorySequence toSpikeMarks2 = drive.trajectorySequenceBuilder(startPose)
+                .lineToLinearHeading(new Pose2d(12,-34, Math.toRadians(90)))
+                .build();
+        TrajectorySequence toSpikeMarks3 = drive.trajectorySequenceBuilder(startPose)
+                .lineToLinearHeading(new Pose2d(16,-33.5, Math.toRadians(90)))
                 .build();
 
-        TrajectorySequence parkANALISE1 = drive.trajectorySequenceBuilder( new Pose2d(12,-33.5, Math.toRadians(180)))
+        TrajectorySequence parkANALISE1 = drive.trajectorySequenceBuilder( new Pose2d(8,-33.5, Math.toRadians(180)))
                 .lineToLinearHeading(new Pose2d(36, -36, Math.toRadians(180)))
                 .addSpatialMarker(new Vector2d(24, -34.7), () -> {arm.UpArm();})
                 .build();
-        TrajectorySequence parkANALISE2 = drive.trajectorySequenceBuilder(new Pose2d(12,-33.5, Math.toRadians(90)))
+        TrajectorySequence parkANALISE2 = drive.trajectorySequenceBuilder(new Pose2d(12,-34, Math.toRadians(90)))
                 .lineToLinearHeading(new Pose2d(36, -36, Math.toRadians(180)))
                 .addSpatialMarker(new Vector2d(24, -34.7), () -> {arm.UpArm();})
                 .build();
-        TrajectorySequence parkANALISE3 = drive.trajectorySequenceBuilder(new Pose2d(12, -33.5, Math.toRadians(0)))
+        TrajectorySequence parkANALISE3 = drive.trajectorySequenceBuilder(new Pose2d(16, -33.5, Math.toRadians(0)))
                 .lineToLinearHeading(new Pose2d(12, -12, Math.toRadians(0)))
                 .lineToLinearHeading(new Pose2d(36, -12, Math.toRadians(180)))
                 .addSpatialMarker(new Vector2d(36, -24), () -> {arm.UpArm();})
@@ -121,10 +127,8 @@ public class BackdropRedParkCanto extends LinearOpMode {
 
         instancia.activateTFODProcessor(false);
 
-        drive.followTrajectorySequence(toSpikeMarks);
-        sleep(500);
-
         if (analysis == 1) {
+            drive.followTrajectorySequence(toSpikeMarks1);
             drive.turn(Math.toRadians(90));
             sleep(200);
             intake.cuspirPixel();
@@ -133,6 +137,7 @@ public class BackdropRedParkCanto extends LinearOpMode {
             sleep(200);
             drive.followTrajectorySequence(toLeftAprilTag);
         } else if (analysis == 3){
+            drive.followTrajectorySequence(toSpikeMarks3);
             drive.turn(Math.toRadians(-90));
             sleep(200);
             intake.cuspirPixel();
@@ -141,6 +146,7 @@ public class BackdropRedParkCanto extends LinearOpMode {
             sleep(200);
             drive.followTrajectorySequence(toRightAprilTag);
         } else {
+            drive.followTrajectorySequence(toSpikeMarks2);
             intake.cuspirPixel();
             sleep(200);
             drive.followTrajectorySequence(parkANALISE2);

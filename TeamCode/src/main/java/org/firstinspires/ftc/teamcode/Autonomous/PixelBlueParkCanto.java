@@ -41,24 +41,32 @@ public class PixelBlueParkCanto extends LinearOpMode {
         drive.setPoseEstimate(startPose);
 
         //start trajectory
-        TrajectorySequence toSpikeMarks = drive.trajectorySequenceBuilder(startPose)
-                .lineToLinearHeading(new Pose2d(-36,33.5, Math.toRadians(270)))
+        TrajectorySequence toSpikeMarks1 = drive.trajectorySequenceBuilder(startPose)
+                .lineToLinearHeading(new Pose2d(-32,33.5, Math.toRadians(270)))
                 .build();
-        TrajectorySequence parkANALISE1 = drive.trajectorySequenceBuilder(new Pose2d(-36,33.5, Math.toRadians(0)))
+        TrajectorySequence toSpikeMarks2 = drive.trajectorySequenceBuilder(startPose)
+                .lineToLinearHeading(new Pose2d(-36,34, Math.toRadians(270)))
+                .build();
+        TrajectorySequence toSpikeMarks3 = drive.trajectorySequenceBuilder(startPose)
+                .lineToLinearHeading(new Pose2d(-40,33.5, Math.toRadians(270)))
+                .build();
+
+        TrajectorySequence parkANALISE1 = drive.trajectorySequenceBuilder(new Pose2d(-32,33.5, Math.toRadians(0)))
+                .back(5)
                 .turn(Math.toRadians(-90))
                 .lineToLinearHeading(new Pose2d(-36, 8, Math.toRadians(180)))
                 .lineToLinearHeading(new Pose2d(36, 8, Math.toRadians(180)))
                 .addSpatialMarker(new Vector2d(0, 8), () -> {arm.UpArm();})
                 .lineToLinearHeading(new Pose2d(36, 36, Math.toRadians(180)))
                 .build();
-        TrajectorySequence parkANALISE2 = drive.trajectorySequenceBuilder(toSpikeMarks.end())
+        TrajectorySequence parkANALISE2 = drive.trajectorySequenceBuilder(toSpikeMarks2.end())
                 .lineToLinearHeading(new Pose2d(-60, 36, Math.toRadians(270)))
                 .lineToLinearHeading(new Pose2d(-60, 8, Math.toRadians(270)))
                 .lineToLinearHeading(new Pose2d(36, 8, Math.toRadians(180)))
                 .addSpatialMarker(new Vector2d(0, 8), () -> {arm.UpArm();})
                 .lineToLinearHeading(new Pose2d(36, 36, Math.toRadians(180)))
                 .build();
-        TrajectorySequence parkANALISE3 = drive.trajectorySequenceBuilder(new Pose2d(-36,33.5, Math.toRadians(180)))
+        TrajectorySequence parkANALISE3 = drive.trajectorySequenceBuilder(new Pose2d(-40,33.5, Math.toRadians(180)))
                 .lineToLinearHeading(new Pose2d(-36, 8, Math.toRadians(180)))
                 .lineToLinearHeading(new Pose2d(36, 8, Math.toRadians(180)))
                 .addSpatialMarker(new Vector2d(0, 8), () -> {arm.UpArm();})
@@ -118,10 +126,8 @@ public class PixelBlueParkCanto extends LinearOpMode {
 
         instancia.activateTFODProcessor(false);
 
-        drive.followTrajectorySequence(toSpikeMarks);
-        sleep(500);
-
         if (analysis == 2) {
+            drive.followTrajectorySequence(toSpikeMarks2);
             intake.cuspirPixel();
             sleep(100);
             drive.followTrajectorySequence(parkANALISE2);
@@ -129,6 +135,7 @@ public class PixelBlueParkCanto extends LinearOpMode {
             drive.followTrajectorySequence(toMiddleAprilTag);
 
         } else if (analysis == 3){
+            drive.followTrajectorySequence(toSpikeMarks3);
             drive.turn(Math.toRadians(-90));
             sleep(100);
             intake.cuspirPixel();
@@ -136,8 +143,8 @@ public class PixelBlueParkCanto extends LinearOpMode {
             drive.followTrajectorySequence(parkANALISE3);
             sleep(100);
             drive.followTrajectorySequence(toRightAprilTag);
-
         } else {
+            drive.followTrajectorySequence(toSpikeMarks1);
             drive.turn(Math.toRadians(90));
             sleep(200);
             intake.cuspirPixel();
