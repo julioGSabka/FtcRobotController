@@ -21,7 +21,7 @@ public class ArmSystem {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                cotovelo.setPosition(0.8);
+                cotovelo.setPosition(0.85);
                 ombro.setPosition(0.95);
                 sleep(350);
                 cotovelo.setPosition(0.97);
