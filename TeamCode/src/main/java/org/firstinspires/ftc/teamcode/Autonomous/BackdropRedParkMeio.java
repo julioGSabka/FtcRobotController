@@ -155,6 +155,8 @@ public class BackdropRedParkMeio extends LinearOpMode {
 
         drive.followTrajectorySequence(park);
 
+        instancia.closeCams();
+
     }
 
 }

@@ -151,6 +151,8 @@ public class PixelBlueParkCanto extends LinearOpMode {
         }
         drive.followTrajectorySequence(park);
 
+        instancia.closeCams();
+
     }
 
 }

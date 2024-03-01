@@ -14,7 +14,7 @@ import org.firstinspires.ftc.teamcode.Subsystems.IntakeSystem;
 import org.firstinspires.ftc.teamcode.vision.InitPipes;
 
 @Autonomous
-public class xmachine extends LinearOpMode {
+public class XMachineAuto extends LinearOpMode {
 
     IntakeSystem intake;
     ArmSystem arm;
@@ -150,6 +150,8 @@ public class xmachine extends LinearOpMode {
         }
 
         drive.followTrajectorySequence(park);
+
+        instancia.closeCams();
 
     }
 

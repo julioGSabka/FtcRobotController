@@ -156,6 +156,7 @@ public class BackdropBlueParkCanto extends LinearOpMode {
 
         drive.followTrajectorySequence(park);
 
+        instancia.closeCams();
     }
 
 }

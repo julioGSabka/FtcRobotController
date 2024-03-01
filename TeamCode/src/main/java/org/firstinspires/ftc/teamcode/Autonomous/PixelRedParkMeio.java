@@ -153,6 +153,8 @@ public class PixelRedParkMeio extends LinearOpMode {
 
         drive.followTrajectorySequence(park);
 
+        instancia.closeCams();
+
     }
 
 }
