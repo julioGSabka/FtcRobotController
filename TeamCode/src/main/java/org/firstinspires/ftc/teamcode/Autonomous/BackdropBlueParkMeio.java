@@ -47,7 +47,7 @@ public class BackdropBlueParkMeio extends LinearOpMode {
                 .lineToLinearHeading(new Pose2d(16,33.5, Math.toRadians(270)))
                 .build();
         TrajectorySequence toSpikeMarks2 = drive.trajectorySequenceBuilder(startPose)
-                .lineToLinearHeading(new Pose2d(12,34, Math.toRadians(270)))
+                .lineToLinearHeading(new Pose2d(14,34, Math.toRadians(270)))
                 .build();
         TrajectorySequence toSpikeMarks3 = drive.trajectorySequenceBuilder(startPose)
                 .lineToLinearHeading(new Pose2d(8,33.5, Math.toRadians(270)))
@@ -59,7 +59,7 @@ public class BackdropBlueParkMeio extends LinearOpMode {
                 .addSpatialMarker(new Vector2d(40, 24), () -> {arm.UpArm();})
                 .lineToLinearHeading(new Pose2d(40, 36, Math.toRadians(180)))
                 .build();
-        TrajectorySequence parkANALISE2 = drive.trajectorySequenceBuilder(new Pose2d(12,33.5, Math.toRadians(270)))
+        TrajectorySequence parkANALISE2 = drive.trajectorySequenceBuilder(new Pose2d(14,33.5, Math.toRadians(270)))
                 .lineToLinearHeading(new Pose2d(36, 36, Math.toRadians(180)))
                 .addSpatialMarker(new Vector2d(24, 34.7), () -> {arm.UpArm();})
                 .build();
@@ -69,10 +69,10 @@ public class BackdropBlueParkMeio extends LinearOpMode {
                 .build();
 
         TrajectorySequence toLeftAprilTag = drive.trajectorySequenceBuilder(parkANALISE1.end())
-                .lineToLinearHeading(new Pose2d(40, 42, Math.toRadians(180)))
+                .lineToLinearHeading(new Pose2d(46, 42, Math.toRadians(180)))
                 .back(9)
                 .addTemporalMarker(() -> {arm.openGarra();})
-                .waitSeconds(0.25)
+                .waitSeconds(0.35)
                 .forward(9,
                         SampleMecanumDrive.getVelocityConstraint(5, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
@@ -82,10 +82,10 @@ public class BackdropBlueParkMeio extends LinearOpMode {
                 .waitSeconds(0.1)
                 .build();
         TrajectorySequence toMiddleAprilTag = drive.trajectorySequenceBuilder(parkANALISE2.end())
-                .lineToLinearHeading(new Pose2d(40, 38, Math.toRadians(180)))
+                .lineToLinearHeading(new Pose2d(46, 38, Math.toRadians(180)))
                 .back(10)
                 .addTemporalMarker(() -> {arm.openGarra();})
-                .waitSeconds(0.25)
+                .waitSeconds(0.35)
                 .forward(10,
                         SampleMecanumDrive.getVelocityConstraint(5, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
@@ -95,10 +95,10 @@ public class BackdropBlueParkMeio extends LinearOpMode {
                 .waitSeconds(0.25)
                 .build();
         TrajectorySequence toRightAprilTag = drive.trajectorySequenceBuilder(parkANALISE3.end())
-                .lineToLinearHeading(new Pose2d(40, 30, Math.toRadians(180)))
+                .lineToLinearHeading(new Pose2d(46, 30, Math.toRadians(180)))
                 .back(9)
                 .addTemporalMarker(() -> {arm.openGarra();})
-                .waitSeconds(0.25)
+                .waitSeconds(0.35)
                 .forward(9,
                         SampleMecanumDrive.getVelocityConstraint(5, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
@@ -117,13 +117,12 @@ public class BackdropBlueParkMeio extends LinearOpMode {
 
         while(analysis == 0 && !isStarted()){
             analysis = instancia.identifyTeamPropPose(1);
+            telemetry.addData("Analise: ", analysis);
+            telemetry.update();
         }
 
         waitForStart();
         resetRuntime();
-
-        telemetry.addData("Analise: ", analysis);
-        telemetry.update();
 
         instancia.activateTFODProcessor(false);
 

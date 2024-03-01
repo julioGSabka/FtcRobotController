@@ -45,7 +45,7 @@ public class PixelBlueParkCanto extends LinearOpMode {
                 .lineToLinearHeading(new Pose2d(-32,33.5, Math.toRadians(270)))
                 .build();
         TrajectorySequence toSpikeMarks2 = drive.trajectorySequenceBuilder(startPose)
-                .lineToLinearHeading(new Pose2d(-36,34, Math.toRadians(270)))
+                .lineToLinearHeading(new Pose2d(-38,34, Math.toRadians(270)))
                 .build();
         TrajectorySequence toSpikeMarks3 = drive.trajectorySequenceBuilder(startPose)
                 .lineToLinearHeading(new Pose2d(-40,33.5, Math.toRadians(270)))
@@ -74,30 +74,30 @@ public class PixelBlueParkCanto extends LinearOpMode {
                 .build();
 
         TrajectorySequence toRightAprilTag = drive.trajectorySequenceBuilder(parkANALISE1.end())
-                .lineToLinearHeading(new Pose2d(40, 28, Math.toRadians(180)))
+                .lineToLinearHeading(new Pose2d(46, 28, Math.toRadians(180)))
                 .back(8)
                 .addTemporalMarker(() -> {arm.openGarra();})
-                .waitSeconds(0.25)
+                .waitSeconds(0.35)
                 .forward(8)
                 .lineToLinearHeading(new Pose2d(36, 36, Math.toRadians(180)))
                 .addTemporalMarker(() -> {arm.DownArm();})
                 .waitSeconds(0.25)
                 .build();
         TrajectorySequence toMiddleAprilTag = drive.trajectorySequenceBuilder(parkANALISE2.end())
-                .lineToLinearHeading(new Pose2d(40, 38, Math.toRadians(180)))
+                .lineToLinearHeading(new Pose2d(46, 38, Math.toRadians(180)))
                 .back(8)
                 .addTemporalMarker(() -> {arm.openGarra();})
-                .waitSeconds(0.25)
+                .waitSeconds(0.35)
                 .forward(8)
                 .lineToLinearHeading(new Pose2d(36, 36, Math.toRadians(180)))
                 .addTemporalMarker(() -> {arm.DownArm();})
                 .waitSeconds(0.25)
                 .build();
         TrajectorySequence toLeftAprilTag = drive.trajectorySequenceBuilder(parkANALISE3.end())
-                .lineToLinearHeading(new Pose2d(40, 42, Math.toRadians(180)))
+                .lineToLinearHeading(new Pose2d(46, 42, Math.toRadians(180)))
                 .back(8)
                 .addTemporalMarker(() -> {arm.openGarra();})
-                .waitSeconds(0.25)
+                .waitSeconds(0.35)
                 .forward(8)
                 .lineToLinearHeading(new Pose2d(36, 36, Math.toRadians(180)))
                 .addTemporalMarker(() -> {arm.DownArm();})
@@ -113,16 +113,12 @@ public class PixelBlueParkCanto extends LinearOpMode {
 
         while(analysis == 0 && !isStarted()){
             analysis = instancia.identifyTeamPropPose(1);
+            telemetry.addData("Analise: ", analysis);
+            telemetry.update();
         }
-
-        telemetry.addData("Status", "Initialized");
-        telemetry.update();
 
         waitForStart();
         resetRuntime();
-
-        telemetry.addData("Analise: ", analysis);
-        telemetry.update();
 
         instancia.activateTFODProcessor(false);
 

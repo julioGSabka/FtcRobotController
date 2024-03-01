@@ -14,14 +14,14 @@ import org.firstinspires.ftc.teamcode.Subsystems.IntakeSystem;
 import org.firstinspires.ftc.teamcode.vision.InitPipes;
 
 @Autonomous
-public class PixelRedParkCanto extends LinearOpMode {
+public class xmachine extends LinearOpMode {
 
     IntakeSystem intake;
     ArmSystem arm;
     InitPipes instancia = InitPipes.getInstancia();
     SampleMecanumDrive drive;
 
-    int analysis = 0;
+    int analysis = 3;
 
     @Override
     public void runOpMode()  {
@@ -52,25 +52,23 @@ public class PixelRedParkCanto extends LinearOpMode {
                 .lineToLinearHeading(new Pose2d(-32,-33.5, Math.toRadians(90)))
                 .build();
 
-        TrajectorySequence parkANALISE1 = drive.trajectorySequenceBuilder(new Pose2d(-40,-33.5, Math.toRadians(180)))
-                .lineToLinearHeading(new Pose2d(-36, -8, Math.toRadians(180)))
-                .lineToLinearHeading(new Pose2d(36, -8, Math.toRadians(180)))
-                .addSpatialMarker(new Vector2d(0, -8), () -> {arm.UpArm();})
+            TrajectorySequence parkANALISE1 = drive.trajectorySequenceBuilder(new Pose2d(-40,-33.5, Math.toRadians(180)))
+                .lineToLinearHeading(new Pose2d(-36, -63.55, Math.toRadians(180)))
+                .lineToLinearHeading(new Pose2d(36, -63.55, Math.toRadians(180)))
+                .addSpatialMarker(new Vector2d(0, -63.55), () -> {arm.UpArm();})
                 .lineToLinearHeading(new Pose2d(36, -36, Math.toRadians(180)))
                 .build();
         TrajectorySequence parkANALISE2 = drive.trajectorySequenceBuilder(toSpikeMarks2.end())
-                .lineToLinearHeading(new Pose2d(-60, -36, Math.toRadians(90)))
-                .lineToLinearHeading(new Pose2d(-60, -8, Math.toRadians(90)))
-                .lineToLinearHeading(new Pose2d(36, -8, Math.toRadians(180)))
-                .addSpatialMarker(new Vector2d(0, -8), () -> {arm.UpArm();})
+                .lineToLinearHeading(new Pose2d(-36, -63.55, Math.toRadians(180)))
+                .lineToLinearHeading(new Pose2d(36, -63.55, Math.toRadians(180)))
+                .addSpatialMarker(new Vector2d(0, -63.55), () -> {arm.UpArm();})
                 .lineToLinearHeading(new Pose2d(36, -36, Math.toRadians(180)))
                 .build();
         TrajectorySequence parkANALISE3 = drive.trajectorySequenceBuilder(new Pose2d(-32,-33.5, Math.toRadians(0)))
                 .back(5)
-                .turn(Math.toRadians(-90))
-                .lineToLinearHeading(new Pose2d(-36, -8, Math.toRadians(180)))
-                .lineToLinearHeading(new Pose2d(36, -8, Math.toRadians(180)))
-                .addSpatialMarker(new Vector2d(0, -8), () -> {arm.UpArm();})
+                .lineToLinearHeading(new Pose2d(-36, -63.55, Math.toRadians(180)))
+                .lineToLinearHeading(new Pose2d(36, -63.55, Math.toRadians(180)))
+                .addSpatialMarker(new Vector2d(0, -63.55), () -> {arm.UpArm();})
                 .lineToLinearHeading(new Pose2d(36, -36, Math.toRadians(180)))
                 .build();
         TrajectorySequence toLeftAprilTag = drive.trajectorySequenceBuilder(parkANALISE1.end())
@@ -105,8 +103,8 @@ public class PixelRedParkCanto extends LinearOpMode {
                 .build();
 
         TrajectorySequence park = drive.trajectorySequenceBuilder(new Pose2d(36,-36, Math.toRadians(180)))
-                .lineToLinearHeading(new Pose2d(36, -60, Math.toRadians(180)))
-                .lineToLinearHeading(new Pose2d(60, -60, Math.toRadians(180)))
+                .lineToLinearHeading(new Pose2d(36, -12, Math.toRadians(180)))
+                .lineToLinearHeading(new Pose2d(60, -12, Math.toRadians(180)))
                 .build();
 
         instancia.activateTFODProcessor(true);

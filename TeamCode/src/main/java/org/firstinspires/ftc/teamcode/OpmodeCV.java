@@ -65,7 +65,7 @@ public class OpmodeCV extends LinearOpMode {
         motorFrontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorBackRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        launcher = hardwareMap.get(Servo.class, "launcher");
+        launcher = hardwareMap.get(Servo.class, "launcher"); //Ex1
         distanceSensor = hardwareMap.get(DistanceSensor.class, "DistanceSensor");//2
 
         //Configure Motors
@@ -172,6 +172,7 @@ public class OpmodeCV extends LinearOpMode {
             distanciaAnterior = distanceSensor.getDistance(DistanceUnit.CM);
 
             //Alinhamento Automatico com as AprilTags
+            /*
             if (gamepad1.dpad_left) {
                 moveRobot(instancia.AlignToBackdropTag(1, 4));
             }else if (gamepad1.dpad_down) {
@@ -198,6 +199,7 @@ public class OpmodeCV extends LinearOpMode {
                 motorFrontRight.setPower(0);
                 motorBackRight.setPower(0);
             } else{
+            */
                 double velocity = (gamepad1.right_trigger * 0.70) + 0.20;
                 double y = -gamepad1.left_stick_y * velocity;
                 double x = gamepad1.left_stick_x * 1.1 * velocity;
@@ -213,7 +215,7 @@ public class OpmodeCV extends LinearOpMode {
                 motorBackLeft.setPower(backLeftPower);
                 motorFrontRight.setPower(frontRightPower);
                 motorBackRight.setPower(backRightPower);
-            }
+            //}
 
             telemetry.addLine("Opmode");
             telemetry.addData("Status", "Run Time: " + runtime.toString());
@@ -237,7 +239,7 @@ public class OpmodeCV extends LinearOpMode {
             telemetry.update();
         }
 
-        instancia.closeCams();
+        //instancia.closeCams();
     }
 
     public void moveRobot(List<Double> vels) {
