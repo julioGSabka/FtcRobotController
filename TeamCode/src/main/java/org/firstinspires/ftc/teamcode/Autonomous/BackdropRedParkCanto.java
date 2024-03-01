@@ -7,7 +7,6 @@ import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.teamcode.RoadRunnerScripts.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.RoadRunnerScripts.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.RoadRunnerScripts.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.Subsystems.ArmSystem;
@@ -44,39 +43,39 @@ public class BackdropRedParkCanto extends LinearOpMode {
 
         //Trajectory Construct
         TrajectorySequence toSpikeMarks1 = drive.trajectorySequenceBuilder(startPose)
-                .lineToLinearHeading(new Pose2d(8,-33.5, Math.toRadians(90)))
+                .lineToLinearHeading(new Pose2d(13.25,-33.5, Math.toRadians(90))) //**
                 .build();
         TrajectorySequence toSpikeMarks2 = drive.trajectorySequenceBuilder(startPose)
-                .lineToLinearHeading(new Pose2d(14,-35, Math.toRadians(90)))
+                .lineToLinearHeading(new Pose2d(14,-36.5, Math.toRadians(90))) //**
                 .build();
         TrajectorySequence toSpikeMarks3 = drive.trajectorySequenceBuilder(startPose)
-                .lineToLinearHeading(new Pose2d(16,-33.5, Math.toRadians(90)))
+                .lineToLinearHeading(new Pose2d(25,-39, Math.toRadians(90)))  //**
                 .build();
 
-        TrajectorySequence parkANALISE1 = drive.trajectorySequenceBuilder( new Pose2d(8,-33.5, Math.toRadians(180)))
+        TrajectorySequence parkANALISE1 = drive.trajectorySequenceBuilder( new Pose2d(13.25,-33.5, Math.toRadians(180)))
+                .back(5)
+                .turn(Math.toRadians(90))
                 .lineToLinearHeading(new Pose2d(36, -36, Math.toRadians(180)))
                 .addSpatialMarker(new Vector2d(24, -34.7), () -> {arm.UpArm();})
                 .build();
-        TrajectorySequence parkANALISE2 = drive.trajectorySequenceBuilder(new Pose2d(14,-34, Math.toRadians(90)))
+        TrajectorySequence parkANALISE2 = drive.trajectorySequenceBuilder(toSpikeMarks2.end())
                 .lineToLinearHeading(new Pose2d(36, -36, Math.toRadians(180)))
                 .addSpatialMarker(new Vector2d(24, -34.7), () -> {arm.UpArm();})
                 .build();
-        TrajectorySequence parkANALISE3 = drive.trajectorySequenceBuilder(new Pose2d(16, -33.5, Math.toRadians(0)))
-                .lineToLinearHeading(new Pose2d(12, -12, Math.toRadians(0)))
-                .lineToLinearHeading(new Pose2d(36, -12, Math.toRadians(180)))
+        TrajectorySequence parkANALISE3 = drive.trajectorySequenceBuilder(toSpikeMarks3.end())
+                .back(5)
+                .lineToLinearHeading(new Pose2d(36, -36, Math.toRadians(180)))
                 .addSpatialMarker(new Vector2d(36, -24), () -> {arm.UpArm();})
-                .lineToLinearHeading(new Pose2d(36, -36, Math.toRadians(180)))
                 .build();
 
         TrajectorySequence toLeftAprilTag = drive.trajectorySequenceBuilder(parkANALISE1.end())
                 .lineToLinearHeading(new Pose2d(46, -30, Math.toRadians(180)))
-                .back(9)
+                .back(10)
                 .addTemporalMarker(() -> {arm.openGarra();})
-                .waitSeconds(0.7)
-                .forward(9,
-                        SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
-                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
-                )
+                .waitSeconds(0.5)
+                .forward(2)
+                .waitSeconds(1)
+                .forward(8)
                 .lineToLinearHeading(new Pose2d(36, -36, Math.toRadians(180)))
                 .addTemporalMarker(() -> {arm.DownArm();})
                 .waitSeconds(0.25)
@@ -85,11 +84,10 @@ public class BackdropRedParkCanto extends LinearOpMode {
                 .lineToLinearHeading(new Pose2d(46, -38, Math.toRadians(180)))
                 .back(10)
                 .addTemporalMarker(() -> {arm.openGarra();})
-                .waitSeconds(0.7)
-                .forward(10,
-                        SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
-                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
-                )
+                .waitSeconds(0.5)
+                .forward(2)
+                .waitSeconds(1)
+                .forward(8)
                 .lineToLinearHeading(new Pose2d(36, -36, Math.toRadians(180)))
                 .addTemporalMarker(() -> {arm.DownArm();})
                 .waitSeconds(0.25)
@@ -98,13 +96,10 @@ public class BackdropRedParkCanto extends LinearOpMode {
                 .lineToLinearHeading(new Pose2d(46, -42, Math.toRadians(180)))
                 .back(10)
                 .addTemporalMarker(() -> {arm.openGarra();})
-                .waitSeconds(0.7)
-                .forward(10)
-                /*,
-                        SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
-                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
-                )
-                */
+                .waitSeconds(0.5)
+                .forward(2)
+                .waitSeconds(1)
+                .forward(8)
                 .lineToLinearHeading(new Pose2d(36, -36, Math.toRadians(180)))
                 .addTemporalMarker(() -> {arm.DownArm();})
                 .waitSeconds(0.1)
@@ -122,6 +117,8 @@ public class BackdropRedParkCanto extends LinearOpMode {
             telemetry.addData("Analise: ", analysis);
             telemetry.update();
         }
+        telemetry.addData("Analise: ", analysis);
+        telemetry.update();
 
         waitForStart();
         resetRuntime();
@@ -139,7 +136,6 @@ public class BackdropRedParkCanto extends LinearOpMode {
             drive.followTrajectorySequence(toLeftAprilTag);
         } else if (analysis == 3){
             drive.followTrajectorySequence(toSpikeMarks3);
-            drive.turn(Math.toRadians(-90));
             sleep(200);
             intake.cuspirPixel();
             sleep(200);

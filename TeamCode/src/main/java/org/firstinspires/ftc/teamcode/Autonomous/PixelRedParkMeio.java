@@ -43,16 +43,17 @@ public class PixelRedParkMeio extends LinearOpMode {
 
         //start trajectory
         TrajectorySequence toSpikeMarks1 = drive.trajectorySequenceBuilder(startPose)
-                .lineToLinearHeading(new Pose2d(-40,-33.5, Math.toRadians(90)))
+                .lineToLinearHeading(new Pose2d(-48, -40, Math.toRadians(90)))
                 .build();
         TrajectorySequence toSpikeMarks2 = drive.trajectorySequenceBuilder(startPose)
-                .lineToLinearHeading(new Pose2d(-38,-34, Math.toRadians(90)))
+                .lineToLinearHeading(new Pose2d(-38,-36.5, Math.toRadians(90)))
                 .build();
         TrajectorySequence toSpikeMarks3 = drive.trajectorySequenceBuilder(startPose)
-                .lineToLinearHeading(new Pose2d(-32,-33.5, Math.toRadians(90)))
+                .lineToLinearHeading(new Pose2d(-37.25,-33.5, Math.toRadians(90)))
                 .build();
 
-        TrajectorySequence parkANALISE1 = drive.trajectorySequenceBuilder(new Pose2d(-40,-33.5, Math.toRadians(180)))
+        TrajectorySequence parkANALISE1 = drive.trajectorySequenceBuilder(toSpikeMarks1.end())
+                .strafeRight(12)
                 .lineToLinearHeading(new Pose2d(-36, -8, Math.toRadians(180)))
                 .lineToLinearHeading(new Pose2d(36, -8, Math.toRadians(180)))
                 .addSpatialMarker(new Vector2d(0, -8), () -> {arm.UpArm();})
@@ -65,7 +66,7 @@ public class PixelRedParkMeio extends LinearOpMode {
                 .addSpatialMarker(new Vector2d(0, -8), () -> {arm.UpArm();})
                 .lineToLinearHeading(new Pose2d(36, -36, Math.toRadians(180)))
                 .build();
-        TrajectorySequence parkANALISE3 = drive.trajectorySequenceBuilder(new Pose2d(-32,-33.5, Math.toRadians(0)))
+        TrajectorySequence parkANALISE3 = drive.trajectorySequenceBuilder(new Pose2d(-37.25,-33.5, Math.toRadians(0)))
                 .back(5)
                 .turn(Math.toRadians(-90))
                 .lineToLinearHeading(new Pose2d(-36, -8, Math.toRadians(180)))
@@ -75,9 +76,11 @@ public class PixelRedParkMeio extends LinearOpMode {
                 .build();
         TrajectorySequence toLeftAprilTag = drive.trajectorySequenceBuilder(parkANALISE1.end())
                 .lineToLinearHeading(new Pose2d(46, -30, Math.toRadians(180)))
-                .back(8)
+                .back(10)
                 .addTemporalMarker(() -> {arm.openGarra();})
-                .waitSeconds(0.35)
+                .waitSeconds(0.5)
+                .forward(2)
+                .waitSeconds(1)
                 .forward(8)
                 .lineToLinearHeading(new Pose2d(36, -36, Math.toRadians(180)))
                 .addTemporalMarker(() -> {arm.DownArm();})
@@ -85,9 +88,11 @@ public class PixelRedParkMeio extends LinearOpMode {
                 .build();
         TrajectorySequence toMiddleAprilTag = drive.trajectorySequenceBuilder(parkANALISE2.end())
                 .lineToLinearHeading(new Pose2d(46, -38, Math.toRadians(180)))
-                .back(8)
+                .back(10)
                 .addTemporalMarker(() -> {arm.openGarra();})
-                .waitSeconds(0.35)
+                .waitSeconds(0.5)
+                .forward(2)
+                .waitSeconds(1)
                 .forward(8)
                 .lineToLinearHeading(new Pose2d(36, -36, Math.toRadians(180)))
                 .addTemporalMarker(() -> {arm.DownArm();})
@@ -95,9 +100,11 @@ public class PixelRedParkMeio extends LinearOpMode {
                 .build();
         TrajectorySequence toRightAprilTag = drive.trajectorySequenceBuilder(parkANALISE3.end())
                 .lineToLinearHeading(new Pose2d(46, -42, Math.toRadians(180)))
-                .back(8)
+                .back(10)
                 .addTemporalMarker(() -> {arm.openGarra();})
-                .waitSeconds(0.35)
+                .waitSeconds(0.5)
+                .forward(2)
+                .waitSeconds(1)
                 .forward(8)
                 .lineToLinearHeading(new Pose2d(36, -36, Math.toRadians(180)))
                 .addTemporalMarker(() -> {arm.DownArm();})
@@ -142,7 +149,6 @@ public class PixelRedParkMeio extends LinearOpMode {
             drive.followTrajectorySequence(toRightAprilTag);
         } else {
             drive.followTrajectorySequence(toSpikeMarks1);
-            drive.turn(Math.toRadians(90));
             sleep(200);
             intake.cuspirPixel();
             sleep(100);
