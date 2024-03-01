@@ -49,7 +49,7 @@ public class BackdropBlueParkCanto extends LinearOpMode {
                 .lineToLinearHeading(new Pose2d(14,36.5, Math.toRadians(270))) //**
                 .build();
         TrajectorySequence toSpikeMarks3 = drive.trajectorySequenceBuilder(startPose)
-                .lineToLinearHeading(new Pose2d(11,33.5, Math.toRadians(270))) //**
+                .lineToLinearHeading(new Pose2d(11,29.5, Math.toRadians(270))) //**
                 .build();
 
         TrajectorySequence parkANALISE1 = drive.trajectorySequenceBuilder(toSpikeMarks1.end())
@@ -61,7 +61,7 @@ public class BackdropBlueParkCanto extends LinearOpMode {
                 .lineToLinearHeading(new Pose2d(36, 36, Math.toRadians(180)))
                 .addSpatialMarker(new Vector2d(24, 34.7), () -> {arm.UpArm();})
                 .build();
-        TrajectorySequence parkANALISE3 = drive.trajectorySequenceBuilder(new Pose2d(13.25,33.5, Math.toRadians(180)))
+        TrajectorySequence parkANALISE3 = drive.trajectorySequenceBuilder(new Pose2d(11,29.5, Math.toRadians(180)))
                 .back(5)
                 .turn(Math.toRadians(-90))
                 .lineToLinearHeading(new Pose2d(36, 36, Math.toRadians(180)))
@@ -112,7 +112,7 @@ public class BackdropBlueParkCanto extends LinearOpMode {
 
         instancia.activateTFODProcessor(true);
 
-        while(analysis == 0 && !isStarted()){
+        while(!isStarted()){
             analysis = instancia.identifyTeamPropPose(1);
             telemetry.addData("Analise: ", analysis);
             telemetry.update();

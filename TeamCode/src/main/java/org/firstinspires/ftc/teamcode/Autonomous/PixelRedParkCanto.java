@@ -49,7 +49,7 @@ public class PixelRedParkCanto extends LinearOpMode {
                 .lineToLinearHeading(new Pose2d(-38,-36.5, Math.toRadians(90)))
                 .build();
         TrajectorySequence toSpikeMarks3 = drive.trajectorySequenceBuilder(startPose)
-                .lineToLinearHeading(new Pose2d(-37.25,-33.5, Math.toRadians(90)))
+                .lineToLinearHeading(new Pose2d(-37.25,-29.5, Math.toRadians(90)))
                 .build();
 
         TrajectorySequence parkANALISE1 = drive.trajectorySequenceBuilder(toSpikeMarks1.end())
@@ -66,7 +66,7 @@ public class PixelRedParkCanto extends LinearOpMode {
                 .addSpatialMarker(new Vector2d(0, -8), () -> {arm.UpArm();})
                 .lineToLinearHeading(new Pose2d(36, -36, Math.toRadians(180)))
                 .build();
-        TrajectorySequence parkANALISE3 = drive.trajectorySequenceBuilder(new Pose2d(-37.25,-33.5, Math.toRadians(0)))
+        TrajectorySequence parkANALISE3 = drive.trajectorySequenceBuilder(new Pose2d(-37.25,-29.5, Math.toRadians(0)))
                 .back(5)
                 .turn(Math.toRadians(-90))
                 .lineToLinearHeading(new Pose2d(-36, -8, Math.toRadians(180)))
@@ -74,6 +74,7 @@ public class PixelRedParkCanto extends LinearOpMode {
                 .addSpatialMarker(new Vector2d(0, -8), () -> {arm.UpArm();})
                 .lineToLinearHeading(new Pose2d(36, -36, Math.toRadians(180)))
                 .build();
+
         TrajectorySequence toLeftAprilTag = drive.trajectorySequenceBuilder(parkANALISE1.end())
                 .lineToLinearHeading(new Pose2d(46, -30, Math.toRadians(180)))
                 .back(10)
@@ -118,7 +119,7 @@ public class PixelRedParkCanto extends LinearOpMode {
 
         instancia.activateTFODProcessor(true);
 
-        while(analysis == 0 && !isStarted()){
+        while(!isStarted()){
             analysis = instancia.identifyTeamPropPose(0);
             telemetry.addData("Analise: ", analysis);
             telemetry.update();

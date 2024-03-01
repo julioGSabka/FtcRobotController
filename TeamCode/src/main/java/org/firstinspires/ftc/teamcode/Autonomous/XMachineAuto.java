@@ -21,7 +21,7 @@ public class XMachineAuto extends LinearOpMode {
     InitPipes instancia = InitPipes.getInstancia();
     SampleMecanumDrive drive;
 
-    int analysis = 3;
+    int analysis = 0;
 
     @Override
     public void runOpMode()  {
@@ -52,23 +52,23 @@ public class XMachineAuto extends LinearOpMode {
                 .lineToLinearHeading(new Pose2d(-32,-33.5, Math.toRadians(90)))
                 .build();
 
-            TrajectorySequence parkANALISE1 = drive.trajectorySequenceBuilder(new Pose2d(-40,-33.5, Math.toRadians(180)))
-                .lineToLinearHeading(new Pose2d(-36, -63.55, Math.toRadians(180)))
-                .lineToLinearHeading(new Pose2d(36, -63.55, Math.toRadians(180)))
-                .addSpatialMarker(new Vector2d(0, -63.55), () -> {arm.UpArm();})
+        TrajectorySequence parkANALISE1 = drive.trajectorySequenceBuilder(new Pose2d(-40,-33.5, Math.toRadians(180)))
+                .lineToLinearHeading(new Pose2d(-36, -60, Math.toRadians(180)))
+                .lineToLinearHeading(new Pose2d(36, -60, Math.toRadians(180)))
+                .addSpatialMarker(new Vector2d(0, -60), () -> {arm.UpArm();})
                 .lineToLinearHeading(new Pose2d(36, -36, Math.toRadians(180)))
                 .build();
         TrajectorySequence parkANALISE2 = drive.trajectorySequenceBuilder(toSpikeMarks2.end())
-                .lineToLinearHeading(new Pose2d(-36, -63.55, Math.toRadians(180)))
-                .lineToLinearHeading(new Pose2d(36, -63.55, Math.toRadians(180)))
-                .addSpatialMarker(new Vector2d(0, -63.55), () -> {arm.UpArm();})
+                .lineToLinearHeading(new Pose2d(-36, -60, Math.toRadians(180)))
+                .lineToLinearHeading(new Pose2d(36, -60, Math.toRadians(180)))
+                .addSpatialMarker(new Vector2d(0, -60), () -> {arm.UpArm();})
                 .lineToLinearHeading(new Pose2d(36, -36, Math.toRadians(180)))
                 .build();
         TrajectorySequence parkANALISE3 = drive.trajectorySequenceBuilder(new Pose2d(-32,-33.5, Math.toRadians(0)))
                 .back(5)
-                .lineToLinearHeading(new Pose2d(-36, -63.55, Math.toRadians(180)))
-                .lineToLinearHeading(new Pose2d(36, -63.55, Math.toRadians(180)))
-                .addSpatialMarker(new Vector2d(0, -63.55), () -> {arm.UpArm();})
+                .lineToLinearHeading(new Pose2d(-36, -60, Math.toRadians(180)))
+                .lineToLinearHeading(new Pose2d(36, -60, Math.toRadians(180)))
+                .addSpatialMarker(new Vector2d(0, -60), () -> {arm.UpArm();})
                 .lineToLinearHeading(new Pose2d(36, -36, Math.toRadians(180)))
                 .build();
         TrajectorySequence toLeftAprilTag = drive.trajectorySequenceBuilder(parkANALISE1.end())
@@ -109,7 +109,7 @@ public class XMachineAuto extends LinearOpMode {
 
         instancia.activateTFODProcessor(true);
 
-        while(analysis == 0 && !isStarted()){
+        while(!isStarted()){
             analysis = instancia.identifyTeamPropPose(0);
             telemetry.addData("Analise: ", analysis);
             telemetry.update();

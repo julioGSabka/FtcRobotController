@@ -43,7 +43,7 @@ public class BackdropRedParkMeio extends LinearOpMode {
 
         //Trajectory Construct
         TrajectorySequence toSpikeMarks1 = drive.trajectorySequenceBuilder(startPose)
-                .lineToLinearHeading(new Pose2d(13.25,-33.5, Math.toRadians(90))) //**
+                .lineToLinearHeading(new Pose2d(13,-29.5, Math.toRadians(90))) //**
                 .build();
         TrajectorySequence toSpikeMarks2 = drive.trajectorySequenceBuilder(startPose)
                 .lineToLinearHeading(new Pose2d(14,-36.5, Math.toRadians(90))) //**
@@ -52,7 +52,7 @@ public class BackdropRedParkMeio extends LinearOpMode {
                 .lineToLinearHeading(new Pose2d(25,-39, Math.toRadians(90)))  //**
                 .build();
 
-        TrajectorySequence parkANALISE1 = drive.trajectorySequenceBuilder( new Pose2d(13.25,-33.5, Math.toRadians(180)))
+        TrajectorySequence parkANALISE1 = drive.trajectorySequenceBuilder( new Pose2d(13,-29.5, Math.toRadians(180)))
                 .back(5)
                 .turn(Math.toRadians(90))
                 .lineToLinearHeading(new Pose2d(36, -36, Math.toRadians(180)))
@@ -112,7 +112,7 @@ public class BackdropRedParkMeio extends LinearOpMode {
 
         instancia.activateTFODProcessor(true);
 
-        while(analysis == 0 && !isStarted()){
+        while(!isStarted()){
             analysis = instancia.identifyTeamPropPose(0);
             telemetry.addData("Analise: ", analysis);
             telemetry.update();

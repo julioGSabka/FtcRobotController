@@ -42,7 +42,7 @@ public class PixelBlueParkCanto extends LinearOpMode {
 
         //start trajectory
         TrajectorySequence toSpikeMarks1 = drive.trajectorySequenceBuilder(startPose)
-                .lineToLinearHeading(new Pose2d(-37.25,33.5, Math.toRadians(270)))
+                .lineToLinearHeading(new Pose2d(-37.25,29.5, Math.toRadians(270)))
                 .build();
         TrajectorySequence toSpikeMarks2 = drive.trajectorySequenceBuilder(startPose)
                 .lineToLinearHeading(new Pose2d(-38,36.5, Math.toRadians(270)))
@@ -51,7 +51,7 @@ public class PixelBlueParkCanto extends LinearOpMode {
                 .lineToLinearHeading(new Pose2d(-48, 40, Math.toRadians(270)))
                 .build();
 
-        TrajectorySequence parkANALISE1 = drive.trajectorySequenceBuilder(new Pose2d(-37.25,33.5, Math.toRadians(0)))
+        TrajectorySequence parkANALISE1 = drive.trajectorySequenceBuilder(new Pose2d(-37.25,29.5, Math.toRadians(0)))
                 .back(5)
                 .turn(Math.toRadians(-90))
                 .lineToLinearHeading(new Pose2d(-36, 8, Math.toRadians(180)))
@@ -112,7 +112,7 @@ public class PixelBlueParkCanto extends LinearOpMode {
 
         instancia.activateTFODProcessor(true);
 
-        while(analysis == 0 && !isStarted()){
+        while(!isStarted()){
             analysis = instancia.identifyTeamPropPose(1);
             telemetry.addData("Analise: ", analysis);
             telemetry.update();
