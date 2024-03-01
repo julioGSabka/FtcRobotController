@@ -46,7 +46,10 @@ public class BackdropBlueParkCanto extends LinearOpMode {
                 .lineToLinearHeading(new Pose2d(25,39, Math.toRadians(270)))  //**
                 .build();
         TrajectorySequence toSpikeMarks2 = drive.trajectorySequenceBuilder(startPose)
-                .lineToLinearHeading(new Pose2d(14,36.5, Math.toRadians(270))) //**
+                //.lineToLinearHeading(new Pose2d(14,36.5, Math.toRadians(270))) //**
+                //.build();
+                .lineToLinearHeading(new Pose2d(36, 24, Math.toRadians(180)))
+                .lineToLinearHeading(new Pose2d(24, 24, Math.toRadians(180)))
                 .build();
         TrajectorySequence toSpikeMarks3 = drive.trajectorySequenceBuilder(startPose)
                 .lineToLinearHeading(new Pose2d(11,29.5, Math.toRadians(270))) //**
