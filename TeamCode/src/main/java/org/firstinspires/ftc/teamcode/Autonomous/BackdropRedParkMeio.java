@@ -44,15 +44,22 @@ public class BackdropRedParkMeio extends LinearOpMode {
         //Trajectory Construct
         TrajectorySequence toSpikeMarks1 = drive.trajectorySequenceBuilder(startPose)
                 .lineToLinearHeading(new Pose2d(13,-35, Math.toRadians(90))) //**
+                .turn(Math.toRadians(90))
+                .forward(3)
                 .build();
         TrajectorySequence toSpikeMarks2 = drive.trajectorySequenceBuilder(startPose)
                 //.lineToLinearHeading(new Pose2d(14,-36.5, Math.toRadians(90))) //**
                 //.build();
-                .lineToLinearHeading(new Pose2d(36, -24, Math.toRadians(180)))
-                .lineToLinearHeading(new Pose2d(24, -24, Math.toRadians(180)))
+                .lineToLinearHeading(new Pose2d(36, -20, Math.toRadians(90)))
+                .turn(Math.toRadians(90))
+                .lineToLinearHeading(new Pose2d(30, -20, Math.toRadians(180)))
+                .forward(3)
                 .build();
         TrajectorySequence toSpikeMarks3 = drive.trajectorySequenceBuilder(startPose)
                 .lineToLinearHeading(new Pose2d(25,-39, Math.toRadians(90)))  //**
+                //.turn(Math.toRadians(-90))
+                //
+                //.forward(3)
                 .build();
 
         TrajectorySequence parkANALISE1 = drive.trajectorySequenceBuilder( new Pose2d(13,-35, Math.toRadians(180)))
