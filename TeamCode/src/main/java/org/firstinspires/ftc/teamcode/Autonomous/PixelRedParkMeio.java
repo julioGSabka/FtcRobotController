@@ -48,11 +48,11 @@ public class PixelRedParkMeio extends LinearOpMode {
         TrajectorySequence toSpikeMarks2 = drive.trajectorySequenceBuilder(startPose)
                 //.lineToLinearHeading(new Pose2d(-38,-36.5, Math.toRadians(90)))
                 //.build();
-                .lineToLinearHeading(new Pose2d(-60, -24, Math.toRadians(0)))
-                .lineToLinearHeading(new Pose2d(-48, -24, Math.toRadians(0)))
+                .lineToLinearHeading(new Pose2d(-54, -25, Math.toRadians(0)))
+                .lineToLinearHeading(new Pose2d(-48, -25, Math.toRadians(0)))
                 .build();
         TrajectorySequence toSpikeMarks3 = drive.trajectorySequenceBuilder(startPose)
-                .lineToLinearHeading(new Pose2d(-37.25,-29.5, Math.toRadians(90)))
+                .lineToLinearHeading(new Pose2d(-37.25,-35, Math.toRadians(90)))
                 .build();
 
         TrajectorySequence parkANALISE1 = drive.trajectorySequenceBuilder(toSpikeMarks1.end())
@@ -64,12 +64,12 @@ public class PixelRedParkMeio extends LinearOpMode {
                 .build();
         TrajectorySequence parkANALISE2 = drive.trajectorySequenceBuilder(toSpikeMarks2.end())
                 //.lineToLinearHeading(new Pose2d(-60, -36, Math.toRadians(90)))
-                .lineToLinearHeading(new Pose2d(-60, -8, Math.toRadians(0))) //270
+                .lineToLinearHeading(new Pose2d(-54, -8, Math.toRadians(0))) //270
                 .lineToLinearHeading(new Pose2d(36, -8, Math.toRadians(180)))
                 .addSpatialMarker(new Vector2d(0, -8), () -> {arm.UpArm();})
                 .lineToLinearHeading(new Pose2d(36, -36, Math.toRadians(180)))
                 .build();
-        TrajectorySequence parkANALISE3 = drive.trajectorySequenceBuilder(new Pose2d(-37.25,-29.5, Math.toRadians(0)))
+        TrajectorySequence parkANALISE3 = drive.trajectorySequenceBuilder(new Pose2d(-37.25,-35, Math.toRadians(0)))
                 .back(5)
                 .turn(Math.toRadians(-90))
                 .lineToLinearHeading(new Pose2d(-36, -8, Math.toRadians(180)))
